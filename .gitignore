@@ -43,3 +43,6 @@ coverage/
 *.pid
 *.seed
 *.pid.lock
+
+# next 
+.next
