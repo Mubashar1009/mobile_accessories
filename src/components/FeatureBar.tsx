@@ -1,3 +1,6 @@
+"use client";
+
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { Shield, Award, Headphones, RotateCcw, BadgeCheck } from "lucide-react";
 
 const features = [
@@ -13,8 +16,8 @@ export function FeatureBar() {
     <section className="border-y bg-card">
       <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {features.map((feat) => (
-            <div key={feat.label} className="flex items-center gap-3">
+          {features.map((feat, i) => (
+            <ScrollReveal key={feat.label} delay={i * 80} className="flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                 <feat.icon className="h-5 w-5 text-primary" />
               </div>
@@ -22,7 +25,7 @@ export function FeatureBar() {
                 <p className="text-sm font-bold text-foreground">{feat.label}</p>
                 <p className="text-[11px] text-muted-foreground">{feat.sublabel}</p>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

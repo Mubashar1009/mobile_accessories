@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Upload, X, Loader2 } from "lucide-react";
 
-export function ProductCreateForm() {
+export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -100,10 +100,17 @@ export function ProductCreateForm() {
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </Button>
+        {compact ? (
+          <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+            <Plus className="h-3.5 w-3.5" />
+            Add
+          </Button>
+        ) : (
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Product
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>

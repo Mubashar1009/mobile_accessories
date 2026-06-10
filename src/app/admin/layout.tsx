@@ -1,46 +1,38 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient } from "@/supabase/client";
+// import { createClient } from "@/utils/supabase/client"; // commented for local dev
 import { Button } from "@/components/ui/button";
-import { LogOut, Package } from "lucide-react";
+import { LogOut, ShoppingBag } from "lucide-react";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/admin/login");
+    // Supabase sign-out commented for local dev
+    // const supabase = createClient();
+    // await supabase.auth.signOut();
+    router.push("/");
     router.refresh();
   };
 
   return (
     <div className="min-h-screen bg-muted/30">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-40 border-b bg-background">
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
         <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-2">
-            <Package className="h-6 w-6 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">
-              Product Catalog
-            </h1>
-            <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-              Admin
-            </span>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <ShoppingBag className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="text-base font-bold text-foreground">Mobile Accessories</span>
+            <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">Admin</span>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">
+            <LogOut className="h-4 w-4" />
+            Exit
           </Button>
         </div>
       </header>
-
-      {/* Main Content */}
       <main className="px-4 py-6 sm:px-6">{children}</main>
     </div>
   );

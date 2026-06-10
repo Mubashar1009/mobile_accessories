@@ -10,7 +10,7 @@ import {
   useMemo,
   type ReactNode,
 } from "react";
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 import {
   saveProducts,
   getProducts as getIDBProducts,

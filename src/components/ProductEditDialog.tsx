@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { updateProduct, productSchema } from "@/lib/actions";
+import { updateProduct } from "@/lib/actions";
+import { productSchema } from "@/lib/types";
 import { type Product, CATEGORIES } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

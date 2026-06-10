@@ -3,11 +3,11 @@
 import { useMemo } from "react";
 import { useProducts } from "@/components/ProductProvider";
 import { ProductCard } from "@/components/ProductCard";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Package, WifiOff, RefreshCw, Loader2, Info, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/lib/db";
 import { matchesCategory, CATEGORIES } from "@/lib/db";
 import Link from "next/link";
 
@@ -16,7 +16,7 @@ interface CategoryPageLayoutProps {
 }
 
 export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
-  const { products, loading, refreshing, isOffline, isDemo, refetch } = useProducts();
+  const { products, loading, isOffline, isDemo, refetch } = useProducts();
   const cat = CATEGORIES.find((c) => c.slug === slug);
   const label = cat?.label ?? slug;
   const filtered = useMemo(() => products.filter((p) => matchesCategory(p, slug)), [products, slug]);
@@ -25,29 +25,19 @@ export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
     <div className="flex flex-1 flex-col">
       <Navbar />
 
-      {/* Category Header */}
       <section className="border-b bg-muted/30">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-          <Link
-            href="/"
-            className="mb-3 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
+          <Link href="/" className="mb-3 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
-          <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            {label}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Browse our collection of {label.toLowerCase()}
-          </p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">{label}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Browse our collection of {label.toLowerCase()}</p>
         </div>
       </section>
 
-      {/* Products */}
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="space-y-6">
-          {/* Demo Mode Banner */}
           {isDemo && (
             <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2.5 text-sm text-primary">
               <Info className="h-4 w-4 shrink-0" />
@@ -55,7 +45,6 @@ export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
             </div>
           )}
 
-          {/* Offline Banner */}
           {isOffline && !isDemo && (
             <div className="flex items-center gap-2 rounded-lg bg-yellow-500/10 px-4 py-2.5 text-sm text-yellow-700 dark:text-yellow-400">
               <WifiOff className="h-4 w-4 shrink-0" />
@@ -63,7 +52,6 @@ export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
             </div>
           )}
 
-          {/* Loading */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -71,7 +59,6 @@ export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
             </div>
           )}
 
-          {/* Products grid */}
           {!loading && filtered.length > 0 && (
             <>
               <div className="mb-4 flex items-end justify-between border-b pb-3">
@@ -84,14 +71,15 @@ export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
                 </Button>
               </div>
               <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {filtered.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {filtered.map((product, i) => (
+                  <ScrollReveal key={product.id} delay={i * 80}>
+                    <ProductCard product={product} />
+                  </ScrollReveal>
                 ))}
               </div>
             </>
           )}
 
-          {/* Empty */}
           {!loading && filtered.length === 0 && (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-20">
               <Package className="mb-4 h-16 w-16 text-muted-foreground/50" />
