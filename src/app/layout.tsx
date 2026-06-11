@@ -14,10 +14,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Mobile Accessories — Smart Wearables & Tech Accessories",
+  title: "Rehvox — Smart Wearables & Tech Accessories",
   description: "Premium audio, power, and smart devices. Order directly via WhatsApp.",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Mobile Accessories" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Rehvox" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

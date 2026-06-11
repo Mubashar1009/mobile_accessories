@@ -37,7 +37,7 @@ export function Footer() {
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
                   <ShoppingBag className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold">Mobile Accessories</span>
+                <span className="text-xl font-bold">Rehvox</span>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-background/60">
                 Premium smart wearables &amp; tech accessories. Genuine products, honest prices. Trusted by customers nationwide.
@@ -157,7 +157,7 @@ export function Footer() {
         <div className="border-t border-background/10">
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 sm:flex-row sm:px-6">
             <p className="text-xs text-background/50">
-              &copy; {new Date().getFullYear()} Mobile Accessories. All rights reserved.
+              &copy; {new Date().getFullYear()} Rehvox. All rights reserved.
             </p>
             <div className="flex gap-6 text-xs text-background/50">
               <Link href="/" className="transition-colors hover:text-background/80">Privacy Policy</Link>

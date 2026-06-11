@@ -25,7 +25,7 @@ export default async function HomePage() {
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                Mobile Accessories Workspace
+                Rehvox Workspace
               </span>
               <span className="text-xs text-zinc-700">|</span>
               <span className="text-xs text-zinc-300 font-medium">Admin Control Center</span>

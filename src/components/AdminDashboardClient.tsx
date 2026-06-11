@@ -101,7 +101,7 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
             Product Dashboard
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your mobile accessories catalog
+            Manage your Rehvox product catalog
           </p>
         </div>
         <ProductCreateForm />
