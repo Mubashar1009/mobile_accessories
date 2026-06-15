@@ -1,21 +1,8 @@
 "use server";
 
-import { createClient } from "@/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { z } from "zod";
-
-// ── Product Validation Schema ───────────────────────────────────────────
-export const productSchema = z.object({
-  title: z.string().trim().min(1, "Product name is required").max(100, "Product name must be 100 characters or less"),
-  description: z.string().trim().nullable().optional(),
-  price: z.number().min(0, "Price must be 0 or greater"),
-  original_price: z.number().min(0, "Original price must be 0 or greater").nullable().optional(),
-  category: z.string().trim().min(1, "Category is required"),
-  colors: z.string().trim().nullable().optional(),
-  tag: z.string().trim().nullable().optional(),
-  is_out_of_stock: z.boolean().optional(),
-});
+import { productSchema } from "@/lib/types";
 
 // ── Types ───────────────────────────────────────────────────────────────
 interface ProductInput {
@@ -92,7 +79,7 @@ export async function createProduct(
   // Validate inputs using Zod
   const validation = productSchema.safeParse(input);
   if (!validation.success) {
-    const errorMessage = validation.error.errors.map((err) => err.message).join(", ");
+    const errorMessage = validation.error.issues.map((err) => err.message).join(", ");
     return { error: `Validation error: ${errorMessage}` };
   }
   const validatedData = validation.data;
@@ -164,7 +151,7 @@ export async function updateProduct(
   // Validate inputs using Zod (partial check for updates)
   const validation = productSchema.partial().safeParse(input);
   if (!validation.success) {
-    const errorMessage = validation.error.errors.map((err) => err.message).join(", ");
+    const errorMessage = validation.error.issues.map((err) => err.message).join(", ");
     return { error: `Validation error: ${errorMessage}` };
   }
   const validatedData = validation.data;

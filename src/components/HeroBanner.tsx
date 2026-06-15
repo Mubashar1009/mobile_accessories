@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { ArrowRight, Zap, Play } from "lucide-react";
 
 export function HeroBanner() {
@@ -14,7 +15,7 @@ export function HeroBanner() {
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:py-20">
         <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-12">
           {/* Left: Text content */}
-          <div className="flex-1 text-center lg:text-left">
+          <ScrollReveal delay={0} className="flex-1 text-center lg:text-left">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-primary">
               <Zap className="h-4 w-4" />
               New Collection 2026
@@ -64,17 +65,17 @@ export function HeroBanner() {
                 <div className="text-xs text-background/50">Avg. Rating</div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* Right: Featured product showcase */}
-          <div className="flex flex-1 items-center justify-center w-full">
+          <ScrollReveal delay={150} className="flex flex-1 items-center justify-center w-full">
             <div className="relative flex items-center justify-center w-full max-w-[480px]">
               {/* Background decorative glows */}
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-violet-500/30 rounded-full blur-3xl opacity-60 animate-pulse" />
               
               <img
                 src="/hero_showcase.png"
-                alt="Ronin Premium Wearables"
+                alt="Rehvox Premium Wearables"
                 className="relative z-10 w-full h-auto max-h-[420px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] select-none pointer-events-none transition-transform duration-500 hover:scale-105 rounded-3xl"
               />
 
@@ -98,7 +99,7 @@ export function HeroBanner() {
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/supabase/client";
+// import { createClient } from "@/utils/supabase/client"; // commented for local dev
 import {
   Dialog,
   DialogContent,
@@ -60,30 +60,18 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
         }
       }
 
-      // Production mode: Connect to Supabase Auth
+      // Production Supabase auth commented for local dev
+      /*
       const supabase = createClient();
-      
-      /* Supabase Authentication Logic - Uncomment when database is ready */
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-
-      if (authError) {
-        setError(authError.message);
-        setLoading(false);
-        return;
-      }
-
-      // Check if logged in user is admin
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (authError) { setError(authError.message); setLoading(false); return; }
       const userEmail = data.user?.email;
       if (!userEmail || !adminEmails.includes(userEmail)) {
         await supabase.auth.signOut();
         setError("Access denied: You are not authorized as an administrator.");
-        setLoading(false);
-        return;
+        setLoading(false); return;
       }
-      /* End Supabase Authentication Logic */
+      */
 
       onOpenChange(false);
       router.refresh();

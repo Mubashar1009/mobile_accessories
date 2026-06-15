@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Menu, X, User, ChevronRight, Settings, LogOut } from "lucide-react";
-import { createClient } from "@/supabase/client";
+import { Search, Menu, X, User, ChevronRight, Settings, LogOut, ShoppingBag } from "lucide-react";
+// import { createClient } from "@/utils/supabase/client"; // commented for local dev
 import { LoginModal } from "@/components/LoginModal";
 
 const announcements = [
@@ -27,8 +27,6 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [announcementIdx, setAnnouncementIdx] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-
-  // Authentication State
   const [loginOpen, setLoginOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -40,9 +38,10 @@ export function Navbar() {
     ).split(",");
 
     // Check mock cookie first
-    const mockEmail = typeof document !== "undefined"
-      ? document.cookie.match(/(^|;)\s*mock-admin-session\s*=\s*([^;]+)/)?.[2]
-      : null;
+    const mockEmail =
+      typeof document !== "undefined"
+        ? document.cookie.match(/(^|;)\s*mock-admin-session\s*=\s*([^;]+)/)?.[2]
+        : null;
 
     if (mockEmail) {
       const decoded = decodeURIComponent(mockEmail);
@@ -51,16 +50,9 @@ export function Navbar() {
       return;
     }
 
-    // Otherwise, check Supabase
+    // Supabase check commented for local dev
+    /*
     try {
-      const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-      const isPlaceholder = !url || url.includes("your-project-id") || url === "https://.supabase.co";
-      if (isPlaceholder) {
-        setUserEmail(null);
-        setIsAdmin(false);
-        return;
-      }
-
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.email) {
@@ -74,32 +66,23 @@ export function Navbar() {
       setUserEmail(null);
       setIsAdmin(false);
     }
+    */
+    setUserEmail(null);
+    setIsAdmin(false);
   }, []);
 
   const handleLogout = async () => {
-    // Clear mock cookie
     if (typeof document !== "undefined") {
       document.cookie = "mock-admin-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
-
-    try {
-      const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-      const isPlaceholder = !url || url.includes("your-project-id") || url === "https://.supabase.co";
-      if (!isPlaceholder) {
-        const supabase = createClient();
-        await supabase.auth.signOut();
-      }
-    } catch (err) {
-      console.error("Supabase signout failed:", err);
-    }
-
+    // Supabase sign-out commented for local dev
+    // try { const supabase = createClient(); await supabase.auth.signOut(); } catch {}
     setUserEmail(null);
     setIsAdmin(false);
     setUserMenuOpen(false);
     router.refresh();
   };
 
-  // Close user menu on outside click
   useEffect(() => {
     if (!userMenuOpen) return;
     const handleOutsideClick = () => setUserMenuOpen(false);
@@ -107,24 +90,18 @@ export function Navbar() {
     return () => window.removeEventListener("click", handleOutsideClick);
   }, [userMenuOpen]);
 
-  // Rotate announcements
   useEffect(() => {
-    const timer = setInterval(() => {
-      setAnnouncementIdx((i) => (i + 1) % announcements.length);
-    }, 4000);
+    const timer = setInterval(() => setAnnouncementIdx((i) => (i + 1) % announcements.length), 4000);
     return () => clearInterval(timer);
   }, []);
 
-  // Track scroll for sticky shadow
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    checkSession();
-  }, [checkSession, loginOpen]);
+  useEffect(() => { checkSession(); }, [checkSession, loginOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,98 +117,62 @@ export function Navbar() {
       {/* Announcement strip */}
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-center px-4 text-xs font-medium sm:text-sm">
-          <span className="transition-all duration-500">{announcements[announcementIdx]}</span>
+          <span key={announcementIdx} className="transition-all duration-500">{announcements[announcementIdx]}</span>
         </div>
       </div>
 
-      {/* Main nav bar */}
+      {/* Main nav */}
       <div className="border-b">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-          {/* Mobile menu toggle */}
-          <button
-            className="p-1.5 sm:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
+          <button className="p-1.5 sm:hidden" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <span className="text-lg font-black text-primary-foreground">R</span>
+              <ShoppingBag className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              Ronin
-            </span>
+            <span className="text-base font-bold tracking-tight text-foreground">Rehvox</span>
           </Link>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop nav */}
           <nav className="hidden items-center gap-1 lg:flex">
             {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
+              <Link key={link.label} href={link.href} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          {/* Right side icons */}
+          {/* Right icons */}
           <div className="flex items-center gap-1">
-            {/* Search toggle */}
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              aria-label="Search"
-            >
+            <button onClick={() => setSearchOpen(!searchOpen)} className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" aria-label="Search">
               <Search className="h-5 w-5" />
             </button>
 
-            {/* User / Admin Dropdown */}
             <div className="relative" onClick={(e) => e.stopPropagation()}>
               {userEmail ? (
                 <>
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    aria-label="User Menu"
-                  >
-                    <User className={`h-5 w-5 ${isAdmin ? "text-primary animate-pulse" : ""}`} />
+                  <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center gap-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+                    <User className={`h-5 w-5 ${isAdmin ? "text-primary" : ""}`} />
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1.5 shadow-md z-50 animate-in fade-in-50 slide-in-from-top-1">
-                      <div className="px-2 py-1.5 text-xs text-muted-foreground border-b mb-1 truncate font-medium">
-                        {userEmail}
-                      </div>
+                    <div className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1.5 shadow-md z-50">
+                      <div className="px-2 py-1.5 text-xs text-muted-foreground border-b mb-1 truncate font-medium">{userEmail}</div>
                       {isAdmin && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground text-foreground"
-                        >
-                          <Settings className="h-4 w-4 text-primary" />
-                          Admin Panel
+                        <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-accent">
+                          <Settings className="h-4 w-4 text-primary" /> Admin Panel
                         </Link>
                       )}
-                      <button
-                        onClick={handleLogout}
-                        className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 text-left font-medium"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        Sign Out
+                      <button onClick={handleLogout} className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 text-left">
+                        <LogOut className="h-4 w-4" /> Sign Out
                       </button>
                     </div>
                   )}
                 </>
               ) : (
-                <button
-                  onClick={() => setLoginOpen(true)}
-                  className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                  aria-label="Admin Login"
-                >
+                <button onClick={() => setLoginOpen(true)} className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" aria-label="Login">
                   <User className="h-5 w-5" />
                 </button>
               )}
@@ -240,7 +181,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Search bar (expandable) */}
+      {/* Search bar */}
       {searchOpen && (
         <div className="border-b bg-background">
           <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
@@ -261,58 +202,31 @@ export function Navbar() {
         </div>
       )}
 
-      {/* Mobile nav dropdown */}
+      {/* Mobile nav */}
       {mobileOpen && (
         <div className="border-b bg-background sm:hidden">
           <nav className="flex flex-col px-4 py-2">
             {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="flex items-center justify-between rounded-md py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.label}
-                <ChevronRight className="h-4 w-4" />
+              <Link key={link.label} href={link.href} className="flex items-center justify-between rounded-md py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" onClick={() => setMobileOpen(false)}>
+                {link.label} <ChevronRight className="h-4 w-4" />
               </Link>
             ))}
             <div className="my-2 border-t" />
             {userEmail ? (
               <div className="space-y-1.5 py-1.5">
-                <div className="px-2 text-xs text-muted-foreground truncate">
-                  Signed in: {userEmail}
-                </div>
+                <div className="px-2 text-xs text-muted-foreground truncate">Signed in: {userEmail}</div>
                 {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="flex items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Admin Panel
-                    <ChevronRight className="h-4 w-4" />
+                  <Link href="/admin" className="flex items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-accent" onClick={() => setMobileOpen(false)}>
+                    Admin Panel <ChevronRight className="h-4 w-4" />
                   </Link>
                 )}
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setMobileOpen(false);
-                  }}
-                  className="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/5 text-left"
-                >
-                  Sign Out
-                  <ChevronRight className="h-4 w-4" />
+                <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-destructive hover:bg-destructive/5 text-left">
+                  Sign Out <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => {
-                  setMobileOpen(false);
-                  setLoginOpen(true);
-                }}
-                className="flex w-full items-center justify-between rounded-md py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground text-left"
-              >
-                Admin Login
-                <ChevronRight className="h-4 w-4" />
+              <button onClick={() => { setMobileOpen(false); setLoginOpen(true); }} className="flex w-full items-center justify-between rounded-md py-2.5 text-sm font-medium text-muted-foreground hover:bg-accent text-left">
+                Admin Login <ChevronRight className="h-4 w-4" />
               </button>
             )}
           </nav>

@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createProduct, productSchema } from "@/lib/actions";
+import { createProduct } from "@/lib/actions";
+import { productSchema } from "@/lib/types";
 import { CATEGORIES } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -192,7 +193,7 @@ export function AdminProductForm() {
             id="product-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Ronin Ultra Charge Pro"
+            placeholder="e.g. Ultra Charge Pro 30000mAh"
             className={errors.title ? "border-destructive focus-visible:ring-destructive" : ""}
           />
           {errors.title && (
