@@ -22,15 +22,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ProductProvider>{children}</ProductProvider>
         <script
           dangerouslySetInnerHTML={{
-            __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(()=>{});})}`,
+            __html:
+              process.env.NODE_ENV === "production"
+                ? `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(()=>{});})}`
+                : `if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){for(let reg of regs){reg.unregister();}}).catch(()=>{});}if('caches' in window){caches.keys().then(function(names){for(let name of names){caches.delete(name);}}).catch(()=>{});}`,
           }}
         />
       </body>
