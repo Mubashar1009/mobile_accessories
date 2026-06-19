@@ -3,23 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node ./node_modules/next/dist/bin/next dev",
-    "build": "node ./node_modules/next/dist/bin/next build",
-    "start": "node ./node_modules/next/dist/bin/next start",
-    "lint": "node ./node_modules/eslint/bin/eslint.js",
-    "db:init": "npx tsx bin/migrate.ts up",
-    "db:migrate": "npx tsx bin/migrate.ts up",
-    "db:migrate:to": "npx tsx bin/migrate.ts up",
-    "db:migrate:down": "npx tsx bin/migrate.ts down",
-    "db:migrate:down:steps": "npx tsx bin/migrate.ts down --steps",
-    "db:migrate:down:to": "npx tsx bin/migrate.ts down --to",
-    "db:migrate:reset": "npx tsx bin/migrate.ts reset",
-    "db:migrate:status": "npx tsx bin/migrate.ts status",
-    "db:migrate:version": "npx tsx bin/migrate.ts version",
-    "db:migrate:verify": "npx tsx bin/migrate.ts verify",
-    "db:create:migration": "npx tsx bin/migrate.ts create",
-    "db:history:clear": "npx tsx bin/migrate.ts history:clear",
-    "db:help": "npx tsx bin/migrate.ts"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "db:init": "tsx src/lib/migrate.ts up",
+    "db:migrate": "tsx src/lib/migrate.ts up",
+    "db:migrate:to": "tsx src/lib/migrate.ts up",
+    "db:migrate:down": "tsx src/lib/migrate.ts down",
+    "db:migrate:down:steps": "tsx src/lib/migrate.ts down --steps",
+    "db:migrate:down:to": "tsx src/lib/migrate.ts down --to",
+    "db:migrate:reset": "tsx src/lib/migrate.ts reset",
+    "db:migrate:status": "tsx src/lib/migrate.ts status",
+    "db:migrate:version": "tsx src/lib/migrate.ts version",
+    "db:migrate:verify": "tsx src/lib/migrate.ts verify",
+    "db:create:migration": "tsx src/lib/migrate.ts create",
+    "db:history:clear": "tsx src/lib/migrate.ts history:clear",
+    "db:help": "tsx src/lib/migrate.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -49,6 +49,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }

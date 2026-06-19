@@ -4,17 +4,17 @@
  * migrate-cli — Custom Migration CLI
  *
  * Usage:
- *   npx tsx bin/migrate.ts up
- *   npx tsx bin/migrate.ts up 003               # sirf 003 tak
- *   npx tsx bin/migrate.ts down                 # last 1 rollback
- *   npx tsx bin/migrate.ts down --steps 3       # last 3 rollback
- *   npx tsx bin/migrate.ts down --to 002        # version 002 tak rollback
- *   npx tsx bin/migrate.ts reset                # sab rollback
- *   npx tsx bin/migrate.ts status
- *   npx tsx bin/migrate.ts version
- *   npx tsx bin/migrate.ts verify
- *   npx tsx bin/migrate.ts create my_table
- *   npx tsx bin/migrate.ts history:clear
+ *   npx tsx src/lib/migrate.ts up
+ *   npx tsx src/lib/migrate.ts up 003               # sirf 003 tak
+ *   npx tsx src/lib/migrate.ts down                 # last 1 rollback
+ *   npx tsx src/lib/migrate.ts down --steps 3       # last 3 rollback
+ *   npx tsx src/lib/migrate.ts down --to 002        # version 002 tak rollback
+ *   npx tsx src/lib/migrate.ts reset                # sab rollback
+ *   npx tsx src/lib/migrate.ts status
+ *   npx tsx src/lib/migrate.ts version
+ *   npx tsx src/lib/migrate.ts verify
+ *   npx tsx src/lib/migrate.ts create my_table
+ *   npx tsx src/lib/migrate.ts history:clear
  */
 
 
@@ -91,90 +91,91 @@ function getFlag(flag: string): string | undefined {
 
 // ─── Command Router ──────────────────────────────
 
-switch (command) {
+async function main() {
+  switch (command) {
 
-  // ── UP ──────────────────────────────────────────
-  case "up":
-    await run(async (m) => {
-      const targetVersion = args[1]; // optional
-      if (targetVersion) {
-        console.log(`\n🚀 Running migrations up to version: ${targetVersion}\n`);
-      } else {
-        console.log("\n🚀 Running all pending migrations...\n");
+    // ── UP ──────────────────────────────────────────
+    case "up":
+      await run(async (m) => {
+        const targetVersion = args[1]; // optional
+        if (targetVersion) {
+          console.log(`\n🚀 Running migrations up to version: ${targetVersion}\n`);
+        } else {
+          console.log("\n🚀 Running all pending migrations...\n");
+        }
+        await m.up(targetVersion);
+      });
+      break;
+
+    // ── DOWN ─────────────────────────────────────────
+    case "down":
+      await run(async (m) => {
+        const toVersion = getFlag("--to");
+        const stepsStr = getFlag("--steps");
+        const steps = stepsStr ? parseInt(stepsStr) : 1;
+
+        if (toVersion) {
+          console.log(`\n⏪ Rolling back to version: ${toVersion}\n`);
+          await m.down(1, toVersion);
+        } else {
+          console.log(`\n⏪ Rolling back last ${steps} migration(s)...\n`);
+          await m.down(steps);
+        }
+      });
+      break;
+
+    // ── RESET ────────────────────────────────────────
+    case "reset":
+      await run(async (m) => {
+        console.log("\n⚠️  Saari migrations rollback ho rahi hain...\n");
+        await m.reset();
+      });
+      break;
+
+    // ── STATUS ───────────────────────────────────────
+    case "status":
+      await run(async (m) => {
+        await m.status();
+      });
+      break;
+
+    // ── VERSION ──────────────────────────────────────
+    case "version":
+      await run(async (m) => {
+        await m.version();
+      });
+      break;
+
+    // ── VERIFY ───────────────────────────────────────
+    case "verify":
+      await run(async (m) => {
+        await m.verify();
+      });
+      break;
+
+    // ── CREATE ───────────────────────────────────────
+    case "create":
+      const migrationName = args.slice(1).join("_");
+      if (!migrationName) {
+        console.error(
+          "\n❌ Migration ka naam do!\n" +
+            "   Example: npx tsx src/lib/migrate.ts create create_users_table\n"
+        );
+        process.exit(1);
       }
-      await m.up(targetVersion);
-    });
-    break;
+      createMigration(migrationName);
+      break;
 
-  // ── DOWN ─────────────────────────────────────────
-  case "down":
-    await run(async (m) => {
-      const toVersion = getFlag("--to");
-      const stepsStr = getFlag("--steps");
-      const steps = stepsStr ? parseInt(stepsStr) : 1;
+    // ── HISTORY:CLEAR ────────────────────────────────
+    case "history:clear":
+      await run(async (m) => {
+        await m.clearHistory();
+      });
+      break;
 
-      if (toVersion) {
-        console.log(`\n⏪ Rolling back to version: ${toVersion}\n`);
-        await m.down(1, toVersion);
-      } else {
-        console.log(`\n⏪ Rolling back last ${steps} migration(s)...\n`);
-        await m.down(steps);
-      }
-    });
-    break;
-
-  // ── RESET ────────────────────────────────────────
-  case "reset":
-    await run(async (m) => {
-      console.log("\n⚠️  Saari migrations rollback ho rahi hain...\n");
-      await m.reset();
-    });
-    break;
-
-  // ── STATUS ───────────────────────────────────────
-  case "status":
-    await run(async (m) => {
-      await m.status();
-    });
-    break;
-
-  // ── VERSION ──────────────────────────────────────
-  case "version":
-    await run(async (m) => {
-      await m.version();
-    });
-    break;
-
-  // ── VERIFY ───────────────────────────────────────
-  case "verify":
-    await run(async (m) => {
-      await m.verify();
-    });
-    break;
-
-  // ── CREATE ───────────────────────────────────────
-  case "create":
-    const migrationName = args.slice(1).join("_");
-    if (!migrationName) {
-      console.error(
-        "\n❌ Migration ka naam do!\n" +
-          "   Example: npx tsx bin/migrate.ts create create_users_table\n"
-      );
-      process.exit(1);
-    }
-    createMigration(migrationName);
-    break;
-
-  // ── HISTORY:CLEAR ────────────────────────────────
-  case "history:clear":
-    await run(async (m) => {
-      await m.clearHistory();
-    });
-    break;
-
-  // ── HELP / DEFAULT ───────────────────────────────
-  default:
-    console.log(`
+    // ── HELP / DEFAULT ───────────────────────────────
+    default:
+      console.log(`
 🗄️  Migration CLI — Available Commands
 ═══════════════════════════════════════════════════
 
@@ -212,4 +213,10 @@ switch (command) {
 
 ═══════════════════════════════════════════════════
 `);
+  }
 }
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
