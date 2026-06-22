@@ -6,7 +6,8 @@ import type { Product } from "@/lib/db";
 import { getDiscount, isNew } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ImageIcon, Heart } from "lucide-react";
+import { MessageCircle, ImageIcon, Heart, Plus, Minus, ShoppingBag } from "lucide-react";
+import { useCart } from "@/components/CartProvider";
 
 interface ProductCardProps {
   product: Product;
@@ -17,11 +18,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
   const discount = getDiscount(product);
   const fresh = isNew(product);
-
-  const whatsappMessage = encodeURIComponent(
-    `Hello, I am interested in ${product.title}.`
-  );
-  const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`;
+  
+  const { addToCart, updateQuantity, getItemQuantity } = useCart();
+  const quantity = getItemQuantity(product.id);
 
   return (
     <div className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5">
@@ -67,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
             <button
               onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-background/80 backdrop-blur transition-colors hover:bg-background"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-background/80 backdrop-blur transition-colors hover:bg-background cursor-pointer"
               aria-label="Wishlist"
             >
               <Heart className={`h-3.5 w-3.5 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
@@ -111,31 +110,49 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* WhatsApp Order Button */}
-        <Button
-          asChild
-          className="mt-3 w-full rounded-lg font-semibold"
-          size="sm"
-          variant={product.is_out_of_stock ? "outline" : "default"}
-          disabled={product.is_out_of_stock}
-        >
-          {product.is_out_of_stock ? (
-            <span className="flex items-center justify-center gap-2">
-              <MessageCircle className="h-3.5 w-3.5" />
-              Unavailable
-            </span>
-          ) : (
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2"
+        {/* Cart / Order Actions */}
+        {product.is_out_of_stock ? (
+          <Button
+            className="mt-3 w-full rounded-lg font-semibold"
+            size="sm"
+            variant="outline"
+            disabled
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            Unavailable
+          </Button>
+        ) : quantity === 0 ? (
+          <Button
+            onClick={() => addToCart(product)}
+            className="mt-3 w-full rounded-lg font-semibold gap-2 transition-all active:scale-[0.98] cursor-pointer"
+            size="sm"
+          >
+            <ShoppingBag className="h-3.5 w-3.5" />
+            Add to Cart
+          </Button>
+        ) : (
+          <div className="mt-3 flex w-full items-center justify-between gap-2">
+            <Button
+              onClick={() => updateQuantity(product.id, quantity - 1)}
+              className="h-9 w-9 rounded-lg p-0 font-bold text-base transition-all active:scale-[0.95] shrink-0 cursor-pointer"
+              variant="outline"
+              size="icon"
             >
-              <MessageCircle className="h-3.5 w-3.5" />
-              Order via WhatsApp
-            </a>
-          )}
-        </Button>
+              <Minus className="h-3.5 w-3.5" />
+            </Button>
+            <span className="text-sm font-bold text-foreground min-w-[24px] text-center select-none">
+              {quantity}
+            </span>
+            <Button
+              onClick={() => updateQuantity(product.id, quantity + 1)}
+              className="h-9 w-9 rounded-lg p-0 font-bold text-base transition-all active:scale-[0.95] shrink-0 cursor-pointer"
+              variant="outline"
+              size="icon"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

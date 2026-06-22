@@ -204,6 +204,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
   // Initial fetch on mount
   useEffect(() => {
     mountedRef.current = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProducts(false);
     return () => {
       mountedRef.current = false;

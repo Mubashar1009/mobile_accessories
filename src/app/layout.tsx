@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ProductProvider } from "@/components/ProductProvider";
+import { CartProvider } from "@/components/CartProvider";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <ProductProvider>{children}</ProductProvider>
+        <ProductProvider>
+          <CartProvider>{children}</CartProvider>
+        </ProductProvider>
         <script
           dangerouslySetInnerHTML={{
             __html:

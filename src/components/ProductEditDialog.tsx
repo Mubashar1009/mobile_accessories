@@ -47,6 +47,7 @@ export function ProductEditDialog({
   // Populate form when product changes
   useEffect(() => {
     if (product) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(product.title);
       setDescription(product.description ?? "");
       setPrice(product.price.toString());

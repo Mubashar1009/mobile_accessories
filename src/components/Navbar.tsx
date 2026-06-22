@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, Menu, X, User, ChevronRight, Settings, LogOut, ShoppingBag } from "lucide-react";
 // import { createClient } from "@/utils/supabase/client"; // commented for local dev
 import { LoginModal } from "@/components/LoginModal";
+import { useCart } from "@/components/CartProvider";
 
 const announcements = [
   "365 Days Warranty on All Products",
@@ -22,6 +23,8 @@ const navLinks = [
 
 export function Navbar() {
   const router = useRouter();
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -101,7 +104,10 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => { checkSession(); }, [checkSession, loginOpen]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    checkSession();
+  }, [checkSession, loginOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,9 +153,22 @@ export function Navbar() {
 
           {/* Right icons */}
           <div className="flex items-center gap-1">
-            <button onClick={() => setSearchOpen(!searchOpen)} className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" aria-label="Search">
+            <button onClick={() => setSearchOpen(!searchOpen)} className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer" aria-label="Search">
               <Search className="h-5 w-5" />
             </button>
+
+            <Link
+              href="/cart"
+              className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer"
+              aria-label="Cart"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground animate-in zoom-in-50">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
 
             <div className="relative" onClick={(e) => e.stopPropagation()}>
               {userEmail ? (
