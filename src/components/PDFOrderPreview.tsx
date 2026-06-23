@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import {
   Dialog,
@@ -18,6 +18,38 @@ interface PDFOrderPreviewProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }
+
+// Helper to convert an image URL to a Base64 data URL via the proxy
+const convertImageToBase64 = async (url: string): Promise<string> => {
+  if (!url) return "";
+  try {
+    let fetchUrl = url;
+    // Only proxy absolute URLs that are external
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      const currentOrigin = typeof window !== "undefined" ? window.location.origin : "";
+      if (!url.startsWith(currentOrigin)) {
+        fetchUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+      }
+    }
+    
+    const response = await fetch(fetchUrl);
+    if (!response.ok) throw new Error(`Failed to fetch image from ${fetchUrl}`);
+    
+    const blob = await response.blob();
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error("Error converting image to base64:", error);
+    // Return original url as fallback
+    return url;
+  }
+};
 
 export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
   const { cartItems, getCartTotal, clearCart } = useCart();
@@ -37,6 +69,47 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
 
   const totalAmount = getCartTotal();
   const [cacheBuster] = useState(() => Date.now().toString());
+
+  const [imageMap, setImageMap] = useState<Record<string, string>>({});
+  const [isImagesLoading, setIsImagesLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let isMounted = true;
+    const loadImages = async () => {
+      setIsImagesLoading(true);
+      const newMap: Record<string, string> = {};
+      
+      try {
+        await Promise.all(
+          cartItems.map(async (item) => {
+            const url = item.product.image_url;
+            if (!url) return;
+            const base64 = await convertImageToBase64(url);
+            if (isMounted) {
+              newMap[item.product.id] = base64;
+            }
+          })
+        );
+        if (isMounted) {
+          setImageMap(newMap);
+        }
+      } catch (err) {
+        console.error("Error loading images:", err);
+      } finally {
+        if (isMounted) {
+          setIsImagesLoading(false);
+        }
+      }
+    };
+
+    loadImages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, cartItems]);
 
   const getBustedImageUrl = (url: string | null) => {
     if (!url) return "";
@@ -166,8 +239,21 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
         pdf.setTextColor("#52525b");
         let y = 85;
         cartItems.forEach((item) => {
-          const titleLines = pdf.splitTextToSize(item.product.title, 80);
-          pdf.text(titleLines, 20, y);
+          const imgBase64 = imageMap[item.product.id];
+          let imageAdded = false;
+          if (imgBase64 && imgBase64.startsWith("data:")) {
+            try {
+              const format = imgBase64.includes("png") ? "PNG" : "JPEG";
+              pdf.addImage(imgBase64, format, 20, y - 6, 8, 8);
+              imageAdded = true;
+            } catch (imgErr) {
+              console.error("Failed to add image to fallback PDF:", imgErr);
+            }
+          }
+
+          const textX = imageAdded ? 30 : 20;
+          const titleLines = pdf.splitTextToSize(item.product.title, imageAdded ? 70 : 80);
+          pdf.text(titleLines, textX, y);
           pdf.text(String(item.quantity), 121, y);
           pdf.text(`Rs.${item.product.price.toLocaleString()}`, 140, y);
           pdf.text(`Rs.${(item.product.price * item.quantity).toLocaleString()}`, 165, y);
@@ -337,24 +423,28 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
               </h3>
               <Button
                 onClick={() => handleDownloadPDF()}
-                disabled={!name.trim() || !phone.trim() || isGenerating}
+                disabled={!name.trim() || !phone.trim() || isGenerating || isImagesLoading}
                 className="w-full rounded-lg py-5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold cursor-pointer border border-zinc-700 hover:border-zinc-600 transition-all active:scale-[0.98] disabled:bg-zinc-950 disabled:text-zinc-600 disabled:border-zinc-900 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {isGenerating ? (
+                {isGenerating || isImagesLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <Download className="h-4 w-4 mr-2" />
                 )}
-                Download PDF
+                {isImagesLoading ? "Loading images..." : "Download PDF"}
               </Button>
 
               <Button
                 onClick={handleWhatsAppOrder}
-                disabled={!name.trim() || !phone.trim() || isGenerating}
+                disabled={!name.trim() || !phone.trim() || isGenerating || isImagesLoading}
                 className="w-full rounded-lg py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer border border-emerald-500 shadow-md transition-all active:scale-[0.98] disabled:bg-zinc-950 disabled:text-zinc-600 disabled:border-zinc-900 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Confirm & Order via WA
+                {isGenerating || isImagesLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                )}
+                {isImagesLoading ? "Loading images..." : "Confirm & Order via WA"}
               </Button>
             </div>
           </div>
@@ -412,26 +502,26 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                   </div>
                 </div>
 
-                {/* Invoice Table */}
-                <table className="w-full mt-6 text-left border-collapse">
-                  <thead>
-                    <tr className="border-b-2 text-xs font-bold uppercase tracking-wider text-zinc-500 font-sans">
-                      <th className="pb-3 w-12">Item</th>
-                      <th className="pb-3">Description</th>
-                      <th className="pb-3 text-center w-12">Qty</th>
-                      <th className="pb-3 text-right w-24">Price</th>
-                      <th className="pb-3 text-right w-24">Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                {/* Invoice Table (Div-based Grid layout for perfect pdf rendering of spacing and borders) */}
+                <div className="w-full mt-6 text-left">
+                  {/* Table Header */}
+                  <div className="border-b-2 pb-3 text-xs font-bold uppercase tracking-wider text-zinc-500 font-sans flex items-center">
+                    <div className="w-12 flex-shrink-0">Item</div>
+                    <div className="flex-1 pr-3">Description</div>
+                    <div className="w-12 text-center flex-shrink-0">Qty</div>
+                    <div className="w-24 text-right flex-shrink-0">Price</div>
+                    <div className="w-24 text-right flex-shrink-0">Subtotal</div>
+                  </div>
+                  {/* Table Body */}
+                  <div>
                     {cartItems.map((item) => (
-                      <tr key={item.id} className="border-b text-sm text-zinc-700">
-                        <td className="py-4 pr-3">
+                      <div key={item.id} className="border-b py-4 text-sm text-zinc-700 flex items-center">
+                        <div className="w-12 pr-3 flex-shrink-0">
                           <div className="relative h-10 w-10 rounded border bg-zinc-50 overflow-hidden">
                             {item.product.image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
-                                src={getBustedImageUrl(item.product.image_url)}
+                                src={imageMap[item.product.id] || getBustedImageUrl(item.product.image_url)}
                                 alt={item.product.title}
                                 className="object-cover h-full w-full"
                                 crossOrigin="anonymous"
@@ -440,19 +530,23 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                               <div className="h-full w-full flex items-center justify-center bg-zinc-200" />
                             )}
                           </div>
-                        </td>
-                        <td className="py-4 font-medium text-zinc-900 pr-3">
+                        </div>
+                        <div className="flex-1 font-medium text-zinc-900 pr-3 min-w-0 break-words">
                           {item.product.title}
-                        </td>
-                        <td className="py-4 text-center font-semibold">{item.quantity}</td>
-                        <td className="py-4 text-right">Rs.{item.product.price.toLocaleString()}</td>
-                        <td className="py-4 text-right font-semibold">
+                        </div>
+                        <div className="w-12 text-center font-semibold flex-shrink-0">
+                          {item.quantity}
+                        </div>
+                        <div className="w-24 text-right flex-shrink-0">
+                          Rs.{item.product.price.toLocaleString()}
+                        </div>
+                        <div className="w-24 text-right font-semibold flex-shrink-0">
                           Rs.{(item.product.price * item.quantity).toLocaleString()}
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
               </div>
 
               {/* Invoice Footer / Summary */}
