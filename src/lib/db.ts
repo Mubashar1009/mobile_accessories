@@ -15,6 +15,13 @@ export interface Product {
   created_at: string;
 }
 
+// ── CartItem type ──────────────────────────────────────────────────────
+export interface CartItem {
+  id: string; // matches product.id
+  product: Product;
+  quantity: number;
+}
+
 // ── Category constants ────────────────────────────────────────────────
 export const CATEGORIES = [
   { slug: "earbuds", label: "Earbuds" },
@@ -73,10 +80,14 @@ interface ProductCatalogDB extends DBSchema {
       "by-created_at": string;
     };
   };
+  cart: {
+    key: string;
+    value: CartItem;
+  };
 }
 
 const DB_NAME = "product-catalog";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 // ── Singleton database connection ──────────────────────────────────────
 let dbPromise: Promise<IDBPDatabase<ProductCatalogDB>> | null = null;
@@ -89,10 +100,36 @@ function getDB() {
           const store = db.createObjectStore("products", { keyPath: "id" });
           store.createIndex("by-created_at", "created_at");
         }
+        if (!db.objectStoreNames.contains("cart")) {
+          db.createObjectStore("cart", { keyPath: "id" });
+        }
       },
     });
   }
   return dbPromise;
+}
+
+// ── Cart IndexedDB operations ──────────────────────────────────────────
+export async function getCartItems(): Promise<CartItem[]> {
+  const db = await getDB();
+  return db.getAll("cart");
+}
+
+export async function saveCartItem(item: CartItem): Promise<void> {
+  const db = await getDB();
+  await db.put("cart", item);
+}
+
+export async function deleteCartItem(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete("cart", id);
+}
+
+export async function clearCart(): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction("cart", "readwrite");
+  await tx.objectStore("cart").clear();
+  await tx.done;
 }
 
 // ── Save all products (full replace from Supabase sync) ────────────────

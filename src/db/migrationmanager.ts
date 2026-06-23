@@ -29,6 +29,7 @@ export class PostgresAdapter implements DatabaseAdapter {
 
   constructor(connectionString: string) {
     // Dynamic import to avoid hard dependency
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { Client } = require("pg");
     this.client = new Client({ connectionString });
   }
