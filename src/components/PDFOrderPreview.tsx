@@ -127,7 +127,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
     setIsGenerating(true);
     try {
       // Dynamic imports to avoid SSR issues
-      const html2canvas = (await import("html2canvas")).default;
+      const html2canvas = (await import("html2canvas-pro")).default;
       const { jsPDF } = await import("jspdf");
 
       const canvas = await html2canvas(invoiceRef.current, {
@@ -214,7 +214,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
         pdf.setFontSize(9);
         pdf.setTextColor("#52525b");
         pdf.text("Rehvox Store", 20, 56);
-        pdf.text("Online Support: wa.me/rehvox", 20, 61);
+        pdf.text("Online Support: wa.me/923056872063", 20, 61);
 
         pdf.text(`Name: ${name || "Guest User"}`, 110, 56);
         pdf.text(`Phone: ${phone || "Not provided"}`, 110, 61);
@@ -237,32 +237,40 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(9);
         pdf.setTextColor("#52525b");
-        let y = 85;
+        let y = 82;
         cartItems.forEach((item) => {
           const imgBase64 = imageMap[item.product.id];
-          let imageAdded = false;
+          
+          const textX = imgBase64 && imgBase64.startsWith("data:") ? 33 : 20;
+          const titleLines = pdf.splitTextToSize(item.product.title, textX === 33 ? 82 : 95);
+          const rowHeight = Math.max(titleLines.length * 5 + 4, 14);
+
+          if (y + rowHeight > 275) {
+            pdf.addPage();
+            y = 20;
+          }
+
           if (imgBase64 && imgBase64.startsWith("data:")) {
             try {
               const format = imgBase64.includes("png") ? "PNG" : "JPEG";
-              pdf.addImage(imgBase64, format, 20, y - 6, 8, 8);
-              imageAdded = true;
+              const imgY = y + (rowHeight - 10) / 2;
+              pdf.addImage(imgBase64, format, 20, imgY, 10, 10);
             } catch (imgErr) {
               console.error("Failed to add image to fallback PDF:", imgErr);
             }
           }
 
-          const textX = imageAdded ? 30 : 20;
-          const titleLines = pdf.splitTextToSize(item.product.title, imageAdded ? 70 : 80);
-          pdf.text(titleLines, textX, y);
-          pdf.text(String(item.quantity), 121, y);
-          pdf.text(`Rs.${item.product.price.toLocaleString()}`, 140, y);
-          pdf.text(`Rs.${(item.product.price * item.quantity).toLocaleString()}`, 165, y);
-          y += Math.max(titleLines.length * 5, 8);
+          const textY = y + (rowHeight - (titleLines.length - 1) * 5) / 2 + 1;
+          pdf.text(titleLines, textX, textY);
+          pdf.text(String(item.quantity), 121, textY);
+          pdf.text(`Rs.${item.product.price.toLocaleString()}`, 140, textY);
+          pdf.text(`Rs.${(item.product.price * item.quantity).toLocaleString()}`, 165, textY);
 
-          if (y > 270) {
-            pdf.addPage();
-            y = 20;
-          }
+          pdf.setDrawColor("#e4e4e7");
+          pdf.setLineWidth(0.3);
+          pdf.line(20, y + rowHeight, 190, y + rowHeight);
+
+          y += rowHeight;
         });
 
         // Totals Divider
@@ -304,7 +312,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
 
   const handleWhatsAppOrder = async () => {
     // 1. Generate and download PDF
-    const pdfBlob = await handleDownloadPDF();
+    await handleDownloadPDF();
 
     // 2. Format WhatsApp text message summary
     const itemsSummary = cartItems
@@ -319,32 +327,9 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
     const message = `Hello Rehvox! I'd like to place an order:\n\n*Invoice No:* ${invoiceNo}\n*Date:* ${currentDate}\n\n*Customer Details:*\n- Name: ${name || "Not provided"}\n- Phone: ${phone || "Not provided"}\n\n*Items:*\n${itemsSummary}\n\n*Total Amount:* Rs.${totalAmount.toLocaleString()}\n\n_Note: I have downloaded the invoice PDF and will attach it to this chat._`;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/923056872063?text=${encodedMessage}`;
 
-    // 3. Try to use Web Share API to send the actual file directly
-    if (pdfBlob && typeof navigator !== "undefined" && navigator.share && navigator.canShare) {
-      try {
-        const file = new File([pdfBlob], `order-${invoiceNo}.pdf`, {
-          type: "application/pdf",
-        });
-
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: `Rehvox Order Summary ${invoiceNo}`,
-            text: "Here is my order invoice. Please process it.",
-          });
-          // Clear cart on success
-          clearCart();
-          setIsOpen(false);
-          return;
-        }
-      } catch (err) {
-        console.warn("Sharing failed, falling back to URL redirect", err);
-      }
-    }
-
-    // 4. Fallback to opening WhatsApp link
+    // 3. Open WhatsApp link directly
     window.open(whatsappUrl, "_blank");
     clearCart();
     setIsOpen(false);
@@ -454,50 +439,100 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
             {/* The Actual Invoice Sheet rendered client-side */}
             <div
               ref={invoiceRef}
-              className="w-full max-w-[595px] min-h-[842px] bg-white text-zinc-900 p-8 shadow-2xl flex flex-col justify-between border"
+              className="w-full max-w-[595px] min-h-[842px] p-8 shadow-2xl flex flex-col justify-between"
               style={{
                 boxSizing: "border-box",
                 fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                backgroundColor: "#ffffff",
+                color: "#18181b",
+                border: "1px solid #e4e4e7",
               }}
             >
               {/* Invoice Header */}
               <div>
-                <div className="flex justify-between items-start border-b pb-6">
+                <div
+                  className="flex justify-between items-start pb-6"
+                  style={{ borderBottom: "1px solid #e4e4e7" }}
+                >
                   <div>
-                    <h1 className="text-3xl font-black tracking-tight text-primary">REHVOX</h1>
-                    <p className="text-xs text-zinc-500 mt-1">
+                    <h1
+                      className="text-3xl font-black tracking-tight"
+                      style={{ color: "#0d9488" }}
+                    >
+                      REHVOX
+                    </h1>
+                    <p
+                      className="text-xs mt-1"
+                      style={{ color: "#71717a" }}
+                    >
                       Smart Wearables & Tech Accessories
                     </p>
                   </div>
                   <div className="text-right">
-                    <h2 className="text-xl font-bold uppercase tracking-wider text-zinc-700">Invoice</h2>
-                    <p className="text-xs font-semibold text-zinc-500 mt-1">
+                    <h2
+                      className="text-xl font-bold uppercase tracking-wider"
+                      style={{ color: "#3f3f46" }}
+                    >
+                      Invoice
+                    </h2>
+                    <p
+                      className="text-xs font-semibold mt-1"
+                      style={{ color: "#71717a" }}
+                    >
                       No: {invoiceNo}
                     </p>
-                    <p className="text-xs text-zinc-500">
+                    <p
+                      className="text-xs"
+                      style={{ color: "#71717a" }}
+                    >
                       Date: {currentDate}
                     </p>
                   </div>
                 </div>
 
                 {/* Client / Order Details */}
-                <div className="grid grid-cols-2 gap-4 py-6 border-b">
+                <div
+                  className="grid grid-cols-2 gap-4 py-6"
+                  style={{ borderBottom: "1px solid #e4e4e7" }}
+                >
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">
+                    <h3
+                      className="text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "#a1a1aa" }}
+                    >
                       Order From
                     </h3>
-                    <p className="text-sm font-bold text-zinc-800">Rehvox Store</p>
-                    <p className="text-xs text-zinc-500 mt-0.5">Online Support: wa.me/rehvox</p>
+                    <p
+                      className="text-sm font-bold"
+                      style={{ color: "#27272a" }}
+                    >
+                      Rehvox Store
+                    </p>
+                    <p
+                      className="text-xs mt-0.5"
+                      style={{ color: "#71717a" }}
+                    >
+                      Online Support: wa.me/923056872063
+                    </p>
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">
+                    <h3
+                      className="text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "#a1a1aa" }}
+                    >
                       Customer Details
                     </h3>
-                    <p className="text-sm font-bold text-zinc-800">
-                      {name || <span className="text-zinc-300 italic">Enter name...</span>}
+                    <p
+                      className="text-sm font-bold"
+                      style={{ color: "#27272a" }}
+                    >
+                      {name || <span style={{ color: "#d4d4d8", fontStyle: "italic" }}>Enter name...</span>}
                     </p>
-                    <p className="text-xs text-zinc-500 mt-0.5">
-                      Phone: {phone || <span className="text-zinc-300 italic">Enter phone...</span>}
+                    <p
+                      className="text-xs mt-0.5"
+                      style={{ color: "#71717a" }}
+                    >
+                      Phone: {phone || <span style={{ color: "#d4d4d8", fontStyle: "italic" }}>Enter phone...</span>}
                     </p>
                   </div>
                 </div>
@@ -505,8 +540,14 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                 {/* Invoice Table (Div-based Grid layout for perfect pdf rendering of spacing and borders) */}
                 <div className="w-full mt-6 text-left">
                   {/* Table Header */}
-                  <div className="border-b-2 pb-3 text-xs font-bold uppercase tracking-wider text-zinc-500 font-sans flex items-center">
-                    <div className="w-12 flex-shrink-0">Item</div>
+                  <div
+                    className="pb-3 text-xs font-bold uppercase tracking-wider font-sans flex items-center"
+                    style={{
+                      borderBottom: "2px solid #e4e4e7",
+                      color: "#71717a",
+                    }}
+                  >
+                    <div className="w-16 flex-shrink-0">Item</div>
                     <div className="flex-1 pr-3">Description</div>
                     <div className="w-12 text-center flex-shrink-0">Qty</div>
                     <div className="w-24 text-right flex-shrink-0">Price</div>
@@ -515,9 +556,22 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                   {/* Table Body */}
                   <div>
                     {cartItems.map((item) => (
-                      <div key={item.id} className="border-b py-4 text-sm text-zinc-700 flex items-center">
-                        <div className="w-12 pr-3 flex-shrink-0">
-                          <div className="relative h-10 w-10 rounded border bg-zinc-50 overflow-hidden">
+                      <div
+                        key={item.id}
+                        className="py-3 text-sm flex items-center"
+                        style={{
+                          borderBottom: "1px solid #e4e4e7",
+                          color: "#3f3f46",
+                        }}
+                      >
+                        <div className="w-16 pr-4 flex-shrink-0">
+                          <div
+                            className="relative h-12 w-12 rounded overflow-hidden"
+                            style={{
+                              border: "1px solid #e4e4e7",
+                              backgroundColor: "#f4f4f5",
+                            }}
+                          >
                             {item.product.image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
@@ -527,11 +581,17 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                                 crossOrigin="anonymous"
                               />
                             ) : (
-                              <div className="h-full w-full flex items-center justify-center bg-zinc-200" />
+                              <div
+                                className="h-full w-full flex items-center justify-center"
+                                style={{ backgroundColor: "#e4e4e7" }}
+                              />
                             )}
                           </div>
                         </div>
-                        <div className="flex-1 font-medium text-zinc-900 pr-3 min-w-0 break-words">
+                        <div
+                          className="flex-1 font-medium pr-3 min-w-0 break-words"
+                          style={{ color: "#18181b" }}
+                        >
                           {item.product.title}
                         </div>
                         <div className="w-12 text-center font-semibold flex-shrink-0">
@@ -550,29 +610,54 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
               </div>
 
               {/* Invoice Footer / Summary */}
-              <div className="mt-8 border-t pt-6">
+              <div
+                className="mt-8 pt-6"
+                style={{ borderTop: "1px solid #e4e4e7" }}
+              >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                    <h4
+                      className="text-xs font-bold uppercase tracking-wider mb-1"
+                      style={{ color: "#a1a1aa" }}
+                    >
                       Payment Terms
                     </h4>
-                    <p className="text-xs text-zinc-500">
+                    <p
+                      className="text-xs"
+                      style={{ color: "#71717a" }}
+                    >
                       Cash on Delivery (COD). Please verify items upon receipt.
                     </p>
                   </div>
                   <div className="w-64 text-right space-y-1.5">
-                    <div className="flex justify-between text-sm text-zinc-600">
+                    <div
+                      className="flex justify-between text-sm"
+                      style={{ color: "#52525b" }}
+                    >
                       <span>Subtotal</span>
                       <span>Rs.{totalAmount.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-lg font-black text-zinc-900 border-t pt-1.5">
+                    <div
+                      className="flex justify-between text-lg font-black"
+                      style={{
+                        color: "#18181b",
+                        borderTop: "1px solid #e4e4e7",
+                        paddingTop: "6px",
+                      }}
+                    >
                       <span>Grand Total</span>
                       <span>Rs.{totalAmount.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-center text-[10px] text-zinc-400 mt-12 border-t pt-6">
+                <div
+                  className="text-center text-[10px] mt-12 pt-6"
+                  style={{
+                    color: "#a1a1aa",
+                    borderTop: "1px solid #e4e4e7",
+                  }}
+                >
                   Thank you for shopping with Rehvox! For any queries, contact us on WhatsApp.
                 </div>
               </div>
