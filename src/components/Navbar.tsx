@@ -19,6 +19,9 @@ const navLinks = [
   { label: "Speakers", href: "/speakers" },
   { label: "Power Banks", href: "/power-banks" },
   { label: "Smart Trackers", href: "/smart-trackers" },
+  { label: "LCD Panels", href: "/lcd-panels" },
+  { label: "Parts", href: "/parts" },
+  { label: "Cables", href: "/cables" },
 ];
 
 export function Navbar() {
@@ -143,9 +146,9 @@ export function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 lg:flex">
+          <nav className="hidden items-center gap-0.5 xl:gap-1 lg:flex">
             {navLinks.map((link) => (
-              <Link key={link.label} href={link.href} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+              <Link key={link.label} href={link.href} className="rounded-md px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground whitespace-nowrap">
                 {link.label}
               </Link>
             ))}

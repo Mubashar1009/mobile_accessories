@@ -89,18 +89,25 @@ export function Footer() {
                 Shop
               </h3>
               <ul className="mt-4 space-y-2.5">
-                {["Earbuds", "Headphones", "Speakers", "Power Banks", "Smart Trackers", "New Arrivals"].map(
-                  (item) => (
-                    <li key={item}>
-                      <Link
-                        href="/"
-                        className="text-sm text-background/60 transition-colors hover:text-primary"
-                      >
-                        {item}
-                      </Link>
-                    </li>
-                  )
-                )}
+                {[
+                  { label: "Earbuds", href: "/earbuds" },
+                  { label: "Headphones", href: "/headphones" },
+                  { label: "Speakers", href: "/speakers" },
+                  { label: "Power Banks", href: "/power-banks" },
+                  { label: "Smart Trackers", href: "/smart-trackers" },
+                  { label: "LCD Panels", href: "/lcd-panels" },
+                  { label: "Parts", href: "/parts" },
+                  { label: "Cables", href: "/cables" },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-background/60 transition-colors hover:text-primary"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 

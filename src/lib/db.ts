@@ -29,6 +29,9 @@ export const CATEGORIES = [
   { slug: "speakers", label: "Speakers" },
   { slug: "power-banks", label: "Power Banks" },
   { slug: "smart-trackers", label: "Smart Trackers" },
+  { slug: "lcd-panels", label: "LCD Panels" },
+  { slug: "parts", label: "Parts" },
+  { slug: "cables", label: "Cables" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
@@ -51,6 +54,12 @@ export function matchesCategory(product: Product, slug: string): boolean {
       return text.includes("power bank");
     case "smart-trackers":
       return text.includes("tracker") || text.includes("tag");
+    case "lcd-panels":
+      return text.includes("lcd") || text.includes("panel") || text.includes("display") || text.includes("screen");
+    case "parts":
+      return text.includes("part") || text.includes("battery replacement") || text.includes("back glass") || text.includes("camera") || text.includes("flex");
+    case "cables":
+      return text.includes("cable") || text.includes("wire") || text.includes("usb");
     default:
       return false;
   }
@@ -181,7 +190,7 @@ export const DEMO_PRODUCTS: Product[] = [
     original_price: 6495,
     tag: "Newly Launched",
     category: "earbuds",
-    image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
+    image_url: "https://images.unsplash.com/photo-1590658268037-6bf12f032f55?w=500&q=80",
     is_out_of_stock: false,
     created_at: new Date(Date.now() - 86400000 * 6).toISOString(),
   },
@@ -193,7 +202,7 @@ export const DEMO_PRODUCTS: Product[] = [
     original_price: 9095,
     tag: "AI Voice Translator",
     category: "earbuds",
-    image_url: "https://images.unsplash.com/photo-1598331668826-20cecc596b86?w=500&q=80",
+    image_url: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=500&q=80",
     is_out_of_stock: false,
     created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
   },
@@ -205,7 +214,7 @@ export const DEMO_PRODUCTS: Product[] = [
     original_price: 7395,
     tag: "Newly Launched",
     category: "earbuds",
-    image_url: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500&q=80",
+    image_url: "https://images.unsplash.com/photo-1608754236920-3a27e7e758b2?w=500&q=80",
     is_out_of_stock: true,
     created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
   },
@@ -229,7 +238,7 @@ export const DEMO_PRODUCTS: Product[] = [
     original_price: 9995,
     tag: "Software Based",
     category: "headphones",
-    image_url: "https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=500&q=80",
+    image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
     is_out_of_stock: false,
     created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
   },
@@ -253,7 +262,7 @@ export const DEMO_PRODUCTS: Product[] = [
     original_price: 5995,
     tag: "Newly Launched",
     category: "speakers",
-    image_url: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=500&q=80",
+    image_url: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&q=80",
     is_out_of_stock: true,
     created_at: new Date().toISOString(),
   },
@@ -265,6 +274,42 @@ export const DEMO_PRODUCTS: Product[] = [
     original_price: 7995,
     tag: "Newly Launched",
     category: "power-banks",
+    image_url: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80",
+    is_out_of_stock: false,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "demo-9",
+    title: "iPhone 13 Pro Max LCD Panel",
+    description: "Original OLED Display Panel | Super Retina XDR",
+    price: 34999,
+    original_price: 39999,
+    tag: "Original Quality",
+    category: "lcd-panels",
+    image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80",
+    is_out_of_stock: false,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "demo-10",
+    title: "Premium Battery for iPhone 12",
+    description: "Zero-cycle replacement battery | 2815mAh with adhesive",
+    price: 3850,
+    original_price: 4500,
+    tag: "High Capacity",
+    category: "parts",
+    image_url: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500&q=80",
+    is_out_of_stock: false,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "demo-11",
+    title: "Braided 100W USB-C to USB-C Cable",
+    description: "2-meter rugged nylon braided cable | PD 3.0 Fast Charging",
+    price: 1450,
+    original_price: 1999,
+    tag: "Best Seller",
+    category: "cables",
     image_url: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80",
     is_out_of_stock: false,
     created_at: new Date().toISOString(),

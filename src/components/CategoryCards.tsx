@@ -2,7 +2,7 @@
 
 import { ScrollReveal } from "@/components/ScrollReveal";
 import Link from "next/link";
-import { ArrowRight, Headphones, Speaker, Battery, Radio, MapPin } from "lucide-react";
+import { ArrowRight, Headphones, Speaker, Battery, Radio, MapPin, Tv, Cpu, Cable } from "lucide-react";
 
 const categories = [
   { name: "Earbuds", count: "25+ Products", icon: Radio, href: "/earbuds", bg: "bg-teal-500", lightBg: "bg-teal-500/10", textColor: "text-teal-600" },
@@ -10,6 +10,9 @@ const categories = [
   { name: "Speakers", count: "12+ Products", icon: Speaker, href: "/speakers", bg: "bg-orange-500", lightBg: "bg-orange-500/10", textColor: "text-orange-600" },
   { name: "Power Banks", count: "15+ Products", icon: Battery, href: "/power-banks", bg: "bg-blue-500", lightBg: "bg-blue-500/10", textColor: "text-blue-600" },
   { name: "Smart Trackers", count: "8+ Products", icon: MapPin, href: "/smart-trackers", bg: "bg-rose-500", lightBg: "bg-rose-500/10", textColor: "text-rose-600" },
+  { name: "LCD Panels", count: "40+ Products", icon: Tv, href: "/lcd-panels", bg: "bg-amber-500", lightBg: "bg-amber-500/10", textColor: "text-amber-600" },
+  { name: "Parts", count: "50+ Products", icon: Cpu, href: "/parts", bg: "bg-emerald-500", lightBg: "bg-emerald-500/10", textColor: "text-emerald-600" },
+  { name: "Cables", count: "30+ Products", icon: Cable, href: "/cables", bg: "bg-indigo-500", lightBg: "bg-indigo-500/10", textColor: "text-indigo-600" },
 ];
 
 export function CategoryCards() {
@@ -26,7 +29,7 @@ export function CategoryCards() {
           </Link>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
           {categories.map((cat, i) => (
             <ScrollReveal key={cat.name} delay={i * 80}>
               <Link href={cat.href} className="group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all hover:shadow-lg hover:-translate-y-0.5 block">
