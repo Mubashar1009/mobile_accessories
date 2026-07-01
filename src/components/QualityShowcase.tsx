@@ -46,7 +46,7 @@ export function QualityShowcase() {
             Engineered for Precision
           </h2>
           <p className="mt-4 text-base text-zinc-400">
-            We don't just sell components; we engineer confidence. Learn how Al-Rehman Mobile Shop sets the standard for quality assurance.
+            We don&apos;t just sell components; we engineer confidence. Learn how Al-Rehman Mobile Shop sets the standard for quality assurance.
           </p>
         </ScrollReveal>
 

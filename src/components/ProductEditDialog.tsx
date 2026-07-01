@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Upload, X, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 interface ProductEditDialogProps {
   product: Product | null;
@@ -166,10 +167,13 @@ export function ProductEditDialog({
             <Label>Product Image</Label>
             {imagePreview ? (
               <div className="relative">
-                <img
+                <Image
                   src={imagePreview}
                   alt="Preview"
+                  width={400}
+                  height={160}
                   className="h-40 w-full rounded-md object-cover"
+                  unoptimized
                 />
                 <button
                   type="button"

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Upload, X, Loader2, Palette } from "lucide-react";
+import Image from "next/image";
 
 export function AdminProductForm() {
   const router = useRouter();
@@ -146,10 +147,13 @@ export function AdminProductForm() {
         </Label>
         {imagePreview ? (
           <div className="relative overflow-hidden rounded-lg border">
-            <img
+            <Image
               src={imagePreview}
               alt="Preview"
+              width={600}
+              height={224}
               className="h-48 w-full object-cover sm:h-56"
+              unoptimized
             />
             <button
               type="button"

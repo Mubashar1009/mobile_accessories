@@ -2,6 +2,7 @@
 
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ArrowRight, Zap, Play } from "lucide-react";
+import Image from "next/image";
 
 export function HeroBanner() {
   return (
@@ -13,9 +14,9 @@ export function HeroBanner() {
       }} />
 
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:py-20">
-        <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-12">
+        <div className="flex flex-col items-center gap-8 md:flex-row lg:gap-12">
           {/* Left: Text content */}
-          <ScrollReveal delay={0} className="flex-1 text-center lg:text-left">
+          <ScrollReveal delay={0} className="flex-1 md:flex-[1.2] text-center md:text-left">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-primary">
               <Zap className="h-4 w-4" />
               New Collection 2026
@@ -31,17 +32,17 @@ export function HeroBanner() {
               Premium audio, power, and smart devices — designed for the modern lifestyle. Order directly via WhatsApp.
             </p>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
               <a
                 href="#products"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 whitespace-nowrap"
               >
                 Shop Now
                 <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href="#categories"
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-background/20 px-7 py-3.5 text-sm font-bold text-background transition-colors hover:bg-background/10"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-background/20 px-7 py-3.5 text-sm font-bold text-background transition-colors hover:bg-background/10 whitespace-nowrap"
               >
                 <Play className="h-4 w-4" />
                 Browse Categories
@@ -49,7 +50,7 @@ export function HeroBanner() {
             </div>
 
             {/* Trust indicators */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 lg:justify-start">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 md:justify-start">
               <div className="text-center">
                 <div className="text-2xl font-extrabold text-primary">70M+</div>
                 <div className="text-xs text-background/50">Happy Customers</div>
@@ -68,15 +69,18 @@ export function HeroBanner() {
           </ScrollReveal>
 
           {/* Right: Featured product showcase */}
-          <ScrollReveal delay={150} className="flex flex-1 items-center justify-center w-full">
+          <ScrollReveal delay={150} className="flex-1 md:flex-[0.8] flex items-center justify-center w-full">
             <div className="relative flex items-center justify-center w-full max-w-[480px]">
               {/* Background decorative glows */}
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-violet-500/30 rounded-full blur-3xl opacity-60 animate-pulse" />
               
-              <img
+              <Image
                 src="/hero_showcase.png"
                 alt="Al-Rehman Premium Wearables"
+                width={480}
+                height={420}
                 className="relative z-10 w-full h-auto max-h-[420px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] select-none pointer-events-none transition-transform duration-500 hover:scale-105 rounded-3xl"
+                priority
               />
 
               {/* Floating badge - top right */}

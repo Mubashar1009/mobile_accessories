@@ -16,7 +16,8 @@ interface ProductInput {
   colors?: string | null;
 }
 
-async function verifyAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function verifyAdmin(_supabase: Awaited<ReturnType<typeof createClient>>) {
   // Temporary bypass for testing: anyone can perform actions
   return true;
 

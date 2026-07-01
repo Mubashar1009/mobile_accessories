@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import type { Product } from "@/lib/db";
 import { toggleOutOfStock, deleteProduct } from "@/lib/actions";
 import Link from "next/link";
+import Image from "next/image";
 import { ProductEditDialog } from "@/components/ProductEditDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -184,9 +185,11 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
                     {/* Image */}
                     <TableCell className="py-3">
                       {product.image_url ? (
-                        <img
+                        <Image
                           src={product.image_url}
                           alt={product.title}
+                          width={48}
+                          height={48}
                           className="h-12 w-12 rounded-lg object-cover ring-1 ring-border"
                         />
                       ) : (

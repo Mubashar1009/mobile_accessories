@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, Upload, X, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -133,10 +134,13 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
             <Label>Product Image</Label>
             {imagePreview ? (
               <div className="relative">
-                <img
+                <Image
                   src={imagePreview}
                   alt="Preview"
+                  width={400}
+                  height={160}
                   className="h-40 w-full rounded-md object-cover"
+                  unoptimized
                 />
                 <button
                   type="button"
