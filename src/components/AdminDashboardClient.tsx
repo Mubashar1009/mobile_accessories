@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import type { Product } from "@/lib/db";
 import { toggleOutOfStock, deleteProduct } from "@/lib/actions";
-import { ProductCreateForm } from "@/components/ProductCreateForm";
+import Link from "next/link";
 import { ProductEditDialog } from "@/components/ProductEditDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -104,7 +104,12 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
             Manage your Al-Rehman product catalog
           </p>
         </div>
-        <ProductCreateForm />
+        <Link href="/admin/products/new">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Product
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Grid */}
@@ -142,7 +147,12 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
               {products.length}
             </span>
           </div>
-          <ProductCreateForm compact />
+          <Link href="/admin/products/new">
+            <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+              <Plus className="h-3.5 w-3.5" />
+              Add
+            </Button>
+          </Link>
         </div>
 
         {products.length === 0 ? (
