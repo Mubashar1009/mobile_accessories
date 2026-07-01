@@ -75,7 +75,7 @@ export function HeroBanner() {
               
               <img
                 src="/hero_showcase.png"
-                alt="Rehvox Premium Wearables"
+                alt="Al-Rehman Premium Wearables"
                 className="relative z-10 w-full h-auto max-h-[420px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.6)] select-none pointer-events-none transition-transform duration-500 hover:scale-105 rounded-3xl"
               />
 

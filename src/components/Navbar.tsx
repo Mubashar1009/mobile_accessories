@@ -9,11 +9,11 @@ import { LoginModal } from "@/components/LoginModal";
 import { useCart } from "@/components/CartProvider";
 
 const announcements = [
-  "365 Days Warranty on All Products",
   "New Arrivals — Shop the Latest Collection Now",
 ];
 
 const navLinks = [
+  { label: "Home", href: "/" },
   { label: "Earbuds", href: "/earbuds" },
   { label: "Headphones", href: "/headphones" },
   { label: "Speakers", href: "/speakers" },
@@ -133,17 +133,20 @@ export function Navbar() {
       {/* Main nav */}
       <div className="border-b">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-          <button className="p-1.5 sm:hidden" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Left: Menu button + Logo */}
+          <div className="flex items-center gap-3">
+            <button className="p-1.5 lg:hidden text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
 
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <ShoppingBag className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-base font-bold tracking-tight text-foreground">Rehvox</span>
-          </Link>
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+                <ShoppingBag className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span className="text-sm font-bold tracking-tight text-foreground sm:text-base">Al-Rehman Mobile Shop</span>
+            </Link>
+          </div>
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-0.5 xl:gap-1 lg:flex">
@@ -226,7 +229,7 @@ export function Navbar() {
 
       {/* Mobile nav */}
       {mobileOpen && (
-        <div className="border-b bg-background sm:hidden">
+        <div className="border-b bg-background lg:hidden">
           <nav className="flex flex-col px-4 py-2">
             {navLinks.map((link) => (
               <Link key={link.label} href={link.href} className="flex items-center justify-between rounded-md py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" onClick={() => setMobileOpen(false)}>

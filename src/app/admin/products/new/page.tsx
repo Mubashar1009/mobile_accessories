@@ -13,7 +13,7 @@ export default async function NewProductPage() {
   // if (!isAdmin) { notFound(); }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-2xl py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Create New Product</h1>
         <p className="mt-2 text-sm text-muted-foreground">

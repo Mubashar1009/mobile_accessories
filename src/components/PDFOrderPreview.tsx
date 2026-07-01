@@ -180,7 +180,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(22);
         pdf.setTextColor("#171717");
-        pdf.text("REHVOX", 20, 25);
+        pdf.text("AL-REHMAN MOBILE SHOP", 20, 25);
 
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(9);
@@ -213,7 +213,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(9);
         pdf.setTextColor("#52525b");
-        pdf.text("Rehvox Store", 20, 56);
+        pdf.text("Al-Rehman Mobile Shop", 20, 56);
         pdf.text("Online Support: wa.me/923056872063", 20, 61);
 
         pdf.text(`Name: ${name || "Guest User"}`, 110, 56);
@@ -295,7 +295,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(8);
         pdf.setTextColor("#a1a1aa");
-        pdf.text("Thank you for shopping with Rehvox! For queries, contact online support.", 20, 280);
+        pdf.text("Thank you for shopping with Al-Rehman Mobile Shop! For queries, contact online support.", 20, 280);
 
         const pdfBlob = pdf.output("blob");
         pdf.save(`order-${invoiceNo}.pdf`);
@@ -324,7 +324,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
       )
       .join("\n");
 
-    const message = `Hello Rehvox! I'd like to place an order:\n\n*Invoice No:* ${invoiceNo}\n*Date:* ${currentDate}\n\n*Customer Details:*\n- Name: ${name || "Not provided"}\n- Phone: ${phone || "Not provided"}\n\n*Items:*\n${itemsSummary}\n\n*Total Amount:* Rs.${totalAmount.toLocaleString()}\n\n_Note: I have downloaded the invoice PDF and will attach it to this chat._`;
+    const message = `Hello Al-Rehman Mobile Shop! I'd like to place an order:\n\n*Invoice No:* ${invoiceNo}\n*Date:* ${currentDate}\n\n*Customer Details:*\n- Name: ${name || "Not provided"}\n- Phone: ${phone || "Not provided"}\n\n*Items:*\n${itemsSummary}\n\n*Total Amount:* Rs.${totalAmount.toLocaleString()}\n\n_Note: I have downloaded the invoice PDF and will attach it to this chat._`;
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/923056872063?text=${encodedMessage}`;
@@ -459,7 +459,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                       className="text-3xl font-black tracking-tight"
                       style={{ color: "#0d9488" }}
                     >
-                      REHVOX
+                      AL-REHMAN MOBILE SHOP
                     </h1>
                     <p
                       className="text-xs mt-1"
@@ -506,7 +506,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                       className="text-sm font-bold"
                       style={{ color: "#27272a" }}
                     >
-                      Rehvox Store
+                      Al-Rehman Mobile Shop
                     </p>
                     <p
                       className="text-xs mt-0.5"
@@ -658,7 +658,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                     borderTop: "1px solid #e4e4e7",
                   }}
                 >
-                  Thank you for shopping with Rehvox! For any queries, contact us on WhatsApp.
+                  Thank you for shopping with Al-Rehman Mobile Shop! For any queries, contact us on WhatsApp.
                 </div>
               </div>
             </div>

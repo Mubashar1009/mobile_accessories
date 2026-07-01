@@ -24,7 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <ShoppingBag className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-base font-bold text-foreground">Rehvox</span>
+            <span className="text-sm font-bold text-foreground sm:text-base">Al-Rehman Mobile Shop</span>
             <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">Admin</span>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">

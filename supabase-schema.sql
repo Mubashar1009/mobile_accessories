@@ -110,7 +110,7 @@ CREATE INDEX IF NOT EXISTS idx_products_is_out_of_stock ON public.products (is_o
 -- ==========================================
 
 INSERT INTO public.products (title, description, price, image_url, is_out_of_stock) VALUES
-  ('Evolve Earbuds', 'Dual ear fit | Customize half & full in-ear', 4995.00, 'https://images.unsplash.com/photo-1590658268037-6bf12f032f55?w=600&h=600&fit=crop', false),
+  ('Evolve Earbuds', 'Dual ear fit | Customize half & full in-ear', 4995.00, 'https://images.unsplash.com/photo-1608156639585-b3a032ef9689?w=600&h=600&fit=crop', false),
   ('Vesper AI Earbuds', '164+ Language Translator | ANC & ENC', 7595.00, 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=600&h=600&fit=crop', false),
   ('Warrior Earbuds', 'Environmental Noise Cancellation | Gaming Buds', 5895.00, 'https://images.unsplash.com/photo-1608754236920-3a27e7e758b2?w=600&h=600&fit=crop', true),
   ('Megawatt Power Bank', '30000 mAh | 65 Watt Max | Built-in Type-C Cable', 10995.00, 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&h=600&fit=crop', false),

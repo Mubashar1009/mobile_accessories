@@ -101,7 +101,7 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
             Product Dashboard
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your Rehvox product catalog
+            Manage your Al-Rehman product catalog
           </p>
         </div>
         <ProductCreateForm />

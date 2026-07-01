@@ -190,7 +190,7 @@ export const DEMO_PRODUCTS: Product[] = [
     original_price: 6495,
     tag: "Newly Launched",
     category: "earbuds",
-    image_url: "https://images.unsplash.com/photo-1590658268037-6bf12f032f55?w=500&q=80",
+    image_url: "https://images.unsplash.com/photo-1608156639585-b3a032ef9689?w=500&q=80",
     is_out_of_stock: false,
     created_at: new Date(Date.now() - 86400000 * 6).toISOString(),
   },

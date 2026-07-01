@@ -3,7 +3,7 @@ import { HeroBanner } from "@/components/HeroBanner";
 import { FeatureBar } from "@/components/FeatureBar";
 import { CategoryCards } from "@/components/CategoryCards";
 import { Storefront } from "@/components/Storefront";
-import { Testimonials } from "@/components/Testimonials";
+import { QualityShowcase } from "@/components/QualityShowcase";
 import { Footer } from "@/components/Footer";
 // import { createClient } from "@/utils/supabase/server"; // commented for local dev
 // import { cookies } from "next/headers"; // commented for local dev
@@ -25,7 +25,7 @@ export default async function HomePage() {
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                Rehvox Workspace
+                Al-Rehman Workspace
               </span>
               <span className="text-xs text-zinc-700">|</span>
               <span className="text-xs text-zinc-300 font-medium">Admin Control Center</span>
@@ -57,7 +57,7 @@ export default async function HomePage() {
         <Storefront />
       </section>
 
-      <Testimonials />
+      <QualityShowcase />
       <Footer />
     </div>
   );
