@@ -302,8 +302,6 @@ export class MigrationManager {
       if (appliedSet.has(file.version)) continue;
       if (targetVersion && file.version > targetVersion) break;
 
-      console.log(`\n⏳ Applying: ${file.version}_${file.name}`);
-
       const sql = fs.readFileSync(file.filePath, "utf-8");
       const { upSQL } = this.parseSql(sql);
 
@@ -315,7 +313,6 @@ export class MigrationManager {
 
       const time = Date.now() - start;
       await this.record(file.version, file.name, time, file.filePath);
-      console.log(`✅ Applied: ${file.version}_${file.name} (${time}ms)`);
       count++;
     }
 
