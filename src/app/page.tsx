@@ -28,7 +28,9 @@ export default async function HomePage() {
                 Al-Rehman Workspace
               </span>
               <span className="text-xs text-zinc-700">|</span>
-              <span className="text-xs text-zinc-300 font-medium">Admin Control Center</span>
+              <span className="text-xs text-zinc-300 font-medium">
+                Admin Control Center
+              </span>
             </div>
             <div className="flex items-center gap-2.5">
               <Link
@@ -53,7 +55,10 @@ export default async function HomePage() {
       <FeatureBar />
       <CategoryCards />
 
-      <section id="products" className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+      <section
+        id="products"
+        className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14"
+      >
         <Storefront />
       </section>
 
