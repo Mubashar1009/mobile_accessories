@@ -32,7 +32,6 @@ function createMigration(name: string): void {
 
   if (!fs.existsSync(migrationsDir)) {
     fs.mkdirSync(migrationsDir, { recursive: true });
-    console.log("📁 migrations/ folder create kiya");
   }
 
   // Timestamp-based version: YYYYMMDDHHMMSS
