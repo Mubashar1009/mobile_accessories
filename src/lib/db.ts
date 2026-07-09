@@ -1,84 +1,12 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import type { Product, CategorySlug } from "@/types/product";
+import { CATEGORIES, getDiscount, isNew } from "@/types/product";
+import { matchesCategory } from "@/core/product/categoryMapper";
+import type { CartItem } from "@/types/cart";
 
-// ── Product type matching the Supabase schema ──────────────────────────
-export interface Product {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number;
-  original_price: number | null;
-  tag: string | null;
-  category: string | null;
-  colors?: string | null;
-  image_url: string | null;
-  is_out_of_stock: boolean;
-  created_at: string;
-}
+export type { Product, CategorySlug, CartItem };
+export { CATEGORIES, matchesCategory, getDiscount, isNew };
 
-// ── CartItem type ──────────────────────────────────────────────────────
-export interface CartItem {
-  id: string; // matches product.id
-  product: Product;
-  quantity: number;
-}
-
-// ── Category constants ────────────────────────────────────────────────
-export const CATEGORIES = [
-  { slug: "earbuds", label: "Earbuds" },
-  { slug: "headphones", label: "Headphones" },
-  { slug: "speakers", label: "Speakers" },
-  { slug: "power-banks", label: "Power Banks" },
-  { slug: "smart-trackers", label: "Smart Trackers" },
-  { slug: "lcd-panels", label: "LCD Panels" },
-  { slug: "parts", label: "Parts" },
-  { slug: "cables", label: "Cables" },
-] as const;
-
-export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
-
-// ── Helper: match a product to a category slug ─────────────────────────
-export function matchesCategory(product: Product, slug: string): boolean {
-  if (product.category) {
-    return product.category === slug;
-  }
-  // Fallback: infer from title/description for demo products without a category field
-  const text = `${product.title} ${product.description ?? ""}`.toLowerCase();
-  switch (slug) {
-    case "earbuds":
-      return text.includes("earbud");
-    case "headphones":
-      return text.includes("headphone");
-    case "speakers":
-      return text.includes("speaker");
-    case "power-banks":
-      return text.includes("power bank");
-    case "smart-trackers":
-      return text.includes("tracker") || text.includes("tag");
-    case "lcd-panels":
-      return text.includes("lcd") || text.includes("panel") || text.includes("display") || text.includes("screen");
-    case "parts":
-      return text.includes("part") || text.includes("battery replacement") || text.includes("back glass") || text.includes("camera") || text.includes("flex");
-    case "cables":
-      return text.includes("cable") || text.includes("wire") || text.includes("usb");
-    default:
-      return false;
-  }
-}
-
-
-// ── Helper: calculate discount percentage ─────────────────────────────
-export function getDiscount(product: Product): number | null {
-  if (product.original_price && product.original_price > product.price) {
-    return Math.round(((product.original_price - product.price) / product.original_price) * 100);
-  }
-  return null;
-}
-
-// ── Helper: check if product is new (created within 7 days) ───────────
-export function isNew(product: Product): boolean {
-  const weekAgo = Date.now() - 7 * 86400000;
-  return new Date(product.created_at).getTime() > weekAgo;
-}
 
 // ── IDB schema definition ──────────────────────────────────────────────
 interface ProductCatalogDB extends DBSchema {

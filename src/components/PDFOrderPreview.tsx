@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useCart } from "@/components/CartProvider";
+import { useCart } from "@/core/cart/useCart";
 import {
   Dialog,
   DialogContent,

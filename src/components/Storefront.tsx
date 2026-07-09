@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { useProducts } from "@/components/ProductProvider";
+import { useProducts } from "@/core/product/useProducts";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Package, WifiOff, RefreshCw, Loader2, Info, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/lib/db";
-import { isNew } from "@/lib/db";
+import type { Product } from "@/types/product";
+import { isNew } from "@/types/product";
 
 export function Storefront() {
   const { products, loading, isOffline, isDemo, refetch } = useProducts();

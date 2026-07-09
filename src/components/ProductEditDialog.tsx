@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { updateProduct } from "@/lib/actions";
-import { productSchema } from "@/lib/types";
-import { type Product, CATEGORIES } from "@/lib/db";
+import { productSchema } from "@/types/product";
+import { type Product, CATEGORIES } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

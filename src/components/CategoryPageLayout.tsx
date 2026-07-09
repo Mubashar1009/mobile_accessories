@@ -1,14 +1,15 @@
 "use client";
 
 import { useMemo } from "react";
-import { useProducts } from "@/components/ProductProvider";
+import { useProducts } from "@/core/product/useProducts";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Package, WifiOff, RefreshCw, Loader2, Info, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { matchesCategory, CATEGORIES } from "@/lib/db";
+import { CATEGORIES } from "@/types/product";
+import { matchesCategory } from "@/core/product/categoryMapper";
 import Link from "next/link";
 
 interface CategoryPageLayoutProps {

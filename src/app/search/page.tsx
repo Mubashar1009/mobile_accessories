@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, Suspense } from "react";
-import { useProducts } from "@/components/ProductProvider";
+import { useProducts } from "@/core/product/useProducts";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Navbar } from "@/components/Navbar";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "@/components/CartProvider";
+import { useCart } from "@/core/cart/useCart";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";

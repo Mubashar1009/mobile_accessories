@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { productSchema } from "@/lib/types";
+import { productSchema } from "@/types/product";
 
 // ── Types ───────────────────────────────────────────────────────────────
 interface ProductInput {

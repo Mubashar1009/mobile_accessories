@@ -1,6 +1,3 @@
-// Re-export Product type from IndexedDB module as the single source of truth
-export type { Product } from "./db";
-
 import { z } from "zod";
 
 export const productSchema = z.object({
@@ -27,10 +24,3 @@ export const dbProductSchema = z.object({
   is_out_of_stock: z.boolean(),
   created_at: z.string(),
 });
-
-export const cartItemSchema = z.object({
-  id: z.string(),
-  product: dbProductSchema,
-  quantity: z.number().int().min(1, "Quantity must be at least 1"),
-});
-

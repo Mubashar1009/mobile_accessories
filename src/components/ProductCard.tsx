@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { Product } from "@/lib/db";
-import { getDiscount, isNew } from "@/lib/db";
+import type { Product } from "@/types/product";
+import { getDiscount, isNew } from "@/types/product";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ImageIcon, Heart, Plus, Minus, ShoppingBag } from "lucide-react";
-import { useCart } from "@/components/CartProvider";
+import { useCart } from "@/core/cart/useCart";
 
 interface ProductCardProps {
   product: Product;

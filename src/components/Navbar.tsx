@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, Menu, X, User, ChevronRight, Settings, LogOut, ShoppingBag } from "lucide-react";
 // import { createClient } from "@/utils/supabase/client"; // commented for local dev
 import { LoginModal } from "@/components/LoginModal";
-import { useCart } from "@/components/CartProvider";
+import { useCart } from "@/core/cart/useCart";
 
 const announcements = [
   "New Arrivals — Shop the Latest Collection Now",
