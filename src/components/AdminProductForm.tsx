@@ -3,8 +3,8 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createProduct } from "@/lib/actions";
-import { productSchema } from "@/lib/types";
-import { CATEGORIES } from "@/lib/db";
+import { productSchema } from "@/types/product";
+import { CATEGORIES } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

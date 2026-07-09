@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Product } from "@/lib/db";
+import type { Product } from "@/types/product";
 import { toggleOutOfStock, deleteProduct } from "@/lib/actions";
 import Link from "next/link";
 import Image from "next/image";

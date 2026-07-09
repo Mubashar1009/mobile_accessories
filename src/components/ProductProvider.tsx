@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { useProductStore } from "@/store/useProductStore";
+import { useProducts } from "@/core/product/useProducts";
 
 export function ProductProvider({ children }: { children: ReactNode }) {
-  const fetchProducts = useProductStore((state) => state.fetchProducts);
-  const setOffline = useProductStore((state) => state.setOffline);
+  const { fetchProducts, setOffline } = useProducts();
 
   // Initial fetch on mount
   useEffect(() => {
@@ -39,21 +38,6 @@ export function ProductProvider({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-export function useProducts() {
-  const products = useProductStore((state) => state.products);
-  const loading = useProductStore((state) => state.loading);
-  const refreshing = useProductStore((state) => state.refreshing);
-  const isOffline = useProductStore((state) => state.isOffline);
-  const isDemo = useProductStore((state) => state.isDemo);
-  const refetch = useProductStore((state) => state.refetch);
+export { useProducts };
 
-  return {
-    products,
-    loading,
-    refreshing,
-    isOffline,
-    isDemo,
-    refetch,
-  };
-}
 

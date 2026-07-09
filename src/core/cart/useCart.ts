@@ -1,38 +1,27 @@
-import { create } from "zustand";
+"use client";
+
+import { useCallback } from "react";
+import { useCartStore } from "@/store/cart/useCartStore";
 import {
-  type Product,
-  type CartItem,
   getCartItems as getIDBCartItems,
   saveCartItem as saveIDBCartItem,
   deleteCartItem as deleteIDBCartItem,
   clearCart as clearIDBCart,
 } from "@/lib/db";
-import { dbProductSchema, cartItemSchema } from "@/lib/types";
+import { cartItemSchema, type CartItem } from "@/types/cart";
+import { dbProductSchema, type Product } from "@/types/product";
 import { z } from "zod";
 
-interface CartState {
-  cartItems: CartItem[];
-  isOpen: boolean;
-  loading: boolean;
-  setIsOpen: (open: boolean) => void;
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  getCartTotal: () => number;
-  getItemQuantity: (productId: string) => number;
-  loadCart: () => Promise<void>;
-}
+export function useCart() {
+  const cartItems = useCartStore((state) => state.cartItems);
+  const isOpen = useCartStore((state) => state.isOpen);
+  const loading = useCartStore((state) => state.loading);
+  const setCartItems = useCartStore((state) => state.setCartItems);
+  const setIsOpen = useCartStore((state) => state.setIsOpen);
+  const setLoading = useCartStore((state) => state.setLoading);
 
-export const useCartStore = create<CartState>((set, get) => ({
-  cartItems: [],
-  isOpen: false,
-  loading: true,
-
-  setIsOpen: (open) => set({ isOpen: open }),
-
-  loadCart: async () => {
-    set({ loading: true });
+  const loadCart = useCallback(async () => {
+    setLoading(true);
     try {
       const items = await getIDBCartItems();
       
@@ -47,15 +36,15 @@ export const useCartStore = create<CartState>((set, get) => ({
         }
       }
       
-      set({ cartItems: validItems });
+      setCartItems(validItems);
     } catch (err) {
       console.error("Failed to load cart items from IndexedDB", err);
     } finally {
-      set({ loading: false });
+      setLoading(false);
     }
-  },
+  }, [setCartItems, setLoading]);
 
-  addToCart: (product) => {
+  const addToCart = useCallback((product: Product) => {
     // Validate product structure using Zod
     const productValidation = dbProductSchema.safeParse(product);
     if (!productValidation.success) {
@@ -63,7 +52,6 @@ export const useCartStore = create<CartState>((set, get) => ({
       return;
     }
 
-    const { cartItems } = get();
     const existing = cartItems.find((item) => item.id === product.id);
     let updated: CartItem[];
 
@@ -83,18 +71,17 @@ export const useCartStore = create<CartState>((set, get) => ({
       return;
     }
 
-    set({ cartItems: updated });
+    setCartItems(updated);
     saveIDBCartItem(targetItem).catch(console.error);
-  },
+  }, [cartItems, setCartItems]);
 
-  removeFromCart: (productId) => {
-    const { cartItems } = get();
+  const removeFromCart = useCallback((productId: string) => {
     const updated = cartItems.filter((item) => item.id !== productId);
-    set({ cartItems: updated });
+    setCartItems(updated);
     deleteIDBCartItem(productId).catch(console.error);
-  },
+  }, [cartItems, setCartItems]);
 
-  updateQuantity: (productId, quantity) => {
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
     // Validate quantity with Zod
     const quantityValidation = z.number().int().safeParse(quantity);
     if (!quantityValidation.success) {
@@ -103,11 +90,10 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
 
     if (quantity <= 0) {
-      get().removeFromCart(productId);
+      removeFromCart(productId);
       return;
     }
 
-    const { cartItems } = get();
     const updated = cartItems.map((item) =>
       item.id === productId ? { ...item, quantity } : item
     );
@@ -119,25 +105,39 @@ export const useCartStore = create<CartState>((set, get) => ({
         console.error("Validation failed for updated cart item:", itemValidation.error.format());
         return;
       }
-      set({ cartItems: updated });
+      setCartItems(updated);
       saveIDBCartItem(targetItem).catch(console.error);
     }
-  },
+  }, [cartItems, setCartItems, removeFromCart]);
 
-  clearCart: () => {
-    set({ cartItems: [] });
+  const clearCart = useCallback(() => {
+    setCartItems([]);
     clearIDBCart().catch(console.error);
-  },
+  }, [setCartItems]);
 
-  getCartTotal: () => {
-    return get().cartItems.reduce(
+  const getCartTotal = useCallback(() => {
+    return cartItems.reduce(
       (total, item) => total + item.product.price * item.quantity,
       0
     );
-  },
+  }, [cartItems]);
 
-  getItemQuantity: (productId) => {
-    const item = get().cartItems.find((item) => item.id === productId);
+  const getItemQuantity = useCallback((productId: string) => {
+    const item = cartItems.find((item) => item.id === productId);
     return item ? item.quantity : 0;
-  },
-}));
+  }, [cartItems]);
+
+  return {
+    cartItems,
+    isOpen,
+    loading,
+    setIsOpen,
+    loadCart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getCartTotal,
+    getItemQuantity,
+  };
+}

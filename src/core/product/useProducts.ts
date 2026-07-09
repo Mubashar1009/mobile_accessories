@@ -1,23 +1,14 @@
-import { create } from "zustand";
+"use client";
+
+import { useCallback } from "react";
+import { useProductStore } from "@/store/product/useProductStore";
 import { createClient } from "@/utils/supabase/client";
 import {
   saveProducts,
   getProducts as getIDBProducts,
   DEMO_PRODUCTS,
-  type Product,
 } from "@/lib/db";
-import { dbProductSchema } from "@/lib/types";
-
-interface ProductState {
-  products: Product[];
-  loading: boolean;
-  refreshing: boolean;
-  isOffline: boolean;
-  isDemo: boolean;
-  setOffline: (offline: boolean) => void;
-  fetchProducts: (isBackgroundRefresh?: boolean) => Promise<void>;
-  refetch: () => void;
-}
+import { dbProductSchema, type Product } from "@/types/product";
 
 function isPlaceholderSupabase(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -53,20 +44,24 @@ function validateProducts(products: unknown[]): Product[] {
   return validProducts;
 }
 
-export const useProductStore = create<ProductState>((set, get) => ({
-  products: DEMO_PRODUCTS,
-  loading: false,
-  refreshing: false,
-  isOffline: false,
-  isDemo: true,
+export function useProducts() {
+  const products = useProductStore((state) => state.products);
+  const loading = useProductStore((state) => state.loading);
+  const refreshing = useProductStore((state) => state.refreshing);
+  const isOffline = useProductStore((state) => state.isOffline);
+  const isDemo = useProductStore((state) => state.isDemo);
+  
+  const setProducts = useProductStore((state) => state.setProducts);
+  const setLoading = useProductStore((state) => state.setLoading);
+  const setRefreshing = useProductStore((state) => state.setRefreshing);
+  const setOffline = useProductStore((state) => state.setOffline);
+  const setIsDemo = useProductStore((state) => state.setIsDemo);
 
-  setOffline: (offline) => set({ isOffline: offline }),
-
-  fetchProducts: async (isBackgroundRefresh = false) => {
+  const fetchProducts = useCallback(async (isBackgroundRefresh = false) => {
     if (isBackgroundRefresh) {
-      set({ refreshing: true });
+      setRefreshing(true);
     } else {
-      set({ loading: true });
+      setLoading(true);
     }
 
     const browserOffline = typeof navigator !== "undefined" ? !navigator.onLine : false;
@@ -77,11 +72,13 @@ export const useProductStore = create<ProductState>((set, get) => ({
         const cached = await getIDBProducts();
         const validCached = validateProducts(cached);
         if (validCached.length > 0) {
-          set({ products: validCached, isDemo: false });
+          setProducts(validCached);
+          setIsDemo(false);
         } else {
-          set({ products: DEMO_PRODUCTS, isDemo: true });
+          setProducts(DEMO_PRODUCTS);
+          setIsDemo(true);
         }
-        set({ isOffline: browserOffline });
+        setOffline(browserOffline);
         return;
       }
 
@@ -89,7 +86,9 @@ export const useProductStore = create<ProductState>((set, get) => ({
       const cached = await getIDBProducts();
       const validCached = validateProducts(cached);
       if (validCached.length > 0) {
-        set({ products: validCached, isDemo: false, loading: false });
+        setProducts(validCached);
+        setIsDemo(false);
+        setLoading(false);
       }
 
       // ── Step 3: Fetch fresh data from Supabase (with 3s timeout) ──
@@ -108,50 +107,61 @@ export const useProductStore = create<ProductState>((set, get) => ({
         const validData = validateProducts(data);
         if (validData.length > 0) {
           saveProducts(validData).catch(() => {});
-          set({ products: validData, isDemo: false });
+          setProducts(validData);
+          setIsDemo(false);
         } else {
           const idbFallback = await getIDBProducts();
           const validFallback = validateProducts(idbFallback);
           if (validFallback.length > 0) {
-            set({ products: validFallback, isDemo: false });
+            setProducts(validFallback);
+            setIsDemo(false);
           } else {
-            set({ products: DEMO_PRODUCTS, isDemo: true });
+            setProducts(DEMO_PRODUCTS);
+            setIsDemo(true);
           }
         }
-        set({ isOffline: browserOffline });
+        setOffline(browserOffline);
         return;
       }
 
       // ── Step 4: Supabase returned error ──
-      const currentProducts = get().products;
-      if (currentProducts === DEMO_PRODUCTS) {
+      if (products === DEMO_PRODUCTS) {
         const idbFallback = await getIDBProducts();
         const validFallback = validateProducts(idbFallback);
-        set({
-          products: validFallback.length > 0 ? validFallback : DEMO_PRODUCTS,
-          isDemo: validFallback.length === 0,
-        });
+        setProducts(validFallback.length > 0 ? validFallback : DEMO_PRODUCTS);
+        setIsDemo(validFallback.length === 0);
       }
-      set({ isOffline: browserOffline });
+      setOffline(browserOffline);
     } catch {
       // Timeout or network error
-      const currentProducts = get().products;
-      if (currentProducts === DEMO_PRODUCTS) {
+      if (products === DEMO_PRODUCTS) {
         const cached = await getIDBProducts();
         const validCached = validateProducts(cached);
-        set({
-          products: validCached.length > 0 ? validCached : DEMO_PRODUCTS,
-          isDemo: validCached.length === 0,
-        });
+        setProducts(validCached.length > 0 ? validCached : DEMO_PRODUCTS);
+        setIsDemo(validCached.length === 0);
       }
-      set({ isOffline: browserOffline });
+      setOffline(browserOffline);
     } finally {
-      set({ loading: false, refreshing: false });
+      setLoading(false);
+      setRefreshing(false);
     }
-  },
+  }, [products, setProducts, setLoading, setRefreshing, setOffline, setIsDemo]);
 
-  refetch: () => {
-    set({ products: DEMO_PRODUCTS, isDemo: true, isOffline: false });
-    get().fetchProducts(false);
-  },
-}));
+  const refetch = useCallback(() => {
+    setProducts(DEMO_PRODUCTS);
+    setIsDemo(true);
+    setOffline(false);
+    fetchProducts(false);
+  }, [setProducts, setIsDemo, setOffline, fetchProducts]);
+
+  return {
+    products,
+    loading,
+    refreshing,
+    isOffline,
+    isDemo,
+    fetchProducts,
+    refetch,
+    setOffline,
+  };
+}
