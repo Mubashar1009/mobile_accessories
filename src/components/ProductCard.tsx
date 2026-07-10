@@ -6,6 +6,11 @@ import type { Product } from "@/types/product";
 import { getDiscount, isNew } from "@/types/product";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { Heading } from "@/components/ui/heading";
+import { Paragraph } from "@/components/ui/paragraph";
 import { MessageCircle, ImageIcon, Heart, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/core/cart/useCart";
 
@@ -23,9 +28,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const quantity = getItemQuantity(product.id);
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5">
+    <Card className="group relative overflow-hidden rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5">
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <Box className="relative aspect-square overflow-hidden bg-muted">
         {product.image_url && !imgError ? (
           <Image
             src={product.image_url}
@@ -36,15 +41,15 @@ export function ProductCard({ product }: ProductCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-muted">
+          <Flex className="h-full w-full" align="center" justify="center">
             <ImageIcon className="h-12 w-12 text-muted-foreground/50" />
-          </div>
+          </Flex>
         )}
 
         {/* Top badges row */}
-        <div className="absolute left-0 right-0 top-0 flex items-start justify-between p-2">
+        <Flex justify="between" align="start" className="absolute left-0 right-0 top-0 p-2">
           {/* Left: Tag badge */}
-          <div className="flex flex-col gap-1">
+          <Flex direction="col" gap={1}>
             {product.tag && !product.is_out_of_stock && (
               <Badge className="bg-primary text-[10px] font-semibold text-primary-foreground hover:bg-primary">
                 {product.tag}
@@ -55,10 +60,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 New
               </Badge>
             )}
-          </div>
+          </Flex>
 
           {/* Right: Discount badge + wishlist */}
-          <div className="flex flex-col items-end gap-1">
+          <Flex direction="col" align="end" gap={1}>
             {discount && !product.is_out_of_stock && (
               <Badge variant="destructive" className="text-[10px] font-bold">
                 -{discount}%
@@ -71,35 +76,35 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               <Heart className={`h-3.5 w-3.5 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
             </button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
 
         {/* Out of Stock Overlay */}
         {product.is_out_of_stock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[2px]">
+          <Flex align="center" justify="center" className="absolute inset-0 bg-black/50 backdrop-blur-[2px]">
             <span className="rounded-md bg-destructive px-4 py-1.5 text-sm font-bold uppercase tracking-wider text-white">
               Sold Out
             </span>
-          </div>
+          </Flex>
         )}
-      </div>
+      </Box>
 
       {/* Content */}
-      <div className="p-3 sm:p-4">
+      <CardContent className="p-3 sm:p-4">
         {/* Title */}
-        <h3 className="line-clamp-2 text-sm font-bold leading-tight text-foreground">
+        <Heading level="h5" className="line-clamp-2 text-sm font-bold leading-tight text-foreground">
           {product.title}
-        </h3>
+        </Heading>
 
         {/* Description */}
         {product.description && (
-          <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+          <Paragraph className="mt-1 line-clamp-1 text-xs text-muted-foreground">
             {product.description}
-          </p>
+          </Paragraph>
         )}
 
         {/* Price row */}
-        <div className="mt-2 flex items-baseline gap-2">
+        <Flex align="baseline" gap={2} className="mt-2">
           <span className="text-lg font-extrabold text-foreground">
             Rs.{product.price.toLocaleString()}
           </span>
@@ -108,7 +113,7 @@ export function ProductCard({ product }: ProductCardProps) {
               Rs.{product.original_price.toLocaleString()}
             </span>
           )}
-        </div>
+        </Flex>
 
         {/* Cart / Order Actions */}
         {product.is_out_of_stock ? (
@@ -131,7 +136,7 @@ export function ProductCard({ product }: ProductCardProps) {
             Add to Cart
           </Button>
         ) : (
-          <div className="mt-3 flex w-full items-center justify-between gap-2">
+          <Flex align="center" justify="between" gap={2} className="mt-3 w-full">
             <Button
               onClick={() => updateQuantity(product.id, quantity - 1)}
               className="h-9 w-9 rounded-lg p-0 font-bold text-base transition-all active:scale-[0.95] shrink-0 cursor-pointer"
@@ -151,9 +156,9 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
-          </div>
+          </Flex>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

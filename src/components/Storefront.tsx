@@ -6,6 +6,11 @@ import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Package, WifiOff, RefreshCw, Loader2, Info, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { Heading } from "@/components/ui/heading";
+import { Paragraph } from "@/components/ui/paragraph";
 import type { Product } from "@/types/product";
 import { isNew } from "@/types/product";
 
@@ -18,34 +23,36 @@ export function Storefront() {
   const outOfStock = useMemo(() => products.filter((p) => p.is_out_of_stock), [products]);
 
   return (
-    <div className="space-y-12">
+    <Box className="space-y-12">
       {isDemo && (
-        <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2.5 text-sm text-primary">
+        <Flex align="center" gap={2} className="rounded-lg bg-primary/10 px-4 py-2.5 text-sm text-primary">
           <Info className="h-4 w-4 shrink-0" />
           <span>Showing demo products. Connect Supabase to load real data from your database.</span>
-        </div>
+        </Flex>
       )}
 
       {isOffline && !isDemo && (
-        <div className="flex items-center gap-2 rounded-lg bg-yellow-500/10 px-4 py-2.5 text-sm text-yellow-700 dark:text-yellow-400">
+        <Flex align="center" gap={2} className="rounded-lg bg-yellow-500/10 px-4 py-2.5 text-sm text-yellow-700 dark:text-yellow-400">
           <WifiOff className="h-4 w-4 shrink-0" />
           <span>You are offline. Showing cached products.</span>
-        </div>
+        </Flex>
       )}
 
       {loading && (
-        <div className="flex flex-col items-center justify-center py-20">
+        <Flex direction="col" align="center" justify="center" className="py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading products...</p>
-        </div>
+          <Paragraph className="mt-4 text-sm text-muted-foreground">Loading products...</Paragraph>
+        </Flex>
       )}
 
       {!loading && products.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-20">
-          <Package className="mb-4 h-16 w-16 text-muted-foreground/50" />
-          <h2 className="text-xl font-bold text-foreground">No Products Yet</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Check back soon for new arrivals!</p>
-        </div>
+        <Card className="flex flex-col items-center justify-center border border-dashed py-20 bg-transparent shadow-none">
+          <CardContent className="flex flex-col items-center justify-center p-0">
+            <Package className="mb-4 h-16 w-16 text-muted-foreground/50" />
+            <Heading level="h2" className="text-xl font-bold text-foreground">No Products Yet</Heading>
+            <Paragraph className="mt-2 text-sm text-muted-foreground">Check back soon for new arrivals!</Paragraph>
+          </CardContent>
+        </Card>
       )}
 
       {!loading && newProducts.length > 0 && (
@@ -65,14 +72,14 @@ export function Storefront() {
       )}
 
       {!loading && products.length > 0 && (
-        <div className="flex justify-center pt-4">
+        <Flex justify="center" className="pt-4">
           <Button variant="outline" size="sm" onClick={refetch} className="gap-2 rounded-lg">
             <RefreshCw className="h-3.5 w-3.5" />
             Refresh Products
           </Button>
-        </div>
+        </Flex>
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -82,15 +89,15 @@ function ProductSection({
   title: string; subtitle: string; products: Product[]; highlight?: boolean; muted?: boolean;
 }) {
   return (
-    <section id="products">
+    <Box as="section" id="products">
       <ScrollReveal className="mb-6 flex items-end justify-between border-b pb-4">
-        <div>
-          <div className="flex items-center gap-2">
+        <Box>
+          <Flex align="center" gap={2}>
             {highlight && <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
-            <h2 className="text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">{title}</h2>
-          </div>
-          <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
-        </div>
+            <Heading level="h2" className="text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">{title}</Heading>
+          </Flex>
+          <Paragraph className="mt-0.5 text-sm text-muted-foreground">{subtitle}</Paragraph>
+        </Box>
         <a href="#products" className="flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary/80">
           View All <ArrowRight className="h-4 w-4" />
         </a>
@@ -103,6 +110,6 @@ function ProductSection({
           </ScrollReveal>
         ))}
       </div>
-    </section>
+    </Box>
   );
 }
