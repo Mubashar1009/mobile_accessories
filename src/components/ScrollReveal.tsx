@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Box } from "@/components/ui/box";
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -32,7 +33,7 @@ export function ScrollReveal({ children, delay = 0, className = "" }: ScrollReve
   }, []);
 
   return (
-    <div
+    <Box
       ref={ref}
       className={className}
       style={{
@@ -44,6 +45,7 @@ export function ScrollReveal({ children, delay = 0, className = "" }: ScrollReve
       }}
     >
       {children}
-    </div>
+    </Box>
   );
 }
+

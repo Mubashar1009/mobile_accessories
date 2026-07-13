@@ -3,36 +3,40 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ArrowRight, Zap, Play } from "lucide-react";
 import Image from "next/image";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { Heading } from "@/components/ui/heading";
+import { Paragraph } from "@/components/ui/paragraph";
 
 export function HeroBanner() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-primary/20">
+    <Box as="section" className="relative overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-primary/20">
       {/* Background pattern */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
+      <Box className="absolute inset-0 opacity-[0.03]" style={{
         backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
         backgroundSize: "40px 40px"
       }} />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:py-20">
-        <div className="flex flex-col items-center gap-8 md:flex-row lg:gap-12">
+      <Box className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:py-20">
+        <Flex align="center" gap="xl" className="flex-col md:flex-row lg:gap-12">
           {/* Left: Text content */}
           <ScrollReveal delay={0} className="flex-1 md:flex-[1.2] text-center md:text-left">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-primary">
+            <Flex align="center" gap="sm" className="mb-4 inline-flex rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-primary">
               <Zap className="h-4 w-4" />
               New Collection 2026
-            </div>
+            </Flex>
 
-            <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-6xl">
+            <Heading level="h1" className="text-3xl font-extrabold leading-tight tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-6xl">
               Smart Wearables
               <br />
-              <span className="text-primary">&amp; Tech Accessories</span>
-            </h1>
+              <Box as="span" className="text-primary">&amp; Tech Accessories</Box>
+            </Heading>
 
-            <p className="mt-4 max-w-lg text-base text-background/70 sm:text-lg">
+            <Paragraph className="mt-4 max-w-lg text-base text-background/70 sm:text-lg">
               Premium audio, power, and smart devices — designed for the modern lifestyle. Order directly via WhatsApp.
-            </p>
+            </Paragraph>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
+            <Flex gap="sm" className="mt-6 flex-col sm:flex-row sm:justify-center md:justify-start">
               <a
                 href="#products"
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 whitespace-nowrap"
@@ -47,32 +51,32 @@ export function HeroBanner() {
                 <Play className="h-4 w-4" />
                 Browse Categories
               </a>
-            </div>
+            </Flex>
 
             {/* Trust indicators */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 md:justify-start">
-              <div className="text-center">
-                <div className="text-2xl font-extrabold text-primary">70M+</div>
-                <div className="text-xs text-background/50">Happy Customers</div>
-              </div>
-              <div className="h-8 w-px bg-background/20" />
-              <div className="text-center">
-                <div className="text-2xl font-extrabold text-primary">365</div>
-                <div className="text-xs text-background/50">Days Warranty</div>
-              </div>
-              <div className="h-8 w-px bg-background/20" />
-              <div className="text-center">
-                <div className="text-2xl font-extrabold text-primary">4.8★</div>
-                <div className="text-xs text-background/50">Avg. Rating</div>
-              </div>
-            </div>
+            <Flex wrap="wrap" align="center" justify="center" gap="lg" className="mt-8 md:justify-start">
+              <Box className="text-center">
+                <Box className="text-2xl font-extrabold text-primary">70M+</Box>
+                <Box className="text-xs text-background/50">Happy Customers</Box>
+              </Box>
+              <Box className="h-8 w-px bg-background/20" />
+              <Box className="text-center">
+                <Box className="text-2xl font-extrabold text-primary">365</Box>
+                <Box className="text-xs text-background/50">Days Warranty</Box>
+              </Box>
+              <Box className="h-8 w-px bg-background/20" />
+              <Box className="text-center">
+                <Box className="text-2xl font-extrabold text-primary">4.8★</Box>
+                <Box className="text-xs text-background/50">Avg. Rating</Box>
+              </Box>
+            </Flex>
           </ScrollReveal>
 
           {/* Right: Featured product showcase */}
           <ScrollReveal delay={150} className="flex-1 md:flex-[0.8] flex items-center justify-center w-full">
-            <div className="relative flex items-center justify-center w-full max-w-[480px]">
+            <Box className="relative flex items-center justify-center w-full max-w-[480px]">
               {/* Background decorative glows */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-violet-500/30 rounded-full blur-3xl opacity-60 animate-pulse" />
+              <Box className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-violet-500/30 rounded-full blur-3xl opacity-60 animate-pulse" />
               
               <Image
                 src="/hero_showcase.png"
@@ -84,28 +88,28 @@ export function HeroBanner() {
               />
 
               {/* Floating badge - top right */}
-              <div className="absolute -right-3 -top-3 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg shadow-primary/30 sm:-right-4 sm:-top-4 sm:h-16 sm:w-16">
-                <div className="text-center text-primary-foreground">
-                  <div className="text-lg font-black leading-none">23%</div>
-                  <div className="text-[8px] font-medium uppercase">OFF</div>
-                </div>
-              </div>
+              <Flex align="center" justify="center" className="absolute -right-3 -top-3 z-20 h-14 w-14 rounded-full bg-primary shadow-lg shadow-primary/30 sm:-right-4 sm:-top-4 sm:h-16 sm:w-16">
+                <Box className="text-center text-primary-foreground">
+                  <Box className="text-lg font-black leading-none">23%</Box>
+                  <Box className="text-[8px] font-medium uppercase">OFF</Box>
+                </Box>
+              </Flex>
 
               {/* Floating review - bottom left */}
-              <div className="absolute -bottom-2 -left-4 z-20 rounded-xl border border-background/10 bg-background/10 px-3 py-2 backdrop-blur sm:-bottom-3 sm:-left-6">
-                <div className="flex items-center gap-1.5">
-                  <div className="flex -space-x-1.5">
+              <Box className="absolute -bottom-2 -left-4 z-20 rounded-xl border border-background/10 bg-background/10 px-3 py-2 backdrop-blur sm:-bottom-3 sm:-left-6">
+                <Flex align="center" gap="xs">
+                  <Flex gap="none" className="-space-x-1.5">
                     {[0,1,2].map(i => (
-                      <div key={i} className="h-5 w-5 rounded-full bg-primary/40 ring-1 ring-background/20" />
+                      <Box key={i} className="h-5 w-5 rounded-full bg-primary/40 ring-1 ring-background/20" />
                     ))}
-                  </div>
-                  <span className="text-xs font-medium text-background/80">2.4k+ Reviews</span>
-                </div>
-              </div>
-            </div>
+                  </Flex>
+                  <Box as="span" className="text-xs font-medium text-background/80">2.4k+ Reviews</Box>
+                </Flex>
+              </Box>
+            </Box>
           </ScrollReveal>
-        </div>
-      </div>
-    </section>
+        </Flex>
+      </Box>
+    </Box>
   );
 }

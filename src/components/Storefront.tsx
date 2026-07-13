@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
+import { Grid } from "@/components/ui/grid";
 import { Heading } from "@/components/ui/heading";
 import { Paragraph } from "@/components/ui/paragraph";
 import type { Product } from "@/types/product";
@@ -25,16 +26,16 @@ export function Storefront() {
   return (
     <Box className="space-y-12">
       {isDemo && (
-        <Flex align="center" gap={2} className="rounded-lg bg-primary/10 px-4 py-2.5 text-sm text-primary">
+        <Flex align="center" gap="sm" className="rounded-lg bg-primary/10 px-4 py-2.5 text-sm text-primary">
           <Info className="h-4 w-4 shrink-0" />
-          <span>Showing demo products. Connect Supabase to load real data from your database.</span>
+          <Box as="span">Showing demo products. Connect Supabase to load real data from your database.</Box>
         </Flex>
       )}
 
       {isOffline && !isDemo && (
-        <Flex align="center" gap={2} className="rounded-lg bg-yellow-500/10 px-4 py-2.5 text-sm text-yellow-700 dark:text-yellow-400">
+        <Flex align="center" gap="sm" className="rounded-lg bg-yellow-500/10 px-4 py-2.5 text-sm text-yellow-700 dark:text-yellow-400">
           <WifiOff className="h-4 w-4 shrink-0" />
-          <span>You are offline. Showing cached products.</span>
+          <Box as="span">You are offline. Showing cached products.</Box>
         </Flex>
       )}
 
@@ -92,8 +93,8 @@ function ProductSection({
     <Box as="section" id="products">
       <ScrollReveal className="mb-6 flex items-end justify-between border-b pb-4">
         <Box>
-          <Flex align="center" gap={2}>
-            {highlight && <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
+          <Flex align="center" gap="sm">
+            {highlight && <Box as="span" className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
             <Heading level="h2" className="text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">{title}</Heading>
           </Flex>
           <Paragraph className="mt-0.5 text-sm text-muted-foreground">{subtitle}</Paragraph>
@@ -103,13 +104,17 @@ function ProductSection({
         </a>
       </ScrollReveal>
 
-      <div className={`grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 ${muted ? "opacity-70" : ""}`}>
+      <Grid
+        cols={2}
+        gap="sm"
+        className={`sm:grid-cols-3 lg:grid-cols-4 sm:gap-4 ${muted ? "opacity-70" : ""}`}
+      >
         {products.map((product, i) => (
           <ScrollReveal key={product.id} delay={i * 80}>
             <ProductCard product={product} />
           </ScrollReveal>
         ))}
-      </div>
+      </Grid>
     </Box>
   );
 }

@@ -14,6 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, MessageCircle, FileText, Loader2, X } from "lucide-react";
 
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { Heading } from "@/components/ui/heading";
+import { Paragraph } from "@/components/ui/paragraph";
+
 interface PDFOrderPreviewProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
@@ -343,7 +348,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-4xl w-[95vw] h-[90vh] flex flex-col p-0 overflow-hidden bg-zinc-950 border-zinc-800 z-50">
         <DialogHeader className="p-6 border-b border-zinc-800 shrink-0 flex flex-row items-center justify-between">
-          <div className="space-y-1">
+          <Box className="space-y-1">
             <DialogTitle className="text-white flex items-center gap-2 text-lg">
               <FileText className="h-5 w-5 text-primary" />
               Order Preview & Confirmation
@@ -351,7 +356,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
             <DialogDescription className="text-zinc-400">
               Fill in your details below, preview your invoice, and proceed to WhatsApp to complete your order.
             </DialogDescription>
-          </div>
+          </Box>
           <Button
             onClick={() => setIsOpen(false)}
             variant="ghost"
@@ -364,17 +369,17 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
         </DialogHeader>
 
         {/* Dialog body split into Form/Actions (left) and PDF Invoice Sheet (right) */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        <Flex className="flex-1 flex-col md:flex-row overflow-hidden">
           {/* Left Panel: Inputs & Steps */}
-          <div className="w-full md:w-80 border-r border-zinc-800 p-6 flex flex-col gap-6 bg-zinc-900 shrink-0 overflow-y-auto">
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-wider">
+          <Flex direction="col" gap="lg" className="w-full md:w-80 border-r border-zinc-800 p-6 bg-zinc-900 shrink-0 overflow-y-auto">
+            <Box className="space-y-4">
+              <Heading level="h3" className="text-sm font-bold text-zinc-300 uppercase tracking-wider">
                 1. Customer Details
-              </h3>
-              <div className="space-y-3">
-                <div className="space-y-1.5">
+              </Heading>
+              <Box className="space-y-3">
+                <Box className="space-y-1.5">
                   <Label htmlFor="name" className="text-xs text-zinc-400">
-                    Your Name <span className="text-red-500">*</span>
+                    Your Name <Box as="span" className="text-red-500">*</Box>
                   </Label>
                   <Input
                     id="name"
@@ -384,10 +389,10 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                     className="bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-600 rounded-lg focus:ring-primary focus:border-primary"
                     required
                   />
-                </div>
-                <div className="space-y-1.5">
+                </Box>
+                <Box className="space-y-1.5">
                   <Label htmlFor="phone" className="text-xs text-zinc-400">
-                    Phone Number <span className="text-red-500">*</span>
+                    Phone Number <Box as="span" className="text-red-500">*</Box>
                   </Label>
                   <Input
                     id="phone"
@@ -398,14 +403,14 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                     type="tel"
                     required
                   />
-                </div>
-              </div>
-            </div>
+                </Box>
+              </Box>
+            </Box>
 
-            <div className="mt-auto space-y-3 pt-6">
-              <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-wider">
+            <Box className="mt-auto space-y-3 pt-6">
+              <Heading level="h3" className="text-sm font-bold text-zinc-300 uppercase tracking-wider">
                 2. Actions
-              </h3>
+              </Heading>
               <Button
                 onClick={() => handleDownloadPDF()}
                 disabled={!name.trim() || !phone.trim() || isGenerating || isImagesLoading}
@@ -431,11 +436,11 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                 )}
                 {isImagesLoading ? "Loading images..." : "Confirm & Order via WA"}
               </Button>
-            </div>
-          </div>
+            </Box>
+          </Flex>
 
           {/* Right Panel: Invoice Sheet Preview */}
-          <div className="flex-1 bg-zinc-950 p-6 overflow-y-auto flex justify-center items-start">
+          <Flex align="start" justify="center" className="flex-1 bg-zinc-950 p-6 overflow-y-auto">
             {/* The Actual Invoice Sheet rendered client-side */}
             <div
               ref={invoiceRef}
@@ -662,8 +667,8 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </DialogContent>
     </Dialog>
   );

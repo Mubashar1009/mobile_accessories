@@ -16,6 +16,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { Paragraph } from "@/components/ui/paragraph";
 import { Plus, Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 
@@ -124,16 +127,16 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Error */}
           {error && (
-            <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <Box className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {error}
-            </div>
+            </Box>
           )}
 
           {/* Image Upload */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label>Product Image</Label>
             {imagePreview ? (
-              <div className="relative">
+              <Box className="relative">
                 <Image
                   src={imagePreview}
                   alt="Preview"
@@ -149,19 +152,19 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
                 >
                   <X className="h-4 w-4" />
                 </button>
-              </div>
+              </Box>
             ) : (
               <label
                 htmlFor="product-image"
                 className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-input bg-muted/50 hover:bg-muted"
               >
                 <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
+                <Box as="span" className="text-sm text-muted-foreground">
                   Click to upload image
-                </span>
-                <span className="text-xs text-muted-foreground">
+                </Box>
+                <Box as="span" className="text-xs text-muted-foreground">
                   PNG, JPG, WEBP up to 5MB
-                </span>
+                </Box>
               </label>
             )}
             <input
@@ -172,10 +175,10 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
               onChange={handleImageChange}
               className="hidden"
             />
-          </div>
+          </Box>
 
           {/* Title */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="title">Title *</Label>
             <Input
               id="title"
@@ -184,10 +187,10 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
               placeholder="Product name"
               required
             />
-          </div>
+          </Box>
 
           {/* Description */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
@@ -196,10 +199,10 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
               placeholder="Product description"
               rows={3}
             />
-          </div>
+          </Box>
 
           {/* Price */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="price">Price *</Label>
             <Input
               id="price"
@@ -211,17 +214,17 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
               placeholder="0.00"
               required
             />
-          </div>
+          </Box>
 
           {/* Out of Stock Toggle */}
-          <div className="flex items-center justify-between">
+          <Flex align="center" justify="between">
             <Label htmlFor="out-of-stock">Out of Stock</Label>
             <Switch
               id="out-of-stock"
               checked={isOutOfStock}
               onCheckedChange={setIsOutOfStock}
             />
-          </div>
+          </Flex>
 
           <DialogFooter>
             <Button

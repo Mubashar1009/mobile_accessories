@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Box, BoxProps } from "./box";
 import { cn } from "@/lib/utils";
+import { GAP_SIZES } from "./grid";
 
 export const FLEX_DIRECTIONS = {
   row: "flex-row",
@@ -37,7 +38,7 @@ export interface FlexProps extends BoxProps {
   align?: keyof typeof FLEX_ALIGN;
   justify?: keyof typeof FLEX_JUSTIFY;
   wrap?: keyof typeof FLEX_WRAPS;
-  gap?: string | number;
+  gap?: keyof typeof GAP_SIZES;
 }
 
 export function Flex({
@@ -59,7 +60,7 @@ export function Flex({
         align && FLEX_ALIGN[align],
         justify && FLEX_JUSTIFY[justify],
         wrap && FLEX_WRAPS[wrap],
-        gap !== undefined && `gap-${gap}`,
+        gap !== undefined && GAP_SIZES[gap],
         className
       )}
       {...props}

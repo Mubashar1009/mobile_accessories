@@ -17,6 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { Paragraph } from "@/components/ui/paragraph";
 import { Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 
@@ -157,16 +160,16 @@ export function ProductEditDialog({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive font-medium">
+            <Box className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive font-medium">
               {error}
-            </div>
+            </Box>
           )}
 
           {/* Image Upload */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label>Product Image</Label>
             {imagePreview ? (
-              <div className="relative">
+              <Box className="relative">
                 <Image
                   src={imagePreview}
                   alt="Preview"
@@ -182,16 +185,16 @@ export function ProductEditDialog({
                 >
                   <X className="h-4 w-4" />
                 </button>
-              </div>
+              </Box>
             ) : (
               <label
                 htmlFor="edit-product-image"
                 className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-input bg-muted/50 hover:bg-muted"
               >
                 <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
+                <Box as="span" className="text-sm text-muted-foreground">
                   Click to upload new image
-                </span>
+                </Box>
               </label>
             )}
             <input
@@ -202,10 +205,10 @@ export function ProductEditDialog({
               onChange={handleImageChange}
               className="hidden"
             />
-          </div>
+          </Box>
 
           {/* Title */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="edit-title">Title *</Label>
             <Input
               id="edit-title"
@@ -215,12 +218,12 @@ export function ProductEditDialog({
               className={errors.title ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {errors.title && (
-              <p className="text-xs text-destructive font-medium mt-1">{errors.title}</p>
+              <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.title}</Paragraph>
             )}
-          </div>
+          </Box>
 
           {/* Category */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="edit-category">Category *</Label>
             <select
               id="edit-category"
@@ -237,12 +240,12 @@ export function ProductEditDialog({
               ))}
             </select>
             {errors.category && (
-              <p className="text-xs text-destructive font-medium mt-1">{errors.category}</p>
+              <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.category}</Paragraph>
             )}
-          </div>
+          </Box>
 
           {/* Price */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="edit-price">Price *</Label>
             <Input
               id="edit-price"
@@ -255,12 +258,12 @@ export function ProductEditDialog({
               className={errors.price ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {errors.price && (
-              <p className="text-xs text-destructive font-medium mt-1">{errors.price}</p>
+              <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.price}</Paragraph>
             )}
-          </div>
+          </Box>
 
           {/* Colors */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="edit-colors">Colors</Label>
             <Input
               id="edit-colors"
@@ -270,12 +273,12 @@ export function ProductEditDialog({
               className={errors.colors ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {errors.colors && (
-              <p className="text-xs text-destructive font-medium mt-1">{errors.colors}</p>
+              <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.colors}</Paragraph>
             )}
-          </div>
+          </Box>
 
           {/* Description */}
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="edit-description">Description</Label>
             <Textarea
               id="edit-description"
@@ -286,19 +289,19 @@ export function ProductEditDialog({
               className={errors.description ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {errors.description && (
-              <p className="text-xs text-destructive font-medium mt-1">{errors.description}</p>
+              <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.description}</Paragraph>
             )}
-          </div>
+          </Box>
 
           {/* Out of Stock Toggle */}
-          <div className="flex items-center justify-between">
+          <Flex align="center" justify="between">
             <Label htmlFor="edit-out-of-stock">Out of Stock</Label>
             <Switch
               id="edit-out-of-stock"
               checked={isOutOfStock}
               onCheckedChange={setIsOutOfStock}
             />
-          </div>
+          </Flex>
 
           <DialogFooter>
             <Button

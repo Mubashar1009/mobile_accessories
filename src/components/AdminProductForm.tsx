@@ -10,6 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { Grid } from "@/components/ui/grid";
+import { Paragraph } from "@/components/ui/paragraph";
 import { Upload, X, Loader2, Palette } from "lucide-react";
 import Image from "next/image";
 
@@ -135,18 +139,18 @@ export function AdminProductForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive font-medium">
+        <Box className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive font-medium">
           {error}
-        </div>
+        </Box>
       )}
 
       {/* Image Upload Block */}
-      <div className="space-y-2">
+      <Box className="space-y-2">
         <Label className="text-sm font-semibold text-foreground">
           Product Image
         </Label>
         {imagePreview ? (
-          <div className="relative overflow-hidden rounded-lg border">
+          <Box className="relative overflow-hidden rounded-lg border">
             <Image
               src={imagePreview}
               alt="Preview"
@@ -162,19 +166,19 @@ export function AdminProductForm() {
             >
               <X className="h-4 w-4" />
             </button>
-          </div>
+          </Box>
         ) : (
           <label
             htmlFor="admin-product-image"
             className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/20 bg-muted/30 transition-all hover:bg-muted/50 hover:border-muted-foreground/45"
           >
             <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">
+            <Box as="span" className="text-sm font-medium text-foreground">
               Upload product photo
-            </span>
-            <span className="text-xs text-muted-foreground mt-0.5">
+            </Box>
+            <Box as="span" className="text-xs text-muted-foreground mt-0.5">
               PNG, JPG or WEBP up to 5MB
-            </span>
+            </Box>
           </label>
         )}
         <input
@@ -185,11 +189,11 @@ export function AdminProductForm() {
           onChange={handleImageChange}
           className="hidden"
         />
-      </div>
+      </Box>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <Grid cols={1} gap="md" className="sm:grid-cols-2">
         {/* Title */}
-        <div className="space-y-2">
+        <Box className="space-y-2">
           <Label htmlFor="product-title" className="text-sm font-semibold">
             Product Name *
           </Label>
@@ -201,12 +205,12 @@ export function AdminProductForm() {
             className={errors.title ? "border-destructive focus-visible:ring-destructive" : ""}
           />
           {errors.title && (
-            <p className="text-xs text-destructive font-medium mt-1">{errors.title}</p>
+            <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.title}</Paragraph>
           )}
-        </div>
+        </Box>
 
         {/* Category */}
-        <div className="space-y-2">
+        <Box className="space-y-2">
           <Label htmlFor="product-category" className="text-sm font-semibold">
             Category *
           </Label>
@@ -225,12 +229,12 @@ export function AdminProductForm() {
             ))}
           </select>
           {errors.category && (
-            <p className="text-xs text-destructive font-medium mt-1">{errors.category}</p>
+            <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.category}</Paragraph>
           )}
-        </div>
+        </Box>
 
         {/* Price */}
-        <div className="space-y-2">
+        <Box className="space-y-2">
           <Label htmlFor="product-price" className="text-sm font-semibold">
             Selling Price (Rs.) *
           </Label>
@@ -245,16 +249,16 @@ export function AdminProductForm() {
             className={errors.price ? "border-destructive focus-visible:ring-destructive" : ""}
           />
           {errors.price && (
-            <p className="text-xs text-destructive font-medium mt-1">{errors.price}</p>
+            <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.price}</Paragraph>
           )}
-        </div>
+        </Box>
 
         {/* Original Price */}
-        <div className="space-y-2">
+        <Box className="space-y-2">
           <Label htmlFor="product-original" className="text-sm font-semibold">
             Original Price (Rs.)
           </Label>
-          <div className="relative">
+          <Box className="relative">
             <Input
               id="product-original"
               type="number"
@@ -266,22 +270,22 @@ export function AdminProductForm() {
               className={errors.original_price ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {discount > 0 && (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-green-500/10 px-1.5 py-0.5 text-xs font-semibold text-green-500">
+              <Box as="span" className="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-green-500/10 px-1.5 py-0.5 text-xs font-semibold text-green-500">
                 {discount}% OFF
-              </span>
+              </Box>
             )}
-          </div>
+          </Box>
           {errors.original_price && (
-            <p className="text-xs text-destructive font-medium mt-1">{errors.original_price}</p>
+            <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.original_price}</Paragraph>
           )}
-        </div>
+        </Box>
 
         {/* Color Choices */}
-        <div className="space-y-2">
+        <Box className="space-y-2">
           <Label htmlFor="product-colors" className="text-sm font-semibold">
             Color Choices
           </Label>
-          <div className="relative">
+          <Box className="relative">
             <Input
               id="product-colors"
               value={colors}
@@ -290,26 +294,27 @@ export function AdminProductForm() {
               className={errors.colors ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             <Palette className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
+          </Box>
           {errors.colors && (
-            <p className="text-xs text-destructive font-medium mt-1">{errors.colors}</p>
+            <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.colors}</Paragraph>
           )}
           {colorList.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-1.5">
+            <Flex wrap="wrap" gap="xs" className="mt-1.5">
               {colorList.map((col, index) => (
-                <span
+                <Box
                   key={index}
+                  as="span"
                   className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground border"
                 >
                   {col}
-                </span>
+                </Box>
               ))}
-            </div>
+            </Flex>
           )}
-        </div>
+        </Box>
 
         {/* Tag */}
-        <div className="space-y-2">
+        <Box className="space-y-2">
           <Label htmlFor="product-tag" className="text-sm font-semibold">
             Product Tag / Badge
           </Label>
@@ -321,13 +326,13 @@ export function AdminProductForm() {
             className={errors.tag ? "border-destructive focus-visible:ring-destructive" : ""}
           />
           {errors.tag && (
-            <p className="text-xs text-destructive font-medium mt-1">{errors.tag}</p>
+            <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.tag}</Paragraph>
           )}
-        </div>
-      </div>
+        </Box>
+      </Grid>
 
       {/* Description */}
-      <div className="space-y-2">
+      <Box className="space-y-2">
         <Label htmlFor="product-desc" className="text-sm font-semibold">
           Description
         </Label>
@@ -340,29 +345,29 @@ export function AdminProductForm() {
           className={errors.description ? "border-destructive focus-visible:ring-destructive" : ""}
         />
         {errors.description && (
-          <p className="text-xs text-destructive font-medium mt-1">{errors.description}</p>
+          <Paragraph className="text-xs text-destructive font-medium mt-1">{errors.description}</Paragraph>
         )}
-      </div>
+      </Box>
 
       {/* Out of Stock Toggle */}
-      <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/10">
-        <div className="space-y-0.5">
+      <Flex align="center" justify="between" className="rounded-lg border p-4 bg-muted/10">
+        <Box className="space-y-0.5">
           <Label htmlFor="product-stock" className="text-sm font-semibold">
             Out of Stock Status
           </Label>
-          <p className="text-xs text-muted-foreground">
+          <Paragraph className="text-xs text-muted-foreground">
             Mark this item as out of stock on the website.
-          </p>
-        </div>
+          </Paragraph>
+        </Box>
         <Switch
           id="product-stock"
           checked={isOutOfStock}
           onCheckedChange={setIsOutOfStock}
         />
-      </div>
+      </Flex>
 
       {/* Action Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
+      <Flex justify="end" gap="sm" className="pt-4 border-t">
         <Button
           type="button"
           variant="outline"
@@ -381,7 +386,7 @@ export function AdminProductForm() {
             "Create Product"
           )}
         </Button>
-      </div>
+      </Flex>
     </form>
   );
 }

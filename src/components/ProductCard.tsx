@@ -49,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Top badges row */}
         <Flex justify="between" align="start" className="absolute left-0 right-0 top-0 p-2">
           {/* Left: Tag badge */}
-          <Flex direction="col" gap={1}>
+          <Flex direction="col" gap="xs">
             {product.tag && !product.is_out_of_stock && (
               <Badge className="bg-primary text-[10px] font-semibold text-primary-foreground hover:bg-primary">
                 {product.tag}
@@ -63,7 +63,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </Flex>
 
           {/* Right: Discount badge + wishlist */}
-          <Flex direction="col" align="end" gap={1}>
+          <Flex direction="col" align="end" gap="xs">
             {discount && !product.is_out_of_stock && (
               <Badge variant="destructive" className="text-[10px] font-bold">
                 -{discount}%
@@ -82,9 +82,9 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Out of Stock Overlay */}
         {product.is_out_of_stock && (
           <Flex align="center" justify="center" className="absolute inset-0 bg-black/50 backdrop-blur-[2px]">
-            <span className="rounded-md bg-destructive px-4 py-1.5 text-sm font-bold uppercase tracking-wider text-white">
+            <Box as="span" className="rounded-md bg-destructive px-4 py-1.5 text-sm font-bold uppercase tracking-wider text-white">
               Sold Out
-            </span>
+            </Box>
           </Flex>
         )}
       </Box>
@@ -104,14 +104,14 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Price row */}
-        <Flex align="baseline" gap={2} className="mt-2">
-          <span className="text-lg font-extrabold text-foreground">
+        <Flex align="baseline" gap="sm" className="mt-2">
+          <Box as="span" className="text-lg font-extrabold text-foreground">
             Rs.{product.price.toLocaleString()}
-          </span>
+          </Box>
           {product.original_price && product.original_price > product.price && (
-            <span className="text-xs text-muted-foreground line-through">
+            <Box as="span" className="text-xs text-muted-foreground line-through">
               Rs.{product.original_price.toLocaleString()}
-            </span>
+            </Box>
           )}
         </Flex>
 
@@ -136,7 +136,7 @@ export function ProductCard({ product }: ProductCardProps) {
             Add to Cart
           </Button>
         ) : (
-          <Flex align="center" justify="between" gap={2} className="mt-3 w-full">
+          <Flex align="center" justify="between" gap="sm" className="mt-3 w-full">
             <Button
               onClick={() => updateQuantity(product.id, quantity - 1)}
               className="h-9 w-9 rounded-lg p-0 font-bold text-base transition-all active:scale-[0.95] shrink-0 cursor-pointer"
@@ -145,9 +145,9 @@ export function ProductCard({ product }: ProductCardProps) {
             >
               <Minus className="h-3.5 w-3.5" />
             </Button>
-            <span className="text-sm font-bold text-foreground min-w-[24px] text-center select-none">
+            <Box as="span" className="text-sm font-bold text-foreground min-w-[24px] text-center select-none">
               {quantity}
-            </span>
+            </Box>
             <Button
               onClick={() => updateQuantity(product.id, quantity + 1)}
               className="h-9 w-9 rounded-lg p-0 font-bold text-base transition-all active:scale-[0.95] shrink-0 cursor-pointer"

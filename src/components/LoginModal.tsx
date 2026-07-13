@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
 import { Loader2 } from "lucide-react";
 
 interface LoginModalProps {
@@ -48,7 +50,7 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
           // Set a mock cookie for development testing
           document.cookie = `mock-admin-session=${encodeURIComponent(
             email.trim()
-          )}; path=/; max-age=86400`;
+            )}; path=/; max-age=86400`;
           
           onOpenChange(false);
           router.refresh();
@@ -59,19 +61,6 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
           return;
         }
       }
-
-      // Production Supabase auth commented for local dev
-      /*
-      const supabase = createClient();
-      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-      if (authError) { setError(authError.message); setLoading(false); return; }
-      const userEmail = data.user?.email;
-      if (!userEmail || !adminEmails.includes(userEmail)) {
-        await supabase.auth.signOut();
-        setError("Access denied: You are not authorized as an administrator.");
-        setLoading(false); return;
-      }
-      */
 
       onOpenChange(false);
       router.refresh();
@@ -95,12 +84,12 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
         <form onSubmit={handleLogin} className="space-y-4">
           {error && (
-            <div className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <Box className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive font-medium">
               {error}
-            </div>
+            </Box>
           )}
 
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="login-email">Email</Label>
             <Input
               id="login-email"
@@ -110,9 +99,9 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@example.com"
             />
-          </div>
+          </Box>
 
-          <div className="space-y-2">
+          <Box className="space-y-2">
             <Label htmlFor="login-password">Password</Label>
             <Input
               id="login-password"
@@ -122,14 +111,14 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
             />
-          </div>
+          </Box>
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
-              <>
+              <Flex align="center" justify="center">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing in...
-              </>
+              </Flex>
             ) : (
               "Sign In"
             )}
