@@ -1,20 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Menu, X, User, ChevronRight, Settings, LogOut, ShoppingBag } from "lucide-react";
-// import { createClient } from "@/utils/supabase/client"; // commented for local dev
 import { LoginModal } from "@/components/LoginModal";
 import { useCart } from "@/core/cart/useCart";
+import { useNavbar } from "@/core/navbar/useNavbar";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
-import { Heading } from "@/components/ui/heading";
-import { Paragraph } from "@/components/ui/paragraph";
-
-const announcements = [
-  "New Arrivals — Shop the Latest Collection Now",
-];
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -32,98 +26,34 @@ export function Navbar() {
   const router = useRouter();
   const { cartItems } = useCart();
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [announcementIdx, setAnnouncementIdx] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
+
+  // Only modal open state stays as useState (per architecture rule)
   const [loginOpen, setLoginOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
 
-  const checkSession = useCallback(async () => {
-    const adminEmails = (
-      process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@example.com,admin2@example.com"
-    ).split(",");
-
-    // Check mock cookie first
-    const mockEmail =
-      typeof document !== "undefined"
-        ? document.cookie.match(/(^|;)\s*mock-admin-session\s*=\s*([^;]+)/)?.[2]
-        : null;
-
-    if (mockEmail) {
-      const decoded = decodeURIComponent(mockEmail);
-      setUserEmail(decoded);
-      setIsAdmin(adminEmails.includes(decoded));
-      return;
-    }
-
-    // Supabase check commented for local dev
-    /*
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        setUserEmail(user.email);
-        setIsAdmin(adminEmails.includes(user.email));
-      } else {
-        setUserEmail(null);
-        setIsAdmin(false);
-      }
-    } catch {
-      setUserEmail(null);
-      setIsAdmin(false);
-    }
-    */
-    setUserEmail(null);
-    setIsAdmin(false);
-  }, []);
-
-  const handleLogout = async () => {
-    if (typeof document !== "undefined") {
-      document.cookie = "mock-admin-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    }
-    // Supabase sign-out commented for local dev
-    // try { const supabase = createClient(); await supabase.auth.signOut(); } catch {}
-    setUserEmail(null);
-    setIsAdmin(false);
-    setUserMenuOpen(false);
-    router.refresh();
-  };
+  const {
+    mobileOpen,
+    searchOpen,
+    searchQuery,
+    announcementIdx,
+    scrolled,
+    userMenuOpen,
+    userEmail,
+    isAdmin,
+    announcements,
+    setSearchQuery,
+    setMobileOpen,
+    setUserMenuOpen,
+    checkSession,
+    handleLogout,
+    handleSearch,
+    toggleMobileOpen,
+    toggleSearchOpen,
+    toggleUserMenuOpen,
+  } = useNavbar();
 
   useEffect(() => {
-    if (!userMenuOpen) return;
-    const handleOutsideClick = () => setUserMenuOpen(false);
-    window.addEventListener("click", handleOutsideClick);
-    return () => window.removeEventListener("click", handleOutsideClick);
-  }, [userMenuOpen]);
-
-  useEffect(() => {
-    const timer = setInterval(() => setAnnouncementIdx((i) => (i + 1) % announcements.length), 4000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkSession();
   }, [checkSession, loginOpen]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
-      setSearchQuery("");
-    }
-  };
 
   return (
     <Box as="header" className={`sticky top-0 z-50 bg-background transition-shadow ${scrolled ? "shadow-md" : ""}`}>
@@ -139,7 +69,7 @@ export function Navbar() {
         <Flex align="center" justify="between" className="mx-auto h-16 max-w-7xl px-4 sm:px-6">
           {/* Left: Menu button + Logo */}
           <Flex align="center" gap="sm">
-            <button className="p-1.5 lg:hidden text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+            <button className="p-1.5 lg:hidden text-muted-foreground hover:text-foreground transition-colors" onClick={toggleMobileOpen} aria-label="Toggle menu">
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
 
@@ -163,7 +93,7 @@ export function Navbar() {
 
           {/* Right icons */}
           <Flex align="center" gap="xs">
-            <button onClick={() => setSearchOpen(!searchOpen)} className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer" aria-label="Search">
+            <button onClick={toggleSearchOpen} className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer" aria-label="Search">
               <Search className="h-5 w-5" />
             </button>
 
@@ -183,7 +113,7 @@ export function Navbar() {
             <Box className="relative" onClick={(e) => e.stopPropagation()}>
               {userEmail ? (
                 <>
-                  <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center gap-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+                  <button onClick={toggleUserMenuOpen} className="flex items-center gap-1 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                     <User className={`h-5 w-5 ${isAdmin ? "text-primary" : ""}`} />
                   </button>
                   {userMenuOpen && (
@@ -194,7 +124,7 @@ export function Navbar() {
                           <Settings className="h-4 w-4 text-primary" /> Admin Panel
                         </Link>
                       )}
-                      <button onClick={handleLogout} className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 text-left">
+                      <button onClick={() => handleLogout()} className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 text-left">
                         <LogOut className="h-4 w-4" /> Sign Out
                       </button>
                     </Box>

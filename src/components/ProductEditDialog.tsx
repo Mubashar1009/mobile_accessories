@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { updateProduct } from "@/lib/actions";
-import { productSchema } from "@/types/product";
-import { type Product, CATEGORIES } from "@/types/product";
+import { useProductEditDialog } from "@/core/productEditDialog/useProductEditDialog";
+import { type Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,119 +32,29 @@ export function ProductEditDialog({
   open,
   onOpenChange,
 }: ProductEditDialogProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("earbuds");
-  const [colors, setColors] = useState("");
-  const [isOutOfStock, setIsOutOfStock] = useState(false);
-
-  // Populate form when product changes
-  useEffect(() => {
-    if (product) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTitle(product.title);
-      setDescription(product.description ?? "");
-      setPrice(product.price.toString());
-      setCategory(product.category ?? "earbuds");
-      setColors(product.colors ?? "");
-      setIsOutOfStock(product.is_out_of_stock);
-      setImagePreview(product.image_url);
-      setError(null);
-      setErrors({});
-    }
-  }, [product]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const clearImage = () => {
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!product) return;
-
-    setError(null);
-    setErrors({});
-    setLoading(true);
-
-    const parsedPrice = parseFloat(price);
-
-    // Validate inputs using Zod
-    const validation = productSchema.partial().safeParse({
-      title,
-      description: description || null,
-      price: isNaN(parsedPrice) ? 0 : parsedPrice,
-      category,
-      colors: colors || null,
-      is_out_of_stock: isOutOfStock,
-    });
-
-    if (!validation.success) {
-      const fieldErrors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as string] = err.message;
-        }
-      });
-      setErrors(fieldErrors);
-      setError("Please fix the validation errors below.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      const fileInput = fileInputRef.current;
-      if (fileInput?.files?.[0]) {
-        formData.append("image", fileInput.files[0]);
-      }
-
-      const result = await updateProduct(
-        product.id,
-        {
-          title,
-          description: description || null,
-          price: parsedPrice,
-          category,
-          colors: colors || null,
-          is_out_of_stock: isOutOfStock,
-        },
-        formData
-      );
-
-      if (result?.error) {
-        setError(result.error);
-        return;
-      }
-
-      onOpenChange(false);
-    } catch {
-      setError("An unexpected error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    loading,
+    error,
+    errors,
+    imagePreview,
+    title,
+    description,
+    price,
+    category,
+    colors,
+    isOutOfStock,
+    fileInputRef,
+    categories,
+    setTitle,
+    setDescription,
+    setPrice,
+    setCategory,
+    setColors,
+    setIsOutOfStock,
+    handleImageChange,
+    clearImage,
+    handleSubmit,
+  } = useProductEditDialog(product, onOpenChange);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -233,7 +141,7 @@ export function ProductEditDialog({
                 errors.category ? "border-destructive focus:ring-destructive" : "border-input"
               }`}
             >
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <option key={cat.slug} value={cat.slug}>
                   {cat.label}
                 </option>

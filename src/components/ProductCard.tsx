@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import type { Product } from "@/types/product";
 import { getDiscount, isNew } from "@/types/product";
@@ -12,20 +11,25 @@ import { Flex } from "@/components/ui/flex";
 import { Heading } from "@/components/ui/heading";
 import { Paragraph } from "@/components/ui/paragraph";
 import { MessageCircle, ImageIcon, Heart, Plus, Minus, ShoppingBag } from "lucide-react";
-import { useCart } from "@/core/cart/useCart";
+import { useProductCard } from "@/core/productCard/useProductCard";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [imgError, setImgError] = useState(false);
-  const [liked, setLiked] = useState(false);
   const discount = getDiscount(product);
   const fresh = isNew(product);
-  
-  const { addToCart, updateQuantity, getItemQuantity } = useCart();
-  const quantity = getItemQuantity(product.id);
+
+  const {
+    imgError,
+    isLiked,
+    quantity,
+    handleImgError,
+    toggleLiked,
+    handleAddToCart,
+    handleUpdateQuantity,
+  } = useProductCard(product.id);
 
   return (
     <Card className="group relative overflow-hidden rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5">
@@ -38,7 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover transition-transform duration-500 group-hover:scale-110"
-            onError={() => setImgError(true)}
+            onError={handleImgError}
           />
         ) : (
           <Flex className="h-full w-full" align="center" justify="center">
@@ -70,11 +74,11 @@ export function ProductCard({ product }: ProductCardProps) {
               </Badge>
             )}
             <button
-              onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
+              onClick={toggleLiked}
               className="flex h-7 w-7 items-center justify-center rounded-full bg-background/80 backdrop-blur transition-colors hover:bg-background cursor-pointer"
               aria-label="Wishlist"
             >
-              <Heart className={`h-3.5 w-3.5 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+              <Heart className={`h-3.5 w-3.5 transition-colors ${isLiked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
             </button>
           </Flex>
         </Flex>
@@ -128,7 +132,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </Button>
         ) : quantity === 0 ? (
           <Button
-            onClick={() => addToCart(product)}
+            onClick={() => handleAddToCart(product)}
             className="mt-3 w-full rounded-lg font-semibold gap-2 transition-all active:scale-[0.98] cursor-pointer"
             size="sm"
           >
@@ -138,7 +142,7 @@ export function ProductCard({ product }: ProductCardProps) {
         ) : (
           <Flex align="center" justify="between" gap="sm" className="mt-3 w-full">
             <Button
-              onClick={() => updateQuantity(product.id, quantity - 1)}
+              onClick={() => handleUpdateQuantity(quantity - 1)}
               className="h-9 w-9 rounded-lg p-0 font-bold text-base transition-all active:scale-[0.95] shrink-0 cursor-pointer"
               variant="outline"
               size="icon"
@@ -149,7 +153,7 @@ export function ProductCard({ product }: ProductCardProps) {
               {quantity}
             </Box>
             <Button
-              onClick={() => updateQuantity(product.id, quantity + 1)}
+              onClick={() => handleUpdateQuantity(quantity + 1)}
               className="h-9 w-9 rounded-lg p-0 font-bold text-base transition-all active:scale-[0.95] shrink-0 cursor-pointer"
               variant="outline"
               size="icon"

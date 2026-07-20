@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { createProduct } from "@/lib/actions";
+import { useState } from "react";
+import { useProductCreateForm } from "@/core/productCreateForm/useProductCreateForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,91 +18,42 @@ import {
 } from "@/components/ui/dialog";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
-import { Paragraph } from "@/components/ui/paragraph";
 import { Plus, Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
+  // Only modal open state stays as useState (per architecture rule)
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [isOutOfStock, setIsOutOfStock] = useState(false);
+  const handleClose = () => setOpen(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const clearImage = () => {
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setPrice("");
-    setIsOutOfStock(false);
-    setImagePreview(null);
-    setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const formData = new FormData();
-      const fileInput = fileInputRef.current;
-      if (fileInput?.files?.[0]) {
-        formData.append("image", fileInput.files[0]);
-      }
-
-      const result = await createProduct(
-        {
-          title,
-          description: description || null,
-          price: parseFloat(price) || 0,
-          is_out_of_stock: isOutOfStock,
-        },
-        formData
-      );
-
-      if (result?.error) {
-        setError(result.error);
-        return;
-      }
-
-      resetForm();
-      setOpen(false);
-    } catch {
-      setError("An unexpected error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    loading,
+    error,
+    imagePreview,
+    title,
+    description,
+    price,
+    isOutOfStock,
+    fileInputRef,
+    setTitle,
+    setDescription,
+    setPrice,
+    setIsOutOfStock,
+    handleImageChange,
+    clearImage,
+    handleResetForm,
+    handleSubmit,
+  } = useProductCreateForm(handleClose);
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (!v) handleResetForm();
+      }}
+    >
       <DialogTrigger asChild>
         {compact ? (
           <Button size="sm" variant="outline" className="gap-1.5 text-xs">
@@ -230,7 +181,7 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => { setOpen(false); resetForm(); }}
+              onClick={() => { setOpen(false); handleResetForm(); }}
             >
               Cancel
             </Button>

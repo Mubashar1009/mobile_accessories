@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import type { Product } from "@/types/product";
-import { toggleOutOfStock, deleteProduct } from "@/lib/actions";
 import Link from "next/link";
 import Image from "next/image";
 import { ProductEditDialog } from "@/components/ProductEditDialog";
@@ -21,47 +20,28 @@ import {
   Pencil, Trash2, Loader2, ImageIcon, Package, TrendingUp,
   ShoppingCart, AlertTriangle, Plus, BarChart3, Layers,
 } from "lucide-react";
+import { useAdminDashboard } from "@/core/adminDashboard/useAdminDashboard";
 
 interface AdminDashboardClientProps {
   initialProducts: Product[];
 }
 
 export function AdminDashboardClient({ initialProducts }: AdminDashboardClientProps) {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [editProduct, setEditProduct] = useState<Product | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const {
+    products,
+    editProduct,
+    editOpen,
+    deletingId,
+    isPending,
+    setEditOpen,
+    handleToggleStock,
+    handleDelete,
+    handleEdit,
+  } = useAdminDashboard(initialProducts);
 
   const inStock = products.filter((p) => !p.is_out_of_stock).length;
   const outOfStock = products.filter((p) => p.is_out_of_stock).length;
   const categories = new Set(products.map((p) => p.category).filter(Boolean)).size;
-
-  const handleToggleStock = (product: Product) => {
-    startTransition(async () => {
-      const result = await toggleOutOfStock(product.id, product.is_out_of_stock);
-      if (!result?.error) {
-        setProducts((prev) =>
-          prev.map((p) => p.id === product.id ? { ...p, is_out_of_stock: !p.is_out_of_stock } : p)
-        );
-      }
-    });
-  };
-
-  const handleDelete = (id: string) => {
-    if (!confirm("Delete this product? This will also remove its image.")) return;
-    setDeletingId(id);
-    startTransition(async () => {
-      const result = await deleteProduct(id);
-      if (!result?.error) setProducts((prev) => prev.filter((p) => p.id !== id));
-      setDeletingId(null);
-    });
-  };
-
-  const handleEdit = (product: Product) => {
-    setEditProduct(product);
-    setEditOpen(true);
-  };
 
   const stats = [
     { label: "Total Products", value: products.length, icon: Package, color: "text-blue-600", bg: "bg-blue-500/10", border: "border-blue-500/20" },

@@ -1,10 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { createProduct } from "@/lib/actions";
-import { productSchema } from "@/types/product";
-import { CATEGORIES } from "@/types/product";
+import { useAdminProductForm } from "@/core/adminProductForm/useAdminProductForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,123 +14,35 @@ import { Upload, X, Loader2, Palette } from "lucide-react";
 import Image from "next/image";
 
 export function AdminProductForm() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Form State
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("earbuds");
-  const [price, setPrice] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [colors, setColors] = useState("");
-  const [tag, setTag] = useState("");
-  const [isOutOfStock, setIsOutOfStock] = useState(false);
-  const [description, setDescription] = useState("");
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const clearImage = () => {
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  // Calculate discount dynamically for preview
-  const numPrice = parseFloat(price) || 0;
-  const numOriginal = parseFloat(originalPrice) || 0;
-  const discount =
-    numOriginal > numPrice
-      ? Math.round(((numOriginal - numPrice) / numOriginal) * 100)
-      : 0;
-
-  // Split colors for preview list
-  const colorList = colors
-    .split(",")
-    .map((c) => c.trim())
-    .filter((c) => c.length > 0);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setErrors({});
-    setLoading(true);
-
-    const parsedPrice = parseFloat(price);
-    const parsedOriginalPrice = originalPrice ? parseFloat(originalPrice) : null;
-
-    // Validate using Zod
-    const validation = productSchema.safeParse({
-      title,
-      description: description || null,
-      price: isNaN(parsedPrice) ? 0 : parsedPrice,
-      original_price: parsedOriginalPrice,
-      category,
-      colors: colors || null,
-      tag: tag || null,
-      is_out_of_stock: isOutOfStock,
-    });
-
-    if (!validation.success) {
-      const fieldErrors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as string] = err.message;
-        }
-      });
-      setErrors(fieldErrors);
-      setError("Please fix the validation errors below.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      const fileInput = fileInputRef.current;
-      if (fileInput?.files?.[0]) {
-        formData.append("image", fileInput.files[0]);
-      }
-
-      const result = await createProduct(
-        {
-          title,
-          description: description || null,
-          price: numPrice,
-          original_price: numOriginal || null,
-          category,
-          colors: colors || null,
-          tag: tag || null,
-          is_out_of_stock: isOutOfStock,
-        },
-        formData
-      );
-
-      if (result?.error) {
-        setError(result.error);
-        return;
-      }
-
-      router.push("/admin");
-      router.refresh();
-    } catch {
-      setError("An unexpected error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    loading,
+    error,
+    errors,
+    imagePreview,
+    title,
+    category,
+    price,
+    originalPrice,
+    colors,
+    tag,
+    isOutOfStock,
+    description,
+    discount,
+    colorList,
+    fileInputRef,
+    categories,
+    setTitle,
+    setCategory,
+    setPrice,
+    setOriginalPrice,
+    setColors,
+    setTag,
+    setIsOutOfStock,
+    setDescription,
+    handleImageChange,
+    clearImage,
+    handleSubmit,
+  } = useAdminProductForm();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -222,7 +130,7 @@ export function AdminProductForm() {
               errors.category ? "border-destructive focus:ring-destructive" : "border-input"
             }`}
           >
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <option key={cat.slug} value={cat.slug}>
                 {cat.label}
               </option>
@@ -371,7 +279,7 @@ export function AdminProductForm() {
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.push("/admin")}
+          onClick={() => window.history.back()}
           disabled={loading}
         >
           Cancel
