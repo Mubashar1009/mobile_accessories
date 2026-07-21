@@ -1,29 +1,12 @@
-import { create } from "zustand";
-import type { Product } from "@/types/product";
-import { DEMO_PRODUCTS } from "@/lib/db";
+import { useRootStore } from "../useRootStore";
+import { useShallow } from "zustand/react/shallow";
+import type { ProductSlice } from "@/types/store/product";
 
-interface ProductState {
-  products: Product[];
-  loading: boolean;
-  refreshing: boolean;
-  isOffline: boolean;
-  isDemo: boolean;
-  setProducts: (products: Product[]) => void;
-  setLoading: (loading: boolean) => void;
-  setRefreshing: (refreshing: boolean) => void;
-  setOffline: (offline: boolean) => void;
-  setIsDemo: (isDemo: boolean) => void;
+export function useProductStore(): ProductSlice;
+export function useProductStore<T>(selector: (state: ProductSlice) => T): T;
+export function useProductStore<T>(selector?: (state: ProductSlice) => T) {
+  if (selector) {
+    return useRootStore((state) => selector(state.product));
+  }
+  return useRootStore(useShallow((state) => state.product));
 }
-
-export const useProductStore = create<ProductState>((set) => ({
-  products: DEMO_PRODUCTS,
-  loading: false,
-  refreshing: false,
-  isOffline: false,
-  isDemo: true,
-  setProducts: (products) => set({ products }),
-  setLoading: (loading) => set({ loading }),
-  setRefreshing: (refreshing) => set({ refreshing }),
-  setOffline: (offline) => set({ isOffline: offline }),
-  setIsDemo: (isDemo) => set({ isDemo }),
-}));

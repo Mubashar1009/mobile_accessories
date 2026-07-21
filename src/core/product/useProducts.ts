@@ -45,17 +45,18 @@ function validateProducts(products: unknown[]): Product[] {
 }
 
 export function useProducts() {
-  const products = useProductStore((state) => state.products);
-  const loading = useProductStore((state) => state.loading);
-  const refreshing = useProductStore((state) => state.refreshing);
-  const isOffline = useProductStore((state) => state.isOffline);
-  const isDemo = useProductStore((state) => state.isDemo);
-  
-  const setProducts = useProductStore((state) => state.setProducts);
-  const setLoading = useProductStore((state) => state.setLoading);
-  const setRefreshing = useProductStore((state) => state.setRefreshing);
-  const setOffline = useProductStore((state) => state.setOffline);
-  const setIsDemo = useProductStore((state) => state.setIsDemo);
+  const {
+    products,
+    loading,
+    refreshing,
+    isOffline,
+    isDemo,
+    setProducts,
+    setLoading,
+    setRefreshing,
+    setOffline,
+    setIsDemo,
+  } = useProductStore();
 
   const fetchProducts = useCallback(async (isBackgroundRefresh = false) => {
     if (isBackgroundRefresh) {

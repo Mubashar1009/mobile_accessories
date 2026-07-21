@@ -1,17 +1,12 @@
-import { create } from "zustand";
+import { useRootStore } from "../useRootStore";
+import { useShallow } from "zustand/react/shallow";
+import type { ProductCardSlice } from "@/types/store/productCard";
 
-interface ProductCardState {
-  imgErrors: Record<string, boolean>;
-  liked: Record<string, boolean>;
-  setImgError: (productId: string, error: boolean) => void;
-  setLiked: (productId: string, liked: boolean) => void;
+export function useProductCardStore(): ProductCardSlice;
+export function useProductCardStore<T>(selector: (state: ProductCardSlice) => T): T;
+export function useProductCardStore<T>(selector?: (state: ProductCardSlice) => T) {
+  if (selector) {
+    return useRootStore((state) => selector(state.productCard));
+  }
+  return useRootStore(useShallow((state) => state.productCard));
 }
-
-export const useProductCardStore = create<ProductCardState>((set) => ({
-  imgErrors: {},
-  liked: {},
-  setImgError: (productId, error) =>
-    set((state) => ({ imgErrors: { ...state.imgErrors, [productId]: error } })),
-  setLiked: (productId, liked) =>
-    set((state) => ({ liked: { ...state.liked, [productId]: liked } })),
-}));

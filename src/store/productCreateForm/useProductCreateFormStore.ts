@@ -1,41 +1,12 @@
-import { create } from "zustand";
+import { useRootStore } from "../useRootStore";
+import { useShallow } from "zustand/react/shallow";
+import type { ProductCreateFormSlice } from "@/types/store/productCreateForm";
 
-interface ProductCreateFormState {
-  loading: boolean;
-  error: string | null;
-  imagePreview: string | null;
-  title: string;
-  description: string;
-  price: string;
-  isOutOfStock: boolean;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  setImagePreview: (preview: string | null) => void;
-  setTitle: (title: string) => void;
-  setDescription: (description: string) => void;
-  setPrice: (price: string) => void;
-  setIsOutOfStock: (val: boolean) => void;
-  resetForm: () => void;
+export function useProductCreateFormStore(): ProductCreateFormSlice;
+export function useProductCreateFormStore<T>(selector: (state: ProductCreateFormSlice) => T): T;
+export function useProductCreateFormStore<T>(selector?: (state: ProductCreateFormSlice) => T) {
+  if (selector) {
+    return useRootStore((state) => selector(state.productCreateForm));
+  }
+  return useRootStore(useShallow((state) => state.productCreateForm));
 }
-
-const defaultState = {
-  loading: false,
-  error: null,
-  imagePreview: null,
-  title: "",
-  description: "",
-  price: "",
-  isOutOfStock: false,
-};
-
-export const useProductCreateFormStore = create<ProductCreateFormState>((set) => ({
-  ...defaultState,
-  setLoading: (loading) => set({ loading }),
-  setError: (error) => set({ error }),
-  setImagePreview: (imagePreview) => set({ imagePreview }),
-  setTitle: (title) => set({ title }),
-  setDescription: (description) => set({ description }),
-  setPrice: (price) => set({ price }),
-  setIsOutOfStock: (isOutOfStock) => set({ isOutOfStock }),
-  resetForm: () => set(defaultState),
-}));

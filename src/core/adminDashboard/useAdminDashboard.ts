@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useTransition, useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useAdminDashboardStore } from "@/store/adminDashboard/useAdminDashboardStore";
 import { toggleOutOfStock, deleteProduct } from "@/lib/actions";
 import type { Product } from "@/types/product";
@@ -18,20 +17,7 @@ export function useAdminDashboard(initialProducts: Product[]) {
     setDeletingId,
     updateProduct,
     removeProduct,
-  } = useAdminDashboardStore(
-    useShallow((s) => ({
-      products: s.products,
-      editProduct: s.editProduct,
-      editOpen: s.editOpen,
-      deletingId: s.deletingId,
-      setProducts: s.setProducts,
-      setEditProduct: s.setEditProduct,
-      setEditOpen: s.setEditOpen,
-      setDeletingId: s.setDeletingId,
-      updateProduct: s.updateProduct,
-      removeProduct: s.removeProduct,
-    }))
-  );
+  } = useAdminDashboardStore();
 
   const [isPending, startTransition] = useTransition();
 

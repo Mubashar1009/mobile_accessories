@@ -13,12 +13,14 @@ import { dbProductSchema, type Product } from "@/types/product";
 import { z } from "zod";
 
 export function useCart() {
-  const cartItems = useCartStore((state) => state.cartItems);
-  const isOpen = useCartStore((state) => state.isOpen);
-  const loading = useCartStore((state) => state.loading);
-  const setCartItems = useCartStore((state) => state.setCartItems);
-  const setIsOpen = useCartStore((state) => state.setIsOpen);
-  const setLoading = useCartStore((state) => state.setLoading);
+  const {
+    cartItems,
+    isOpen,
+    loading,
+    setCartItems,
+    setIsOpen,
+    setLoading,
+  } = useCartStore();
 
   const loadCart = useCallback(async () => {
     setLoading(true);

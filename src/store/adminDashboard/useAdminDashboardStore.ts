@@ -1,34 +1,12 @@
-import { create } from "zustand";
-import type { Product } from "@/types/product";
+import { useRootStore } from "../useRootStore";
+import { useShallow } from "zustand/react/shallow";
+import type { AdminDashboardSlice } from "@/types/store/adminDashboard";
 
-interface AdminDashboardState {
-  products: Product[];
-  editProduct: Product | null;
-  editOpen: boolean;
-  deletingId: string | null;
-  setProducts: (products: Product[]) => void;
-  setEditProduct: (product: Product | null) => void;
-  setEditOpen: (open: boolean) => void;
-  setDeletingId: (id: string | null) => void;
-  updateProduct: (updated: Product) => void;
-  removeProduct: (id: string) => void;
+export function useAdminDashboardStore(): AdminDashboardSlice;
+export function useAdminDashboardStore<T>(selector: (state: AdminDashboardSlice) => T): T;
+export function useAdminDashboardStore<T>(selector?: (state: AdminDashboardSlice) => T) {
+  if (selector) {
+    return useRootStore((state) => selector(state.adminDashboard));
+  }
+  return useRootStore(useShallow((state) => state.adminDashboard));
 }
-
-export const useAdminDashboardStore = create<AdminDashboardState>((set) => ({
-  products: [],
-  editProduct: null,
-  editOpen: false,
-  deletingId: null,
-  setProducts: (products) => set({ products }),
-  setEditProduct: (editProduct) => set({ editProduct }),
-  setEditOpen: (editOpen) => set({ editOpen }),
-  setDeletingId: (deletingId) => set({ deletingId }),
-  updateProduct: (updated) =>
-    set((state) => ({
-      products: state.products.map((p) => (p.id === updated.id ? updated : p)),
-    })),
-  removeProduct: (id) =>
-    set((state) => ({
-      products: state.products.filter((p) => p.id !== id),
-    })),
-}));

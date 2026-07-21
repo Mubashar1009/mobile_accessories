@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useProductCreateFormStore } from "@/store/productCreateForm/useProductCreateFormStore";
 import { createProduct } from "@/lib/actions";
 
@@ -24,25 +23,7 @@ export function useProductCreateForm(onClose: () => void) {
     setPrice,
     setIsOutOfStock,
     resetForm,
-  } = useProductCreateFormStore(
-    useShallow((s) => ({
-      loading: s.loading,
-      error: s.error,
-      imagePreview: s.imagePreview,
-      title: s.title,
-      description: s.description,
-      price: s.price,
-      isOutOfStock: s.isOutOfStock,
-      setLoading: s.setLoading,
-      setError: s.setError,
-      setImagePreview: s.setImagePreview,
-      setTitle: s.setTitle,
-      setDescription: s.setDescription,
-      setPrice: s.setPrice,
-      setIsOutOfStock: s.setIsOutOfStock,
-      resetForm: s.resetForm,
-    }))
-  );
+  } = useProductCreateFormStore();
 
   const handleImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

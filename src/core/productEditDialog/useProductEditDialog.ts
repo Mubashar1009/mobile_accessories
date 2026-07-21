@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef, useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useProductEditDialogStore } from "@/store/productEditDialog/useProductEditDialogStore";
 import { updateProduct } from "@/lib/actions";
 import { productSchema, CATEGORIES, type Product } from "@/types/product";
@@ -31,31 +30,7 @@ export function useProductEditDialog(product: Product | null, onOpenChange: (ope
     setColors,
     setIsOutOfStock,
     resetForm,
-  } = useProductEditDialogStore(
-    useShallow((s) => ({
-      loading: s.loading,
-      error: s.error,
-      errors: s.errors,
-      imagePreview: s.imagePreview,
-      title: s.title,
-      description: s.description,
-      price: s.price,
-      category: s.category,
-      colors: s.colors,
-      isOutOfStock: s.isOutOfStock,
-      setLoading: s.setLoading,
-      setError: s.setError,
-      setErrors: s.setErrors,
-      setImagePreview: s.setImagePreview,
-      setTitle: s.setTitle,
-      setDescription: s.setDescription,
-      setPrice: s.setPrice,
-      setCategory: s.setCategory,
-      setColors: s.setColors,
-      setIsOutOfStock: s.setIsOutOfStock,
-      resetForm: s.resetForm,
-    }))
-  );
+  } = useProductEditDialogStore();
 
   // Populate form when product changes
   useEffect(() => {

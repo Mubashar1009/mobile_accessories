@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useNavbarStore } from "@/store/navbar/useNavbarStore";
 import { useRouter } from "next/navigation";
 
@@ -27,26 +26,7 @@ export function useNavbar() {
     setUserMenuOpen,
     setUserEmail,
     setIsAdmin,
-  } = useNavbarStore(
-    useShallow((s) => ({
-      mobileOpen: s.mobileOpen,
-      searchOpen: s.searchOpen,
-      searchQuery: s.searchQuery,
-      announcementIdx: s.announcementIdx,
-      scrolled: s.scrolled,
-      userMenuOpen: s.userMenuOpen,
-      userEmail: s.userEmail,
-      isAdmin: s.isAdmin,
-      setMobileOpen: s.setMobileOpen,
-      setSearchOpen: s.setSearchOpen,
-      setSearchQuery: s.setSearchQuery,
-      setAnnouncementIdx: s.setAnnouncementIdx,
-      setScrolled: s.setScrolled,
-      setUserMenuOpen: s.setUserMenuOpen,
-      setUserEmail: s.setUserEmail,
-      setIsAdmin: s.setIsAdmin,
-    }))
-  );
+  } = useNavbarStore();
 
   const checkSession = useCallback(async () => {
     const adminEmails = (

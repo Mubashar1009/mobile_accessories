@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useLoginModalStore } from "@/store/loginModal/useLoginModalStore";
 import { useRouter } from "next/navigation";
 
@@ -23,19 +22,7 @@ export function useLoginModal(onOpenChange: (open: boolean) => void) {
     setError,
     setLoading,
     resetForm,
-  } = useLoginModalStore(
-    useShallow((s) => ({
-      email: s.email,
-      password: s.password,
-      error: s.error,
-      loading: s.loading,
-      setEmail: s.setEmail,
-      setPassword: s.setPassword,
-      setError: s.setError,
-      setLoading: s.setLoading,
-      resetForm: s.resetForm,
-    }))
-  );
+  } = useLoginModalStore();
 
   const handleLogin = useCallback(
     async (e: React.FormEvent) => {

@@ -1,29 +1,12 @@
-import { create } from "zustand";
+import { useRootStore } from "../useRootStore";
+import { useShallow } from "zustand/react/shallow";
+import type { LoginModalSlice } from "@/types/store/loginModal";
 
-interface LoginModalState {
-  email: string;
-  password: string;
-  error: string | null;
-  loading: boolean;
-  setEmail: (email: string) => void;
-  setPassword: (password: string) => void;
-  setError: (error: string | null) => void;
-  setLoading: (loading: boolean) => void;
-  resetForm: () => void;
+export function useLoginModalStore(): LoginModalSlice;
+export function useLoginModalStore<T>(selector: (state: LoginModalSlice) => T): T;
+export function useLoginModalStore<T>(selector?: (state: LoginModalSlice) => T) {
+  if (selector) {
+    return useRootStore((state) => selector(state.loginModal));
+  }
+  return useRootStore(useShallow((state) => state.loginModal));
 }
-
-const defaultState = {
-  email: "",
-  password: "",
-  error: null,
-  loading: false,
-};
-
-export const useLoginModalStore = create<LoginModalState>((set) => ({
-  ...defaultState,
-  setEmail: (email) => set({ email }),
-  setPassword: (password) => set({ password }),
-  setError: (error) => set({ error }),
-  setLoading: (loading) => set({ loading }),
-  resetForm: () => set(defaultState),
-}));

@@ -1,20 +1,12 @@
 "use client";
 
 import { useCallback } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useProductCardStore } from "@/store/productCard/useProductCardStore";
 import { useCart } from "@/core/cart/useCart";
 import type { Product } from "@/types/product";
 
 export function useProductCard(productId: string) {
-  const { imgErrors, liked, setImgError, setLiked } = useProductCardStore(
-    useShallow((s) => ({
-      imgErrors: s.imgErrors,
-      liked: s.liked,
-      setImgError: s.setImgError,
-      setLiked: s.setLiked,
-    }))
-  );
+  const { imgErrors, liked, setImgError, setLiked } = useProductCardStore();
 
   const { addToCart, updateQuantity, getItemQuantity } = useCart();
 

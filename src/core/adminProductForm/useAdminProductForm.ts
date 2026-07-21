@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { useAdminProductFormStore } from "@/store/adminProductForm/useAdminProductFormStore";
 import { createProduct } from "@/lib/actions";
 import { productSchema, CATEGORIES } from "@/types/product";
@@ -37,35 +36,7 @@ export function useAdminProductForm() {
     setIsOutOfStock,
     setDescription,
     resetForm,
-  } = useAdminProductFormStore(
-    useShallow((s) => ({
-      loading: s.loading,
-      error: s.error,
-      errors: s.errors,
-      imagePreview: s.imagePreview,
-      title: s.title,
-      category: s.category,
-      price: s.price,
-      originalPrice: s.originalPrice,
-      colors: s.colors,
-      tag: s.tag,
-      isOutOfStock: s.isOutOfStock,
-      description: s.description,
-      setLoading: s.setLoading,
-      setError: s.setError,
-      setErrors: s.setErrors,
-      setImagePreview: s.setImagePreview,
-      setTitle: s.setTitle,
-      setCategory: s.setCategory,
-      setPrice: s.setPrice,
-      setOriginalPrice: s.setOriginalPrice,
-      setColors: s.setColors,
-      setTag: s.setTag,
-      setIsOutOfStock: s.setIsOutOfStock,
-      setDescription: s.setDescription,
-      resetForm: s.resetForm,
-    }))
-  );
+  } = useAdminProductFormStore();
 
   // Derived values
   const numPrice = parseFloat(price) || 0;
