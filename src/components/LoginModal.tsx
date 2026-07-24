@@ -14,11 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
 import { Loader2 } from "lucide-react";
-
-interface LoginModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import type { LoginModalProps } from "@/types/components/loginModal";
 
 export function LoginModal({ open, onOpenChange }: LoginModalProps) {
   const {

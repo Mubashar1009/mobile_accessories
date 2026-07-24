@@ -48,4 +48,15 @@ export function isNew(product: Product): boolean {
   return new Date(product.created_at).getTime() > weekAgo;
 }
 
+export interface ProductInput {
+  title: string;
+  description?: string | null;
+  price: number;
+  original_price?: number | null;
+  tag?: string | null;
+  is_out_of_stock?: boolean;
+  category?: string | null;
+  colors?: string | null;
+}
+
 export * from "./schema";

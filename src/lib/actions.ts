@@ -2,19 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { productSchema } from "@/types/product";
-
-// ── Types ───────────────────────────────────────────────────────────────
-interface ProductInput {
-  title: string;
-  description?: string | null;
-  price: number;
-  original_price?: number | null;
-  tag?: string | null;
-  is_out_of_stock?: boolean;
-  category?: string | null;
-  colors?: string | null;
-}
+import { productSchema, type ProductInput } from "@/types/product";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function verifyAdmin(_supabase: Awaited<ReturnType<typeof createClient>>) {

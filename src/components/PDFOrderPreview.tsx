@@ -18,11 +18,8 @@ import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
 import { Heading } from "@/components/ui/heading";
 import { Paragraph } from "@/components/ui/paragraph";
+import type { PDFOrderPreviewProps } from "@/types/components/pdfOrderPreview";
 
-interface PDFOrderPreviewProps {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-}
 
 // Helper to convert an image URL to a Base64 data URL via the proxy
 const convertImageToBase64 = async (url: string): Promise<string> => {

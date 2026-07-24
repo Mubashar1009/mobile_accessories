@@ -12,10 +12,7 @@ import { Heading } from "@/components/ui/heading";
 import { Paragraph } from "@/components/ui/paragraph";
 import { MessageCircle, ImageIcon, Heart, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useProductCard } from "@/core/productCard/useProductCard";
-
-interface ProductCardProps {
-  product: Product;
-}
+import type { ProductCardProps } from "@/types/components/productCard";
 
 export function ProductCard({ product }: ProductCardProps) {
   const discount = getDiscount(product);

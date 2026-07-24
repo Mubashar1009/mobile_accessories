@@ -21,10 +21,7 @@ import {
   ShoppingCart, AlertTriangle, Plus, BarChart3, Layers,
 } from "lucide-react";
 import { useAdminDashboard } from "@/core/adminDashboard/useAdminDashboard";
-
-interface AdminDashboardClientProps {
-  initialProducts: Product[];
-}
+import type { AdminDashboardClientProps } from "@/types/components/adminDashboardClient";
 
 export function AdminDashboardClient({ initialProducts }: AdminDashboardClientProps) {
   const {

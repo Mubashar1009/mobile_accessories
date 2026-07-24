@@ -20,12 +20,7 @@ import { Flex } from "@/components/ui/flex";
 import { Paragraph } from "@/components/ui/paragraph";
 import { Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
-
-interface ProductEditDialogProps {
-  product: Product | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+import type { ProductEditDialogProps } from "@/types/components/productEditDialog";
 
 export function ProductEditDialog({
   product,

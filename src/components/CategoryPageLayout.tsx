@@ -16,10 +16,7 @@ import { Paragraph } from "@/components/ui/paragraph";
 import { CATEGORIES } from "@/types/product";
 import { matchesCategory } from "@/core/product/categoryMapper";
 import Link from "next/link";
-
-interface CategoryPageLayoutProps {
-  slug: string;
-}
+import type { CategoryPageLayoutProps } from "@/types/components/categoryPageLayout";
 
 export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
   const { products, loading, isOffline, isDemo, refetch } = useProducts();

@@ -2,12 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Box } from "@/components/ui/box";
-
-interface ScrollRevealProps {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}
+import type { ScrollRevealProps } from "@/types/components/scrollReveal";
 
 export function ScrollReveal({ children, delay = 0, className = "" }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
