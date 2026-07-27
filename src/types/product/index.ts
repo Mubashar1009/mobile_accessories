@@ -36,17 +36,8 @@ export const CATEGORIES = [
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
 
-export function getDiscount(product: Product): number | null {
-  if (product.original_price && product.original_price > product.price) {
-    return Math.round(((product.original_price - product.price) / product.original_price) * 100);
-  }
-  return null;
-}
-
-export function isNew(product: Product): boolean {
-  const weekAgo = Date.now() - 7 * 86400000;
-  return new Date(product.created_at).getTime() > weekAgo;
-}
+// Runtime helpers (getDiscount, isNew) have been moved to:
+// @/core/product/productHelpers
 
 export interface ProductInput {
   title: string;

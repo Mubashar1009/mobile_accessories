@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { Product } from "@/types/product";
-import { getDiscount, isNew } from "@/types/product";
+import { getDiscount, isNew } from "@/core/product/productHelpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

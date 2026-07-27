@@ -1,11 +1,8 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import type { Product, CategorySlug } from "@/types/product";
-import { CATEGORIES, getDiscount, isNew } from "@/types/product";
-import { matchesCategory } from "@/core/product/categoryMapper";
 import type { CartItem } from "@/types/cart";
 
 export type { Product, CategorySlug, CartItem };
-export { CATEGORIES, matchesCategory, getDiscount, isNew };
 
 
 // ── IDB schema definition ──────────────────────────────────────────────

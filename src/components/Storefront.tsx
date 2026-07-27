@@ -13,7 +13,7 @@ import { Grid } from "@/components/ui/grid";
 import { Heading } from "@/components/ui/heading";
 import { Paragraph } from "@/components/ui/paragraph";
 import type { Product } from "@/types/product";
-import { isNew } from "@/types/product";
+import { isNew } from "@/core/product/productHelpers";
 
 export function Storefront() {
   const { products, loading, isOffline, isDemo, refetch } = useProducts();
