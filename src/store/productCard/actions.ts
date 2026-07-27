@@ -2,7 +2,7 @@ import type { ProductCardActions, ProductCardState } from "@/types/store/product
 
 export const createProductCardActions = (
   set: (partial: Partial<ProductCardState> | ((state: ProductCardState) => Partial<ProductCardState>)) => void,
-  get: () => ProductCardState
+  _get: () => ProductCardState
 ): ProductCardActions => ({
   setImgError: (productId, error) =>
     set((state) => ({ imgErrors: { ...state.imgErrors, [productId]: error } })),

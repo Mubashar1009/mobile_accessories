@@ -3,7 +3,7 @@ import { defaultProductEditDialogState } from "./defaults";
 
 export const createProductEditDialogActions = (
   set: (partial: Partial<ProductEditDialogState> | ((state: ProductEditDialogState) => Partial<ProductEditDialogState>)) => void,
-  get: () => ProductEditDialogState
+  _get: () => ProductEditDialogState
 ): ProductEditDialogActions => ({
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),

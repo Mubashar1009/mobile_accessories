@@ -3,7 +3,7 @@ import { defaultProductCreateFormState } from "./defaults";
 
 export const createProductCreateFormActions = (
   set: (partial: Partial<ProductCreateFormState> | ((state: ProductCreateFormState) => Partial<ProductCreateFormState>)) => void,
-  get: () => ProductCreateFormState
+  _get: () => ProductCreateFormState
 ): ProductCreateFormActions => ({
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),

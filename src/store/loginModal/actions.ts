@@ -3,7 +3,7 @@ import { defaultLoginModalState } from "./defaults";
 
 export const createLoginModalActions = (
   set: (partial: Partial<LoginModalState> | ((state: LoginModalState) => Partial<LoginModalState>)) => void,
-  get: () => LoginModalState
+  _get: () => LoginModalState
 ): LoginModalActions => ({
   setEmail: (email) => set({ email }),
   setPassword: (password) => set({ password }),

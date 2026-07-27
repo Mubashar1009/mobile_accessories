@@ -2,7 +2,7 @@ import type { AdminDashboardActions, AdminDashboardState } from "@/types/store/a
 
 export const createAdminDashboardActions = (
   set: (partial: Partial<AdminDashboardState> | ((state: AdminDashboardState) => Partial<AdminDashboardState>)) => void,
-  get: () => AdminDashboardState
+  _get: () => AdminDashboardState
 ): AdminDashboardActions => ({
   setProducts: (products) => set({ products }),
   setEditProduct: (editProduct) => set({ editProduct }),

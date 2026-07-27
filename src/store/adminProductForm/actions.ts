@@ -3,7 +3,7 @@ import { defaultAdminProductFormState } from "./defaults";
 
 export const createAdminProductFormActions = (
   set: (partial: Partial<AdminProductFormState> | ((state: AdminProductFormState) => Partial<AdminProductFormState>)) => void,
-  get: () => AdminProductFormState
+  _get: () => AdminProductFormState
 ): AdminProductFormActions => ({
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),

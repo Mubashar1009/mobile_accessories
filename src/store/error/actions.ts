@@ -3,7 +3,7 @@ import { defaultErrorState } from "./defaults";
 
 export const createErrorActions = (
   set: (partial: Partial<ErrorState> | ((state: ErrorState) => Partial<ErrorState>)) => void,
-  get: () => ErrorState
+  _get: () => ErrorState
 ): ErrorActions => ({
   setError: (feature, error) =>
     set((state) => ({

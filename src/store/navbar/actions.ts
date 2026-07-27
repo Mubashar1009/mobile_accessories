@@ -2,7 +2,7 @@ import type { NavbarActions, NavbarState } from "@/types/store/navbar";
 
 export const createNavbarActions = (
   set: (partial: Partial<NavbarState> | ((state: NavbarState) => Partial<NavbarState>)) => void,
-  get: () => NavbarState
+  _get: () => NavbarState
 ): NavbarActions => ({
   setMobileOpen: (mobileOpen) => set({ mobileOpen }),
   setSearchOpen: (searchOpen) => set({ searchOpen }),

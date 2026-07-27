@@ -1,7 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
-import type { Product } from "@/types/product";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ProductEditDialog } from "@/components/ProductEditDialog";
