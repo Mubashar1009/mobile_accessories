@@ -79,13 +79,12 @@ export function useAdminProductForm() {
       setLoading(true);
 
       const parsedPrice = parseFloat(price);
-      const parsedOriginalPrice = originalPrice ? parseFloat(originalPrice) : null;
 
       const validation = productSchema.safeParse({
         title,
         description: description || null,
         price: isNaN(parsedPrice) ? 0 : parsedPrice,
-        original_price: parsedOriginalPrice,
+        original_price: numOriginal || null,
         category,
         colors: colors || null,
         tag: tag || null,
