@@ -4,6 +4,7 @@ import { createAdminDashboardSlice } from "./adminDashboard/adminDashboardSlice"
 import { createAdminProductFormSlice } from "./adminProductForm/adminProductFormSlice";
 import { createCartSlice } from "./cart/cartSlice";
 import { createLoginModalSlice } from "./loginModal/loginModalSlice";
+import { createLoginSlice } from "./login/loginSlice";
 import { createNavbarSlice } from "./navbar/navbarSlice";
 import { createProductSlice } from "./product/productSlice";
 import { createProductCardSlice } from "./productCard/productCardSlice";
@@ -43,6 +44,10 @@ export const useRootStore = create<RootState>((set, get) => {
     loginModal: createLoginModalSlice(
       makeScopedSet("loginModal"),
       () => get().loginModal
+    ),
+    login: createLoginSlice(
+      makeScopedSet("login"),
+      () => get().login
     ),
     navbar: createNavbarSlice(
       makeScopedSet("navbar"),

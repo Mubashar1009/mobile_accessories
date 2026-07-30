@@ -2,6 +2,7 @@ import type { AdminDashboardSlice } from "./adminDashboard";
 import type { AdminProductFormSlice } from "./adminProductForm";
 import type { CartSlice } from "./cart";
 import type { LoginModalSlice } from "./loginModal";
+import type { LoginSlice } from "./login";
 import type { NavbarSlice } from "./navbar";
 import type { ProductSlice } from "./product";
 import type { ProductCardSlice } from "./productCard";
@@ -14,6 +15,7 @@ export interface RootState {
   adminProductForm: AdminProductFormSlice;
   cart: CartSlice;
   loginModal: LoginModalSlice;
+  login: LoginSlice;
   navbar: NavbarSlice;
   product: ProductSlice;
   productCard: ProductCardSlice;
