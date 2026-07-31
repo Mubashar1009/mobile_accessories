@@ -120,7 +120,7 @@ export function Navbar() {
                     <Box className="absolute right-0 mt-2 w-48 rounded-md border bg-popover p-1.5 shadow-md z-50">
                       <Box className="px-2 py-1.5 text-xs text-muted-foreground border-b mb-1 truncate font-medium">{userEmail}</Box>
                       {isAdmin && (
-                        <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-accent">
+                        <Link href="/dashboard" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-accent">
                           <Settings className="h-4 w-4 text-primary" /> Admin Panel
                         </Link>
                       )}
@@ -175,7 +175,7 @@ export function Navbar() {
               <Box className="space-y-1.5 py-1.5">
                 <Box className="px-2 text-xs text-muted-foreground truncate">Signed in: {userEmail}</Box>
                 {isAdmin && (
-                  <Link href="/admin" className="flex items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-accent" onClick={() => setMobileOpen(false)}>
+                  <Link href="/dashboard" className="flex items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-accent" onClick={() => setMobileOpen(false)}>
                     Admin Panel <ChevronRight className="h-4 w-4" />
                   </Link>
                 )}

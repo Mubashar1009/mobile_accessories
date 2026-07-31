@@ -58,7 +58,7 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
             Manage your Al-Rehman product catalog
           </Paragraph>
         </Box>
-        <Link href="/admin/products/new">
+        <Link href="/dashboard/products/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Product
@@ -101,7 +101,7 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
               {products.length}
             </Box>
           </Flex>
-          <Link href="/admin/products/new">
+          <Link href="/dashboard/products/new">
             <Button size="sm" variant="outline" className="gap-1.5 text-xs">
               <Plus className="h-3.5 w-3.5" />
               Add

@@ -34,13 +34,13 @@ export default async function HomePage() {
             </div>
             <div className="flex items-center gap-2.5">
               <Link
-                href="/admin"
+                href="/dashboard"
                 className="rounded bg-zinc-900 px-3 py-1 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors border border-zinc-800"
               >
                 Dashboard
               </Link>
               <Link
-                href="/admin/products/new"
+                href="/dashboard/products/new"
                 className="rounded bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary/95 transition-all shadow-sm"
               >
                 + Add Product

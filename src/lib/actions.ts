@@ -29,18 +29,23 @@ async function verifyAdmin(supabase: Awaited<ReturnType<typeof createClient>>): 
 
 // ── Fetch all products ──────────────────────────────────────────────────
 export async function getProducts() {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching products:", error.message);
+    if (error) {
+      console.error("Error fetching products:", error.message);
+      return [];
+    }
+
+    return data ?? [];
+  } catch (err) {
+    console.error("Failed to fetch products:", err);
     return [];
   }
-
-  return data;
 }
 
 // ── Create a product with image upload to Supabase Storage ──────────────
@@ -110,7 +115,7 @@ export async function createProduct(
     return { error: `Failed to create product: ${insertError.message}` };
   }
 
-  revalidatePath("/admin");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 
@@ -193,7 +198,7 @@ export async function updateProduct(
     return { error: `Failed to update product: ${updateError.message}` };
   }
 
-  revalidatePath("/admin");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 
@@ -212,7 +217,7 @@ export async function toggleOutOfStock(id: string, currentStatus: boolean) {
     return { error: `Failed to toggle status: ${error.message}` };
   }
 
-  revalidatePath("/admin");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 
@@ -248,7 +253,7 @@ export async function deleteProduct(id: string) {
     }
   }
 
-  revalidatePath("/admin");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 

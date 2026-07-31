@@ -131,7 +131,7 @@ export function useAdminProductForm() {
 
         resetForm();
         if (fileInputRef.current) fileInputRef.current.value = "";
-        router.push("/admin");
+        router.push("/dashboard");
         router.refresh();
       } catch {
         setError("An unexpected error occurred.");

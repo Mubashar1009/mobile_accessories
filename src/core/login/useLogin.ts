@@ -121,7 +121,7 @@ export function useLogin() {
 
         // 3. Admin confirmed — go to dashboard
         resetForm();
-        router.push("/admin");
+        router.push("/dashboard");
         router.refresh();
       } catch (err) {
         setServerError(
