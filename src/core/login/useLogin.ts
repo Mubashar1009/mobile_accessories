@@ -4,11 +4,7 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLoginStore } from "@/store/login/useLoginStore";
 import { loginSchema } from "@/types/login/schema";
-
-function isPlaceholderSupabase(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  return !url || url.includes("your-project-id") || url === "https://.supabase.co";
-}
+import { createClient } from "@/utils/supabase/client";
 
 export function useLogin() {
   const router = useRouter();
@@ -82,29 +78,48 @@ export function useLogin() {
       setLoading(true);
 
       try {
-        const adminEmails = (
-          process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@example.com,admin2@example.com"
-        ).split(",");
+        const supabase = createClient();
 
-        if (isPlaceholderSupabase()) {
-          if (adminEmails.includes(result.data.email.trim())) {
-            document.cookie = `mock-admin-session=${encodeURIComponent(
-              result.data.email.trim()
-            )}; path=/; max-age=86400`;
-            resetForm();
-            router.push("/admin");
-            router.refresh();
+        // 1. Authenticate with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email: result.data.email.trim(),
+          password: result.data.password,
+        });
+
+        if (authError) {
+          if (authError.message.toLowerCase().includes("invalid login credentials")) {
+            setServerError("Incorrect email or password. Please try again.");
+          } else if (authError.message.toLowerCase().includes("email not confirmed")) {
+            setServerError(
+              "Please confirm your email address before signing in. Check your inbox for the invite link."
+            );
           } else {
-            setServerError("Access denied: you are not authorized as an administrator.");
+            setServerError(authError.message);
           }
           return;
         }
 
-        // Real Supabase auth would go here
-        // const supabase = createClient();
-        // const { error } = await supabase.auth.signInWithPassword(result.data);
-        // if (error) throw error;
+        // 2. Check role in public.users (set by the on_auth_user_created trigger in 003 migration)
+        const { data: userRow, error: roleError } = await supabase
+          .from("users")
+          .select("role")
+          .eq("id", authData.user.id)
+          .single();
 
+        if (roleError || !userRow) {
+          // Sign out to avoid a half-authenticated state
+          await supabase.auth.signOut();
+          setServerError("Could not verify your account. Please contact support.");
+          return;
+        }
+
+        if (userRow.role !== "admin") {
+          await supabase.auth.signOut();
+          setServerError("Access denied: your account does not have administrator privileges.");
+          return;
+        }
+
+        // 3. Admin confirmed — go to dashboard
         resetForm();
         router.push("/admin");
         router.refresh();

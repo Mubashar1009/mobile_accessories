@@ -4,40 +4,28 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { productSchema, type ProductInput } from "@/types/product";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function verifyAdmin(_supabase: Awaited<ReturnType<typeof createClient>>) {
-  // Temporary bypass for testing: anyone can perform actions
-  return true;
-
-  /*
-  const adminEmails = (
-    process.env.ADMIN_EMAILS || "admin@example.com,admin2@example.com"
-  ).split(",");
-
-  // Check mock session cookie for local offline fallback
+/**
+ * Verifies that the caller is an authenticated admin.
+ * Checks public.users.role which is set by the on_auth_user_created
+ * trigger defined in 003_admin_setup.sql.
+ */
+async function verifyAdmin(supabase: Awaited<ReturnType<typeof createClient>>): Promise<boolean> {
   try {
-    const cookieStore = await cookies();
-    const mockCookie = cookieStore.get("mock-admin-session")?.value;
-    if (mockCookie && adminEmails.includes(mockCookie)) {
-      return true;
-    }
-  } catch {
-    // Ignore and proceed to supabase check
-  }
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) return false;
 
-  // Production check against Supabase session
-  try {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (!error && user && user.email && adminEmails.includes(user.email)) {
-      return true;
-    }
-  } catch {
-    // Ignore and fall back to false
-  }
+    const { data: userRow, error: roleError } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single();
 
-  return false;
-  */
+    return !roleError && userRow?.role === "admin";
+  } catch {
+    return false;
+  }
 }
+
 
 // ── Fetch all products ──────────────────────────────────────────────────
 export async function getProducts() {
