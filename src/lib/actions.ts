@@ -4,6 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { productSchema, type ProductInput } from "@/types/product";
 
+import { UserRole } from "@/types/enums/roles";
+
 /**
  * Verifies that the caller is an authenticated admin.
  * Checks public.users.role which is set by the on_auth_user_created
@@ -20,7 +22,7 @@ async function verifyAdmin(supabase: Awaited<ReturnType<typeof createClient>>): 
       .eq("id", user.id)
       .single();
 
-    return !roleError && userRow?.role === "admin";
+    return !roleError && userRow?.role === UserRole.ADMIN;
   } catch {
     return false;
   }

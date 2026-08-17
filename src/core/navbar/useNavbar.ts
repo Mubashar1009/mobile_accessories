@@ -3,6 +3,9 @@
 import { useCallback, useEffect } from "react";
 import { useNavbarStore } from "@/store/navbar/useNavbarStore";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { AppRoutes } from "@/types/enums/routes";
+import { UserRole } from "@/types/enums/roles";
 
 const announcements = ["New Arrivals — Shop the Latest Collection Now"];
 
@@ -29,20 +32,23 @@ export function useNavbar() {
   } = useNavbarStore();
 
   const checkSession = useCallback(async () => {
-    const adminEmails = (
-      process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@example.com,admin2@example.com"
-    ).split(",");
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
 
-    const mockEmail =
-      typeof document !== "undefined"
-        ? document.cookie.match(/(^|;)\s*mock-admin-session\s*=\s*([^;]+)/)?.[2]
-        : null;
+      if (user) {
+        setUserEmail(user.email ?? null);
+        const { data: userRow } = await supabase
+          .from("users")
+          .select("role")
+          .eq("id", user.id)
+          .single();
 
-    if (mockEmail) {
-      const decoded = decodeURIComponent(mockEmail);
-      setUserEmail(decoded);
-      setIsAdmin(adminEmails.includes(decoded));
-      return;
+        setIsAdmin(userRow?.role === UserRole.ADMIN);
+        return;
+      }
+    } catch {
+      // ignore
     }
 
     setUserEmail(null);
@@ -50,8 +56,11 @@ export function useNavbar() {
   }, [setUserEmail, setIsAdmin]);
 
   const handleLogout = useCallback(async () => {
-    if (typeof document !== "undefined") {
-      document.cookie = "mock-admin-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch {
+      // ignore
     }
     setUserEmail(null);
     setIsAdmin(false);
@@ -63,7 +72,7 @@ export function useNavbar() {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (searchQuery.trim()) {
-        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+        router.push(`${AppRoutes.SEARCH}?q=${encodeURIComponent(searchQuery.trim())}`);
         setSearchOpen(false);
         setSearchQuery("");
       }

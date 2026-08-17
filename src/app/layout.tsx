@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { ProductProvider } from "@/components/ProductProvider";
 import { CartProvider } from "@/components/CartProvider";
 import "./globals.css";
@@ -41,7 +42,9 @@ export default function RootLayout({
         <ProductProvider>
           <CartProvider>{children}</CartProvider>
         </ProductProvider>
-        <script
+        <Script
+          id="service-worker-handler"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html:
               process.env.NODE_ENV === "production"

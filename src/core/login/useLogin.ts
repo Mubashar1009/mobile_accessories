@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useLoginStore } from "@/store/login/useLoginStore";
 import { loginSchema } from "@/types/login/schema";
 import { createClient } from "@/utils/supabase/client";
+import { UserRole } from "@/types/enums/roles";
+import { AppRoutes } from "@/types/enums/routes";
 
 export function useLogin() {
   const router = useRouter();
@@ -113,7 +115,7 @@ export function useLogin() {
           return;
         }
 
-        if (userRow.role !== "admin") {
+        if (userRow.role !== UserRole.ADMIN) {
           await supabase.auth.signOut();
           setServerError("Access denied: your account does not have administrator privileges.");
           return;
@@ -121,7 +123,7 @@ export function useLogin() {
 
         // 3. Admin confirmed — go to dashboard
         resetForm();
-        router.push("/dashboard");
+        router.push(AppRoutes.DASHBOARD);
         router.refresh();
       } catch (err) {
         setServerError(
