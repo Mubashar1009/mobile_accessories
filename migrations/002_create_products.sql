@@ -66,32 +66,20 @@ CREATE POLICY "Products are publicly readable"
 CREATE POLICY "Admins can insert products"
   ON public.products
   FOR INSERT
-  WITH CHECK (
-    auth.role() = 'authenticated'
-    AND auth.jwt() ->> 'email' = 'admin@example.com'
-  );
+  WITH CHECK (public.is_admin());
 
 -- Only authenticated admins can update products
 CREATE POLICY "Admins can update products"
   ON public.products
   FOR UPDATE
-  USING (
-    auth.role() = 'authenticated'
-    AND auth.jwt() ->> 'email' = 'admin@example.com'
-  )
-  WITH CHECK (
-    auth.role() = 'authenticated'
-    AND auth.jwt() ->> 'email' = 'admin@example.com'
-  );
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- Only authenticated admins can delete products
 CREATE POLICY "Admins can delete products"
   ON public.products
   FOR DELETE
-  USING (
-    auth.role() = 'authenticated'
-    AND auth.jwt() ->> 'email' = 'admin@example.com'
-  );
+  USING (public.is_admin());
 
 -- =====================================================
 -- STORAGE BUCKET: product-images
@@ -111,9 +99,7 @@ CREATE POLICY "Admins can upload product images"
   ON storage.objects
   FOR INSERT
   WITH CHECK (
-    bucket_id = 'product-images'
-    AND auth.role() = 'authenticated'
-    AND auth.jwt() ->> 'email' = 'admin@example.com'
+    bucket_id = 'product-images' AND public.is_admin()
   );
 
 -- Admins can update product images
@@ -121,9 +107,7 @@ CREATE POLICY "Admins can update product images"
   ON storage.objects
   FOR UPDATE
   USING (
-    bucket_id = 'product-images'
-    AND auth.role() = 'authenticated'
-    AND auth.jwt() ->> 'email' = 'admin@example.com'
+    bucket_id = 'product-images' AND public.is_admin()
   );
 
 -- Admins can delete product images
@@ -131,9 +115,7 @@ CREATE POLICY "Admins can delete product images"
   ON storage.objects
   FOR DELETE
   USING (
-    bucket_id = 'product-images'
-    AND auth.role() = 'authenticated'
-    AND auth.jwt() ->> 'email' = 'admin@example.com'
+    bucket_id = 'product-images' AND public.is_admin()
   );
 
 -- =====================================================
@@ -165,7 +147,8 @@ CREATE INDEX IF NOT EXISTS idx_products_on_discount     ON public.products (disc
 --   ) STORED;
 -- ALTER TABLE public.products ADD COLUMN IF NOT EXISTS tag TEXT;
 
--- DOWN
+-- DOWN (Rollback Section — Safe: Commented out for manual SQL Editor runs)
+/*
 DROP INDEX IF EXISTS idx_products_on_discount;
 DROP INDEX IF EXISTS idx_products_in_stock;
 DROP INDEX IF EXISTS idx_products_is_out_of_stock;
@@ -173,3 +156,4 @@ DROP INDEX IF EXISTS idx_products_category;
 DROP INDEX IF EXISTS idx_products_created_at;
 DROP TABLE IF EXISTS public.products;
 DROP TYPE  IF EXISTS public.product_category;
+*/

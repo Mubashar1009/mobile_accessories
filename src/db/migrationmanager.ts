@@ -71,12 +71,37 @@ export class MigrationManager {
     if (config.adapter) {
       this.adapter = config.adapter;
     } else {
-      if (!process.env.DATABASE_URL) {
+      let connectionString = process.env.DATABASE_URL;
+
+      // If DATABASE_URL is an HTTP URL or missing, try auto-building from project ref & password
+      const httpUrl = (connectionString && connectionString.startsWith("http"))
+        ? connectionString
+        : process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+      if (httpUrl) {
+        const urlMatch = httpUrl.match(/https?:\/\/([^.]+)\.supabase\.co/);
+        if (urlMatch && urlMatch[1]) {
+          const projectRef = urlMatch[1];
+          const dbPassword = process.env.SUPABASE_DB_PASSWORD || process.env.DB_PASSWORD;
+          if (dbPassword) {
+            connectionString = `postgresql://postgres:${encodeURIComponent(dbPassword)}@db.${projectRef}.supabase.co:5432/postgres`;
+          } else if (connectionString?.startsWith("http")) {
+            connectionString = undefined;
+          }
+        }
+      }
+
+      if (!connectionString || connectionString.startsWith("http")) {
         throw new Error(
-          "❌ DATABASE_URL is not set in .env — ya phir apna custom adapter pass karo"
+          "❌ Missing or invalid database connection string!\n\n" +
+          "   Option 1: Set DATABASE_URL in your .env file:\n" +
+          "             DATABASE_URL=postgresql://postgres:[PASSWORD]@db.nmqsphhmfxqhvxoagmnx.supabase.co:5432/postgres\n\n" +
+          "   Option 2: Add your database password to .env:\n" +
+          "             NEXT_PUBLIC_SUPABASE_URL=https://nmqsphhmfxqhvxoagmnx.supabase.co\n" +
+          "             SUPABASE_DB_PASSWORD=your_database_password"
         );
       }
-      this.adapter = new PostgresAdapter(process.env.DATABASE_URL);
+      this.adapter = new PostgresAdapter(connectionString);
     }
 
     this.migrationsPath = path.resolve(config.migrationsPath ?? "./migrations");
@@ -166,16 +191,11 @@ export class MigrationManager {
   // ─── Parse SQL UP / DOWN Sections ───────────
 
   private parseSql(sql: string): { upSQL: string; downSQL: string | null } {
-    if (sql.includes("-- UP") && sql.includes("-- DOWN")) {
-      const parts = sql.split("-- DOWN");
-      return {
-        upSQL: parts[0].replace("-- UP", "").trim(),
-        downSQL: parts[1].trim(),
-      };
-    }
     if (sql.includes("-- DOWN")) {
       const parts = sql.split("-- DOWN");
-      return { upSQL: parts[0].trim(), downSQL: parts[1].trim() };
+      const upSQL = parts[0].replace("-- UP", "").trim();
+      const downSQL = parts[1].replace(/\/\*|\*\//g, "").trim();
+      return { upSQL, downSQL: downSQL.length > 0 ? downSQL : null };
     }
     return { upSQL: sql.replace("-- UP", "").trim(), downSQL: null };
   }

@@ -51,16 +51,28 @@ CREATE POLICY "Users can update own profile"
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
+-- =====================================================
+-- HELPER FUNCTION: is_admin()
+-- Returns true if the caller is an authenticated admin
+-- =====================================================
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid() AND role = 'admin'::public.user_role
+  );
+$$;
+
 -- Admins have full read access to all users
 CREATE POLICY "Admins can view all users"
   ON public.users
   FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.users u
-      WHERE u.id = auth.uid() AND u.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- =====================================================
 -- INDEXES
@@ -68,8 +80,11 @@ CREATE POLICY "Admins can view all users"
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON public.users (email);
 CREATE        INDEX IF NOT EXISTS idx_users_role  ON public.users (role);
 
--- DOWN
+-- DOWN (Rollback Section — Safe: Commented out for manual SQL Editor runs)
+/*
 DROP TRIGGER  IF EXISTS users_set_updated_at ON public.users;
 DROP FUNCTION IF EXISTS public.set_updated_at();
+DROP FUNCTION IF EXISTS public.is_admin() CASCADE;
 DROP TABLE    IF EXISTS public.users;
 DROP TYPE     IF EXISTS public.user_role;
+*/

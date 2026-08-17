@@ -42,24 +42,38 @@ CREATE POLICY "Products are publicly readable"
   FOR SELECT
   USING (true);
 
+-- Helper function to check admin role
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid() AND role = 'admin'::public.user_role
+  );
+$$;
+
 -- Authenticated admins can insert products
 CREATE POLICY "Authenticated admins can insert products"
   ON public.products
   FOR INSERT
-  WITH CHECK (auth.role() = 'authenticated' AND auth.jwt() ->> 'email' = 'admin@example.com');
+  WITH CHECK (public.is_admin());
 
 -- Authenticated admins can update products
 CREATE POLICY "Authenticated admins can update products"
   ON public.products
   FOR UPDATE
-  USING (auth.role() = 'authenticated' AND auth.jwt() ->> 'email' = 'admin@example.com')
-  WITH CHECK (auth.role() = 'authenticated' AND auth.jwt() ->> 'email' = 'admin@example.com');
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- Authenticated admins can delete products
 CREATE POLICY "Authenticated admins can delete products"
   ON public.products
   FOR DELETE
-  USING (auth.role() = 'authenticated' AND auth.jwt() ->> 'email' = 'admin@example.com');
+  USING (public.is_admin());
 
 -- ==========================================
 -- 3. CREATE THE PRODUCT-IMAGES STORAGE BUCKET
@@ -82,19 +96,19 @@ CREATE POLICY "Product images are publicly accessible"
 CREATE POLICY "Authenticated admins can upload product images"
   ON storage.objects
   FOR INSERT
-  WITH CHECK (bucket_id = 'product-images' AND auth.role() = 'authenticated' AND auth.jwt() ->> 'email' = 'admin@example.com');
+  WITH CHECK (bucket_id = 'product-images' AND public.is_admin());
 
 -- Authenticated admins can update product images
 CREATE POLICY "Authenticated admins can update product images"
   ON storage.objects
   FOR UPDATE
-  USING (bucket_id = 'product-images' AND auth.role() = 'authenticated' AND auth.jwt() ->> 'email' = 'admin@example.com');
+  USING (bucket_id = 'product-images' AND public.is_admin());
 
 -- Authenticated admins can delete product images
 CREATE POLICY "Authenticated admins can delete product images"
   ON storage.objects
   FOR DELETE
-  USING (bucket_id = 'product-images' AND auth.role() = 'authenticated' AND auth.jwt() ->> 'email' = 'admin@example.com');
+  USING (bucket_id = 'product-images' AND public.is_admin());
 
 -- ==========================================
 -- 5. INDEX FOR PERFORMANCE
