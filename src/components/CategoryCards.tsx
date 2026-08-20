@@ -23,34 +23,62 @@ const categories = [
 export function CategoryCards() {
   return (
     <Box as="section" id="categories" className="bg-background">
-      <Box className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+      <Box className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         <ScrollReveal>
-          <Flex align="end" justify="between" className="mb-8">
+          <Flex align="end" justify="between" className="mb-6 sm:mb-8">
             <Box>
-              <Heading level="h2" className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+              <Heading level="h2" className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                 Shop by Category
               </Heading>
-              <Paragraph className="mt-1 text-sm text-muted-foreground">Find exactly what you need</Paragraph>
+              <Paragraph className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                Browse our premium collection of accessories
+              </Paragraph>
             </Box>
-            <Link href="/search?q=" className="hidden items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary/80 sm:flex">
+            <Link
+              href="/search?q="
+              className="hidden items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary/80 sm:flex"
+            >
               View All <ArrowRight className="h-4 w-4" />
             </Link>
           </Flex>
         </ScrollReveal>
 
-        <Grid cols={2} gap="sm" className="sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+        <Grid cols={2} gap="sm" className="gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {categories.map((cat, i) => (
-            <ScrollReveal key={cat.name} delay={i * 80}>
-              <Link href={cat.href} className="group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all hover:shadow-lg hover:-translate-y-0.5 block">
-                <Box className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${cat.lightBg}`}>
-                  <cat.icon className={`h-7 w-7 ${cat.textColor}`} />
-                </Box>
-                <Heading level="h3" className="text-lg font-bold text-foreground">{cat.name}</Heading>
-                <Paragraph className="mt-0.5 text-sm text-muted-foreground">{cat.count}</Paragraph>
-                <Flex align="center" gap="xs" className="mt-4 text-sm font-semibold text-primary opacity-0 transition-all group-hover:opacity-100">
-                  Shop Now <ArrowRight className="h-3.5 w-3.5" />
+            <ScrollReveal key={cat.name} delay={i * 60}>
+              <Link
+                href={cat.href}
+                className="group relative overflow-hidden rounded-2xl border bg-card/80 p-3.5 sm:p-5 transition-all duration-300 hover:shadow-md hover:border-primary/40 hover:-translate-y-1 block h-full flex flex-col justify-between"
+              >
+                <div>
+                  <Box
+                    className={`mb-2.5 sm:mb-3 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 ${cat.lightBg}`}
+                  >
+                    <cat.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${cat.textColor}`} />
+                  </Box>
+                  <Heading
+                    level="h3"
+                    className="text-xs sm:text-base font-bold text-foreground leading-snug tracking-tight"
+                  >
+                    {cat.name}
+                  </Heading>
+                  <Paragraph className="mt-0.5 text-[11px] sm:text-xs font-medium text-muted-foreground">
+                    {cat.count}
+                  </Paragraph>
+                </div>
+
+                <Flex
+                  align="center"
+                  gap="xs"
+                  className="mt-3 text-xs font-semibold text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100 hidden sm:flex"
+                >
+                  Explore <ArrowRight className="h-3 w-3" />
                 </Flex>
-                <Box className={`absolute -bottom-6 -right-6 h-24 w-24 rounded-full ${cat.bg} opacity-10 transition-opacity group-hover:opacity-20`} />
+
+                {/* Subtle Decorative Ambient Background Circle */}
+                <Box
+                  className={`absolute -bottom-4 -right-4 h-16 w-16 sm:h-20 sm:w-20 rounded-full ${cat.bg} opacity-10 transition-opacity duration-300 group-hover:opacity-20 pointer-events-none`}
+                />
               </Link>
             </ScrollReveal>
           ))}

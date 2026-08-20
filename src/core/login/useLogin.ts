@@ -101,29 +101,9 @@ export function useLogin() {
           return;
         }
 
-        // 2. Check role in public.users (set by the on_auth_user_created trigger in 003 migration)
-        const { data: userRow, error: roleError } = await supabase
-          .from("users")
-          .select("role")
-          .eq("id", authData.user.id)
-          .single();
-
-        if (roleError || !userRow) {
-          // Sign out to avoid a half-authenticated state
-          await supabase.auth.signOut();
-          setServerError("Could not verify your account. Please contact support.");
-          return;
-        }
-
-        if (userRow.role !== UserRole.ADMIN) {
-          await supabase.auth.signOut();
-          setServerError("Access denied: your account does not have administrator privileges.");
-          return;
-        }
-
-        // 3. Admin confirmed — go to dashboard
+        // 2. Login successful -> reset form & redirect to home by default
         resetForm();
-        router.push(AppRoutes.DASHBOARD);
+        router.push(AppRoutes.HOME);
         router.refresh();
       } catch (err) {
         setServerError(

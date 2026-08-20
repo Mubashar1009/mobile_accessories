@@ -26,8 +26,8 @@ import { AppRoutes } from "@/types/enums/routes";
 const featureChips = [
   {
     icon: ShoppingBag,
-    title: "Product Management",
-    sub: "Add, edit, and organise your catalog",
+    title: "Product Catalog",
+    sub: "Browse & shop latest mobile accessories",
     bg: "bg-emerald-500/10 text-emerald-400",
   },
   {
@@ -38,14 +38,14 @@ const featureChips = [
   },
   {
     icon: Wifi,
-    title: "Live Inventory",
-    sub: "Real-time stock updates",
+    title: "Live Stock",
+    sub: "Real-time stock updates & fast delivery",
     bg: "bg-indigo-500/10 text-indigo-400",
   },
   {
     icon: Battery,
-    title: "Order Tracking",
-    sub: "Monitor orders & generate invoices",
+    title: "Secure Account",
+    sub: "Protected authentication by Supabase",
     bg: "bg-amber-500/10 text-amber-400",
   },
 ];
@@ -66,7 +66,7 @@ export default function LoginPage() {
 
   return (
     <Box className="relative flex min-h-screen overflow-hidden bg-[#080c12] font-sans">
-      {/* Ambient background using Tailwind gradient utilities (no inline style) */}
+      {/* Ambient background */}
       <Box
         aria-hidden
         className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_80%_60%_at_20%_10%,rgba(16,185,129,0.18),transparent_60%)] animate-pulse"
@@ -82,24 +82,21 @@ export default function LoginPage() {
           <Box as="span" className="text-base font-bold tracking-tight text-slate-100">
             Al-Rehman Mobile Shop
           </Box>
-          <Box as="span" className="rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-emerald-400">
-            Admin
-          </Box>
         </Flex>
 
         {/* Hero text */}
         <Paragraph className="mb-5 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-400">
-          Admin Portal
+          Welcome Back
         </Paragraph>
         <Heading level="h1" className="mb-6 text-5xl font-extrabold leading-[1.08] tracking-tight text-slate-50">
-          Manage your
+          Sign in to your
           <br />
           <Box as="span" className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-            store with ease
+            account
           </Box>
         </Heading>
-        <Paragraph className="mb-14 max-w-sm text-base leading-relaxed text-slate-500">
-          Access the full admin workspace to manage products, orders, and analytics — all from one place.
+        <Paragraph className="mb-14 max-w-sm text-base leading-relaxed text-slate-400">
+          Access your personal account, shop top mobile accessories, or manage products if you are an administrator.
         </Paragraph>
 
         {/* Feature chips */}
@@ -116,7 +113,7 @@ export default function LoginPage() {
               </Flex>
               <Box>
                 <Paragraph className="text-sm font-semibold text-slate-200">{title}</Paragraph>
-                <Paragraph className="text-xs text-slate-500">{sub}</Paragraph>
+                <Paragraph className="text-xs text-slate-400">{sub}</Paragraph>
               </Box>
             </Flex>
           ))}
@@ -128,13 +125,13 @@ export default function LoginPage() {
         <Box className="w-full max-w-[400px] rounded-3xl border border-white/[0.08] bg-slate-900/70 p-10 shadow-[0_32px_80px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
           {/* Form header */}
           <Paragraph className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-400">
-            Secure Access
+            Account Sign In
           </Paragraph>
           <Heading level="h2" className="mb-2 text-3xl font-extrabold tracking-tight text-slate-100">
             Welcome back
           </Heading>
-          <Paragraph className="mb-9 text-sm leading-relaxed text-slate-500">
-            Sign in with your admin credentials to continue.
+          <Paragraph className="mb-9 text-sm leading-relaxed text-slate-400">
+            Enter your credentials to access your account.
           </Paragraph>
 
           {/* Server error */}
@@ -159,7 +156,7 @@ export default function LoginPage() {
                   id="login-email"
                   type="email"
                   autoComplete="email"
-                  placeholder="admin@example.com"
+                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => handleEmailChange(e.target.value)}
                   aria-invalid={!!fieldErrors.email}
@@ -226,21 +223,28 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  Sign in to Dashboard
+                  Sign In
                   <ArrowRight size={16} />
                 </>
               )}
             </Button>
           </form>
 
-          <Flex justify="center" className="mt-7">
+          {/* Links */}
+          <Box className="mt-7 flex flex-col items-center gap-3 text-center">
+            <Paragraph className="text-xs text-slate-400">
+              Don't have an account?{" "}
+              <Link href={AppRoutes.SIGNUP} className="font-semibold text-emerald-400 hover:underline">
+                Sign Up
+              </Link>
+            </Paragraph>
             <Link
               href={AppRoutes.HOME}
               className="text-xs text-slate-500 transition-colors hover:text-emerald-400"
             >
               ← Back to storefront
             </Link>
-          </Flex>
+          </Box>
         </Box>
       </Flex>
     </Box>

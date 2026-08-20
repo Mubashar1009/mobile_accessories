@@ -3,6 +3,7 @@ import type { AdminProductFormSlice } from "./adminProductForm";
 import type { CartSlice } from "./cart";
 import type { LoginModalSlice } from "./loginModal";
 import type { LoginSlice } from "./login";
+import type { SignupSlice } from "./signup";
 import type { NavbarSlice } from "./navbar";
 import type { ProductSlice } from "./product";
 import type { ProductCardSlice } from "./productCard";
@@ -16,6 +17,7 @@ export interface RootState {
   cart: CartSlice;
   loginModal: LoginModalSlice;
   login: LoginSlice;
+  signup: SignupSlice;
   navbar: NavbarSlice;
   product: ProductSlice;
   productCard: ProductCardSlice;
@@ -23,3 +25,4 @@ export interface RootState {
   productEditDialog: ProductEditDialogSlice;
   error: ErrorSlice;
 }
+

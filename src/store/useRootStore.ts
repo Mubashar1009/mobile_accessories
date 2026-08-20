@@ -5,6 +5,7 @@ import { createAdminProductFormSlice } from "./adminProductForm/adminProductForm
 import { createCartSlice } from "./cart/cartSlice";
 import { createLoginModalSlice } from "./loginModal/loginModalSlice";
 import { createLoginSlice } from "./login/loginSlice";
+import { createSignupSlice } from "./signup/signupSlice";
 import { createNavbarSlice } from "./navbar/navbarSlice";
 import { createProductSlice } from "./product/productSlice";
 import { createProductCardSlice } from "./productCard/productCardSlice";
@@ -48,6 +49,10 @@ export const useRootStore = create<RootState>((set, get) => {
     login: createLoginSlice(
       makeScopedSet("login"),
       () => get().login
+    ),
+    signup: createSignupSlice(
+      makeScopedSet("signup"),
+      () => get().signup
     ),
     navbar: createNavbarSlice(
       makeScopedSet("navbar"),

@@ -3,6 +3,7 @@ export enum AppRoutes {
   DASHBOARD = "/dashboard",
   CREATE_PRODUCT = "/dashboard/products/new",
   LOGIN = "/login",
+  SIGNUP = "/signup",
   CART = "/cart",
   SEARCH = "/search",
   EARBUDS = "/earbuds",
@@ -14,3 +15,4 @@ export enum AppRoutes {
   PARTS = "/parts",
   CABLES = "/cables",
 }
+
