@@ -233,7 +233,7 @@ export default function LoginPage() {
           {/* Links */}
           <Box className="mt-7 flex flex-col items-center gap-3 text-center">
             <Paragraph className="text-xs text-slate-400">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href={AppRoutes.SIGNUP} className="font-semibold text-emerald-400 hover:underline">
                 Sign Up
               </Link>

@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSignupStore } from "@/store/signup/useSignupStore";
 import { signupSchema } from "@/types/signup/schema";
+import { signupUserAction } from "@/lib/auth-actions";
 import { createClient } from "@/utils/supabase/client";
 import { AppRoutes } from "@/types/enums/routes";
 
@@ -107,42 +108,36 @@ export function useSignup() {
       setLoading(true);
 
       try {
-        const supabase = createClient();
-
-        // Sign up user via Supabase Auth
-        // Role defaults to 'user' automatically in public.users via the DB trigger handle_new_auth_user
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        // Sign up with encrypted password storage via server action
+        const actionResult = await signupUserAction({
+          name: result.data.name.trim(),
           email: result.data.email.trim(),
           password: result.data.password,
-          options: {
-            data: {
-              full_name: result.data.name.trim(),
-            },
-          },
+          confirmPassword: result.data.confirmPassword,
         });
 
-        if (authError) {
-          if (authError.message.toLowerCase().includes("user already registered")) {
-            setServerError("An account with this email already exists. Please sign in instead.");
-          } else {
-            setServerError(authError.message);
-          }
+        if (actionResult.error) {
+          setServerError(actionResult.error);
           return;
         }
 
-        // If auto-confirm is enabled or session returned directly
-        if (authData.session) {
-          resetForm();
+        // Also sign in browser client if session available
+        try {
+          const supabase = createClient();
+          await supabase.auth.signInWithPassword({
+            email: result.data.email.trim(),
+            password: result.data.password,
+          });
+        } catch {
+          // Ignored if confirmation email required
+        }
+
+        setSuccessMessage("Account created successfully! Redirecting...");
+        resetForm();
+        setTimeout(() => {
           router.push(AppRoutes.HOME);
           router.refresh();
-        } else if (authData.user) {
-          setSuccessMessage("Account created successfully! Redirecting to home...");
-          resetForm();
-          setTimeout(() => {
-            router.push(AppRoutes.HOME);
-            router.refresh();
-          }, 1500);
-        }
+        }, 1200);
       } catch (err) {
         setServerError(
           err instanceof Error ? err.message : "An unexpected error occurred. Please try again."

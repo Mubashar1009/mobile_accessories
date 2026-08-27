@@ -3,11 +3,8 @@
 import { useCallback } from "react";
 import { useLoginModalStore } from "@/store/loginModal/useLoginModalStore";
 import { useRouter } from "next/navigation";
-
-function isPlaceholderSupabase(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  return !url || url.includes("your-project-id") || url === "https://.supabase.co";
-}
+import { env, isPlaceholderSupabase } from "@/config/env";
+import { loginUserAction } from "@/lib/auth-actions";
 
 export function useLoginModal(onOpenChange: (open: boolean) => void) {
   const router = useRouter();
@@ -31,12 +28,9 @@ export function useLoginModal(onOpenChange: (open: boolean) => void) {
       setLoading(true);
 
       try {
-        const adminEmails = (
-          process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@example.com,admin2@example.com"
-        ).split(",");
-
         if (isPlaceholderSupabase()) {
-          if (adminEmails.includes(email.trim())) {
+          const adminEmails = env.auth.adminEmails;
+          if (adminEmails.includes(email.trim().toLowerCase())) {
             document.cookie = `mock-admin-session=${encodeURIComponent(
               email.trim()
             )}; path=/; max-age=86400`;
@@ -49,6 +43,16 @@ export function useLoginModal(onOpenChange: (open: boolean) => void) {
             setLoading(false);
             return;
           }
+        }
+
+        const actionResult = await loginUserAction({
+          email: email.trim(),
+          password,
+        });
+
+        if (actionResult.error) {
+          setError(actionResult.error);
+          return;
         }
 
         resetForm();
@@ -64,7 +68,7 @@ export function useLoginModal(onOpenChange: (open: boolean) => void) {
         setLoading(false);
       }
     },
-    [email, setError, setLoading, resetForm, onOpenChange, router]
+    [email, password, setError, setLoading, resetForm, onOpenChange, router]
   );
 
   return {

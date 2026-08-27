@@ -10,10 +10,7 @@ import {
 } from "@/lib/db";
 import { dbProductSchema, type Product } from "@/types/product";
 
-function isPlaceholderSupabase(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  return !url || url.includes("your-project-id") || url === "https://.supabase.co";
-}
+import { isPlaceholderSupabase } from "@/config/env";
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {

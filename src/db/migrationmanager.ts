@@ -95,9 +95,9 @@ export class MigrationManager {
         throw new Error(
           "❌ Missing or invalid database connection string!\n\n" +
           "   Option 1: Set DATABASE_URL in your .env file:\n" +
-          "             DATABASE_URL=postgresql://postgres:[PASSWORD]@db.nmqsphhmfxqhvxoagmnx.supabase.co:5432/postgres\n\n" +
+          "             DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres\n\n" +
           "   Option 2: Add your database password to .env:\n" +
-          "             NEXT_PUBLIC_SUPABASE_URL=https://nmqsphhmfxqhvxoagmnx.supabase.co\n" +
+          "             NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_REF].supabase.co\n" +
           "             SUPABASE_DB_PASSWORD=your_database_password"
         );
       }

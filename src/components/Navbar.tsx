@@ -14,7 +14,6 @@ import {
   PlusCircle,
   LogIn,
   UserPlus,
-  ShieldAlert,
 } from "lucide-react";
 import { useCart } from "@/core/cart/useCart";
 import { useNavbar } from "@/core/navbar/useNavbar";

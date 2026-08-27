@@ -65,7 +65,7 @@ export default function CartPage() {
             </div>
             <h2 className="text-2xl font-bold text-foreground tracking-tight">Your Cart is Empty</h2>
             <p className="text-sm text-muted-foreground mt-2 max-w-xs leading-relaxed">
-              Looks like you haven't added any mobile accessories to your cart yet.
+              Looks like you haven&apos;t added any mobile accessories to your cart yet.
             </p>
             <Link href={AppRoutes.HOME} className="mt-7 w-full max-w-xs">
               <Button className="w-full rounded-xl py-6 font-bold cursor-pointer bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-md shadow-emerald-500/20 transition-all">

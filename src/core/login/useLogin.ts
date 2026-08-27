@@ -4,8 +4,8 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLoginStore } from "@/store/login/useLoginStore";
 import { loginSchema } from "@/types/login/schema";
+import { loginUserAction } from "@/lib/auth-actions";
 import { createClient } from "@/utils/supabase/client";
-import { UserRole } from "@/types/enums/roles";
 import { AppRoutes } from "@/types/enums/routes";
 
 export function useLogin() {
@@ -80,28 +80,29 @@ export function useLogin() {
       setLoading(true);
 
       try {
-        const supabase = createClient();
-
-        // 1. Authenticate with Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        // 1. Authenticate and verify encrypted password matching via server action
+        const actionResult = await loginUserAction({
           email: result.data.email.trim(),
           password: result.data.password,
         });
 
-        if (authError) {
-          if (authError.message.toLowerCase().includes("invalid login credentials")) {
-            setServerError("Incorrect email or password. Please try again.");
-          } else if (authError.message.toLowerCase().includes("email not confirmed")) {
-            setServerError(
-              "Please confirm your email address before signing in. Check your inbox for the invite link."
-            );
-          } else {
-            setServerError(authError.message);
-          }
+        if (actionResult.error) {
+          setServerError(actionResult.error);
           return;
         }
 
-        // 2. Login successful -> reset form & redirect to home by default
+        // 2. Establish client session in browser
+        try {
+          const supabase = createClient();
+          await supabase.auth.signInWithPassword({
+            email: result.data.email.trim(),
+            password: result.data.password,
+          });
+        } catch {
+          // Session already handled by server action cookies
+        }
+
+        // 3. Login successful -> reset form & redirect to home by default
         resetForm();
         router.push(AppRoutes.HOME);
         router.refresh();
