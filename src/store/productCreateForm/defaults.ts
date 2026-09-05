@@ -5,6 +5,7 @@ export const defaultProductCreateFormState: ProductCreateFormState = {
   error: null,
   imagePreview: null,
   title: "",
+  category: "earbuds",
   description: "",
   price: "",
   isOutOfStock: false,

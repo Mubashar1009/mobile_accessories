@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { Toaster } from "sonner";
 import { ProductProvider } from "@/components/ProductProvider";
 import { CartProvider } from "@/components/CartProvider";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default function RootLayout({
         <ProductProvider>
           <CartProvider>{children}</CartProvider>
         </ProductProvider>
+        <Toaster position="top-center" richColors closeButton />
         <Script
           id="service-worker-handler"
           strategy="afterInteractive"

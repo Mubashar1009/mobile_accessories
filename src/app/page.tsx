@@ -5,7 +5,7 @@ import { CategoryCards } from "@/components/CategoryCards";
 import { Storefront } from "@/components/Storefront";
 import { QualityShowcase } from "@/components/QualityShowcase";
 import { Footer } from "@/components/Footer";
-import { checkIsAdmin } from "@/lib/auth";
+import { checkIsAdmin } from "@/lib/authz";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
 import { Button } from "@/components/ui/button";
