@@ -4,6 +4,8 @@ export enum AppRoutes {
   CREATE_PRODUCT = "/dashboard/products/new",
   LOGIN = "/login",
   SIGNUP = "/signup",
+  FORGOT_PASSWORD = "/forgot-password",
+  UPDATE_PASSWORD = "/update-password",
   CART = "/cart",
   SEARCH = "/search",
   EARBUDS = "/earbuds",

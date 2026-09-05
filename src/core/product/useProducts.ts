@@ -2,19 +2,19 @@
 
 import { useCallback } from "react";
 import { useProductStore } from "@/store/product/useProductStore";
-import { createClient } from "@/utils/supabase/client";
+import { getProducts as getBackendProducts } from "@/app/actions/product.actions";
 import {
   saveProducts,
   getProducts as getIDBProducts,
   DEMO_PRODUCTS,
-} from "@/lib/db";
+} from "@/lib/offlineCache";
 import { dbProductSchema, type Product } from "@/types/product";
 
 import { isPlaceholderSupabase } from "@/config/env";
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error("Supabase fetch timed out")), ms);
+    const timer = setTimeout(() => reject(new Error("Product fetch timed out")), ms);
     promise
       .then((v) => {
         clearTimeout(timer);
@@ -65,7 +65,7 @@ export function useProducts() {
     const browserOffline = typeof navigator !== "undefined" ? !navigator.onLine : false;
 
     try {
-      // ── Step 1: Skip Supabase if config is placeholder ──
+      // ── Step 1: Skip the backend if config is placeholder ──
       if (isPlaceholderSupabase()) {
         const cached = await getIDBProducts();
         const validCached = validateProducts(cached);
@@ -80,7 +80,7 @@ export function useProducts() {
         return;
       }
 
-      // ── Step 2: Show cached data immediately while Supabase loads ──
+      // ── Step 2: Show cached data immediately while the backend loads ──
       const cached = await getIDBProducts();
       const validCached = validateProducts(cached);
       if (validCached.length > 0) {
@@ -89,50 +89,21 @@ export function useProducts() {
         setLoading(false);
       }
 
-      // ── Step 3: Fetch fresh data from Supabase (with 3s timeout) ──
-      const supabase = createClient();
-      const supabasePromise = supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
+      // ── Step 3: Fetch fresh data from the real backend (Core/ProductService,
+      // same path as the admin dashboard), with a 3s timeout ──
+      const data = await withTimeout(getBackendProducts(), 3000);
 
-      const { data, error } = await withTimeout(
-        new Promise((resolve) => resolve(supabasePromise)) as Promise<Awaited<typeof supabasePromise>>,
-        3000
-      );
-
-      if (!error && data) {
-        const validData = validateProducts(data);
-        if (validData.length > 0) {
-          saveProducts(validData).catch(() => {});
-          setProducts(validData);
-          setIsDemo(false);
-        } else {
-          const idbFallback = await getIDBProducts();
-          const validFallback = validateProducts(idbFallback);
-          if (validFallback.length > 0) {
-            setProducts(validFallback);
-            setIsDemo(false);
-          } else {
-            setProducts(DEMO_PRODUCTS);
-            setIsDemo(true);
-          }
-        }
-        setOffline(browserOffline);
-        return;
-      }
-
-      // ── Step 4: Supabase returned error ──
-      if (products === DEMO_PRODUCTS) {
-        const idbFallback = await getIDBProducts();
-        const validFallback = validateProducts(idbFallback);
-        setProducts(validFallback.length > 0 ? validFallback : DEMO_PRODUCTS);
-        setIsDemo(validFallback.length === 0);
-      }
+      // A successful response is authoritative even when it's empty — an
+      // empty catalog is a real state, not a reason to fall back to demo
+      // data (that fallback is reserved for when the fetch itself fails).
+      const validData = validateProducts(data);
+      saveProducts(validData).catch(() => {});
+      setProducts(validData);
+      setIsDemo(false);
       setOffline(browserOffline);
     } catch {
-      // Timeout or network error
-      if (products === DEMO_PRODUCTS) {
+      // Timeout or backend error
+      if (isDemo) {
         const cached = await getIDBProducts();
         const validCached = validateProducts(cached);
         setProducts(validCached.length > 0 ? validCached : DEMO_PRODUCTS);
@@ -143,14 +114,18 @@ export function useProducts() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [products, setProducts, setLoading, setRefreshing, setOffline, setIsDemo]);
+    // `isDemo` (a boolean) replaces a previous `products === DEMO_PRODUCTS`
+    // reference check — that depended on `products`, a fresh array on every
+    // successful fetch, which gave this callback a new identity every time
+    // it ran and re-triggered ProductProvider's `[fetchProducts]` effect,
+    // causing an unbounded refetch loop. `isDemo` is always set alongside
+    // `products` in every branch above, so it's an equivalent check that
+    // only changes when the demo/real-data status actually flips.
+  }, [isDemo, setProducts, setLoading, setRefreshing, setOffline, setIsDemo]);
 
   const refetch = useCallback(() => {
-    setProducts(DEMO_PRODUCTS);
-    setIsDemo(true);
-    setOffline(false);
     fetchProducts(false);
-  }, [setProducts, setIsDemo, setOffline, fetchProducts]);
+  }, [fetchProducts]);
 
   return {
     products,

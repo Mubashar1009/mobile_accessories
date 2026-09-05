@@ -1,5 +1,5 @@
 import { AdminProductForm } from "@/components/AdminProductForm";
-import { checkIsAdmin } from "@/lib/auth";
+import { checkIsAdmin } from "@/lib/authz";
 import { notFound } from "next/navigation";
 
 export const revalidate = 0;

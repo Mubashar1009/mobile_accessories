@@ -4,12 +4,12 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSignupStore } from "@/store/signup/useSignupStore";
 import { signupSchema } from "@/types/signup/schema";
-import { signupUserAction } from "@/lib/auth-actions";
-import { createClient } from "@/utils/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { AppRoutes } from "@/types/enums/routes";
 
 export function useSignup() {
   const router = useRouter();
+  const { signUp } = useAuth();
 
   const {
     name,
@@ -108,28 +108,18 @@ export function useSignup() {
       setLoading(true);
 
       try {
-        // Sign up with encrypted password storage via server action
-        const actionResult = await signupUserAction({
-          name: result.data.name.trim(),
-          email: result.data.email.trim(),
-          password: result.data.password,
-          confirmPassword: result.data.confirmPassword,
-        });
+        // Sign up (encrypted password storage + Supabase Auth, and
+        // establishes the browser client's own session) via useAuth().
+        const actionResult = await signUp(
+          result.data.name.trim(),
+          result.data.email.trim(),
+          result.data.password,
+          result.data.confirmPassword
+        );
 
         if (actionResult.error) {
           setServerError(actionResult.error);
           return;
-        }
-
-        // Also sign in browser client if session available
-        try {
-          const supabase = createClient();
-          await supabase.auth.signInWithPassword({
-            email: result.data.email.trim(),
-            password: result.data.password,
-          });
-        } catch {
-          // Ignored if confirmation email required
         }
 
         setSuccessMessage("Account created successfully! Redirecting...");
@@ -157,6 +147,7 @@ export function useSignup() {
       setLoading,
       resetForm,
       router,
+      signUp,
     ]
   );
 

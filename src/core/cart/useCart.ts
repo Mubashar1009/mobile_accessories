@@ -7,7 +7,7 @@ import {
   saveCartItem as saveIDBCartItem,
   deleteCartItem as deleteIDBCartItem,
   clearCart as clearIDBCart,
-} from "@/lib/db";
+} from "@/lib/offlineCache";
 import { cartItemSchema, type CartItem } from "@/types/cart";
 import { dbProductSchema, type Product } from "@/types/product";
 import { z } from "zod";

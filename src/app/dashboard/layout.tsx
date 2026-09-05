@@ -1,4 +1,4 @@
-import { checkIsAdmin } from "@/lib/auth";
+import { checkIsAdmin } from "@/lib/authz";
 import { notFound } from "next/navigation";
 import { AdminHeader } from "@/components/AdminHeader";
 
