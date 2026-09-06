@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import { Toaster } from "sonner";
 import { ProductProvider } from "@/components/ProductProvider";
 import { CartProvider } from "@/components/CartProvider";
+import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -44,16 +44,7 @@ export default function RootLayout({
           <CartProvider>{children}</CartProvider>
         </ProductProvider>
         <Toaster position="top-center" richColors closeButton />
-        <Script
-          id="service-worker-handler"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html:
-              process.env.NODE_ENV === "production"
-                ? `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(()=>{});})}`
-                : `if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){for(let reg of regs){reg.unregister();}}).catch(()=>{});}if('caches' in window){caches.keys().then(function(names){for(let name of names){caches.delete(name);}}).catch(()=>{});}`,
-          }}
-        />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

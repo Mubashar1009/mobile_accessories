@@ -8,8 +8,9 @@ import {
   getProducts as getIDBProducts,
   DEMO_PRODUCTS,
 } from "@/lib/offlineCache";
+import { syncItems } from "@/lib/offlineSearchIndex";
+import { PRODUCT_SEARCH_FIELDS } from "@/core/product/productSearchFields";
 import { dbProductSchema, type Product } from "@/types/product";
-
 import { isPlaceholderSupabase } from "@/config/env";
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -98,6 +99,7 @@ export function useProducts() {
       // data (that fallback is reserved for when the fetch itself fails).
       const validData = validateProducts(data);
       saveProducts(validData).catch(() => {});
+      syncItems(validData, PRODUCT_SEARCH_FIELDS).catch(() => {});
       setProducts(validData);
       setIsDemo(false);
       setOffline(browserOffline);

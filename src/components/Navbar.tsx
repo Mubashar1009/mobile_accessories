@@ -22,6 +22,7 @@ import { Flex } from "@/components/ui/flex";
 import { Paragraph } from "@/components/ui/paragraph";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { InstallAppButton } from "@/components/InstallAppButton";
 import { AppRoutes } from "@/types/enums/routes";
 
 const navLinks = [
@@ -116,6 +117,11 @@ export function Navbar() {
 
           {/* Right icons */}
           <Flex align="center" gap="xs" className="shrink-0">
+            {/* Install App (only rendered when the browser offers the prompt) */}
+            <Box className="hidden sm:block">
+              <InstallAppButton />
+            </Box>
+
             {/* Search Toggle */}
             <Button
               variant="ghost"
