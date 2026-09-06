@@ -173,9 +173,14 @@ export default function LoginPage() {
 
             {/* Password */}
             <Box>
-              <Label htmlFor="login-password" className="mb-2 block text-xs font-semibold tracking-wide text-slate-400">
-                Password
-              </Label>
+              <Flex align="center" justify="between" className="mb-2">
+                <Label htmlFor="login-password" className="block text-xs font-semibold tracking-wide text-slate-400">
+                  Password
+                </Label>
+                <Link href={AppRoutes.FORGOT_PASSWORD} className="text-xs font-semibold text-emerald-400 hover:underline">
+                  Forgot password?
+                </Link>
+              </Flex>
               <Box className="relative">
                 <Box as="span" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
                   <Lock size={15} />

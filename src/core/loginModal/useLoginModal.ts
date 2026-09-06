@@ -3,11 +3,11 @@
 import { useCallback } from "react";
 import { useLoginModalStore } from "@/store/loginModal/useLoginModalStore";
 import { useRouter } from "next/navigation";
-import { env, isPlaceholderSupabase } from "@/config/env";
-import { loginUserAction } from "@/lib/auth-actions";
+import { useAuth } from "@/hooks/useAuth";
 
 export function useLoginModal(onOpenChange: (open: boolean) => void) {
   const router = useRouter();
+  const { signIn } = useAuth();
 
   const {
     email,
@@ -28,27 +28,7 @@ export function useLoginModal(onOpenChange: (open: boolean) => void) {
       setLoading(true);
 
       try {
-        if (isPlaceholderSupabase()) {
-          const adminEmails = env.auth.adminEmails;
-          if (adminEmails.includes(email.trim().toLowerCase())) {
-            document.cookie = `mock-admin-session=${encodeURIComponent(
-              email.trim()
-            )}; path=/; max-age=86400`;
-            resetForm();
-            onOpenChange(false);
-            router.refresh();
-            return;
-          } else {
-            setError("Access denied: You are not authorized as an administrator.");
-            setLoading(false);
-            return;
-          }
-        }
-
-        const actionResult = await loginUserAction({
-          email: email.trim(),
-          password,
-        });
+        const actionResult = await signIn(email.trim(), password);
 
         if (actionResult.error) {
           setError(actionResult.error);
@@ -68,7 +48,7 @@ export function useLoginModal(onOpenChange: (open: boolean) => void) {
         setLoading(false);
       }
     },
-    [email, password, setError, setLoading, resetForm, onOpenChange, router]
+    [email, password, setError, setLoading, resetForm, onOpenChange, router, signIn]
   );
 
   return {
@@ -77,7 +57,6 @@ export function useLoginModal(onOpenChange: (open: boolean) => void) {
     password,
     error,
     loading,
-    isPlaceholderSupabase: isPlaceholderSupabase(),
     // Setters
     setEmail,
     setPassword,

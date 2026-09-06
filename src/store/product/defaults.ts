@@ -1,5 +1,5 @@
 import type { ProductState } from "@/types/store/product";
-import { DEMO_PRODUCTS } from "@/lib/db";
+import { DEMO_PRODUCTS } from "@/lib/offlineCache";
 
 export const defaultProductState: ProductState = {
   products: DEMO_PRODUCTS,

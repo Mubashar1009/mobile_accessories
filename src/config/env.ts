@@ -23,11 +23,12 @@ export const env = {
       process.env.AUTH_SECRET ||
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
       "",
-    adminEmails: process.env.NEXT_PUBLIC_ADMIN_EMAILS
-      ? process.env.NEXT_PUBLIC_ADMIN_EMAILS.split(",")
-          .map((email) => email.trim().toLowerCase())
-          .filter(Boolean)
-      : [],
+  },
+  site: {
+    // Base URL used to build absolute redirect links (e.g. Supabase's
+    // resetPasswordForEmail `redirectTo`) — set to the deployed origin in
+    // production, defaults to the local dev server otherwise.
+    url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   },
   isDevelopment: process.env.NODE_ENV === "development",
   isProduction: process.env.NODE_ENV === "production",

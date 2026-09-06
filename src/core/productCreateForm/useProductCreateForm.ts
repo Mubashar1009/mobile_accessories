@@ -2,16 +2,19 @@
 
 import { useCallback, useRef } from "react";
 import { useProductCreateFormStore } from "@/store/productCreateForm/useProductCreateFormStore";
-import { createProduct } from "@/lib/actions";
+import { useProducts } from "@/hooks/useProducts";
+import { CATEGORIES } from "@/types/product";
 
 export function useProductCreateForm(onClose: () => void) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { create } = useProducts();
 
   const {
     loading,
     error,
     imagePreview,
     title,
+    category,
     description,
     price,
     isOutOfStock,
@@ -19,6 +22,7 @@ export function useProductCreateForm(onClose: () => void) {
     setError,
     setImagePreview,
     setTitle,
+    setCategory,
     setDescription,
     setPrice,
     setIsOutOfStock,
@@ -65,11 +69,12 @@ export function useProductCreateForm(onClose: () => void) {
           formData.append("image", fileInputRef.current.files[0]);
         }
 
-        const result = await createProduct(
+        const result = await create(
           {
             title,
             description: description || null,
             price: parseFloat(price) || 0,
+            category,
             is_out_of_stock: isOutOfStock,
           },
           formData
@@ -88,7 +93,7 @@ export function useProductCreateForm(onClose: () => void) {
         setLoading(false);
       }
     },
-    [title, description, price, isOutOfStock, setLoading, setError, handleResetForm, onClose]
+    [title, category, description, price, isOutOfStock, setLoading, setError, handleResetForm, onClose, create]
   );
 
   return {
@@ -97,12 +102,15 @@ export function useProductCreateForm(onClose: () => void) {
     error,
     imagePreview,
     title,
+    category,
     description,
     price,
     isOutOfStock,
     fileInputRef,
+    categories: CATEGORIES,
     // Setters
     setTitle,
+    setCategory,
     setDescription,
     setPrice,
     setIsOutOfStock,

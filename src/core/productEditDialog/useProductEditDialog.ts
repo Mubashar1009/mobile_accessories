@@ -2,11 +2,12 @@
 
 import { useCallback, useRef, useEffect } from "react";
 import { useProductEditDialogStore } from "@/store/productEditDialog/useProductEditDialogStore";
-import { updateProduct } from "@/lib/actions";
+import { useProducts } from "@/hooks/useProducts";
 import { productSchema, CATEGORIES, type Product } from "@/types/product";
 
 export function useProductEditDialog(product: Product | null, onOpenChange: (open: boolean) => void) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { update } = useProducts();
 
   const {
     loading,
@@ -107,7 +108,7 @@ export function useProductEditDialog(product: Product | null, onOpenChange: (ope
           formData.append("image", fileInputRef.current.files[0]);
         }
 
-        const result = await updateProduct(
+        const result = await update(
           product.id,
           {
             title,
@@ -134,7 +135,7 @@ export function useProductEditDialog(product: Product | null, onOpenChange: (ope
     },
     [
       product, price, title, description, category, colors, isOutOfStock,
-      setLoading, setError, setErrors, onOpenChange,
+      setLoading, setError, setErrors, onOpenChange, update,
     ]
   );
 

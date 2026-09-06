@@ -9,6 +9,7 @@ export const createProductCreateFormActions = (
   setError: (error) => set({ error }),
   setImagePreview: (imagePreview) => set({ imagePreview }),
   setTitle: (title) => set({ title }),
+  setCategory: (category) => set({ category }),
   setDescription: (description) => set({ description }),
   setPrice: (price) => set({ price }),
   setIsOutOfStock: (isOutOfStock) => set({ isOutOfStock }),

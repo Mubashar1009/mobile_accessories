@@ -3,6 +3,7 @@ export interface ProductCreateFormState {
   error: string | null;
   imagePreview: string | null;
   title: string;
+  category: string;
   description: string;
   price: string;
   isOutOfStock: boolean;
@@ -13,6 +14,7 @@ export interface ProductCreateFormActions {
   setError: (error: string | null) => void;
   setImagePreview: (preview: string | null) => void;
   setTitle: (title: string) => void;
+  setCategory: (category: string) => void;
   setDescription: (description: string) => void;
   setPrice: (price: string) => void;
   setIsOutOfStock: (val: boolean) => void;

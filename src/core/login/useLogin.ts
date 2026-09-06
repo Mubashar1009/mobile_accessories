@@ -4,12 +4,12 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLoginStore } from "@/store/login/useLoginStore";
 import { loginSchema } from "@/types/login/schema";
-import { loginUserAction } from "@/lib/auth-actions";
-import { createClient } from "@/utils/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { AppRoutes } from "@/types/enums/routes";
 
 export function useLogin() {
   const router = useRouter();
+  const { signIn } = useAuth();
 
   const {
     email,
@@ -80,29 +80,16 @@ export function useLogin() {
       setLoading(true);
 
       try {
-        // 1. Authenticate and verify encrypted password matching via server action
-        const actionResult = await loginUserAction({
-          email: result.data.email.trim(),
-          password: result.data.password,
-        });
+        // Authenticate (verifies encrypted password + Supabase Auth, and
+        // establishes the browser client's own session) via useAuth().
+        const actionResult = await signIn(result.data.email.trim(), result.data.password);
 
         if (actionResult.error) {
           setServerError(actionResult.error);
           return;
         }
 
-        // 2. Establish client session in browser
-        try {
-          const supabase = createClient();
-          await supabase.auth.signInWithPassword({
-            email: result.data.email.trim(),
-            password: result.data.password,
-          });
-        } catch {
-          // Session already handled by server action cookies
-        }
-
-        // 3. Login successful -> reset form & redirect to home by default
+        // Login successful -> reset form & redirect to home by default
         resetForm();
         router.push(AppRoutes.HOME);
         router.refresh();
@@ -114,7 +101,7 @@ export function useLogin() {
         setLoading(false);
       }
     },
-    [email, password, setServerError, setFieldErrors, setLoading, resetForm, router]
+    [email, password, setServerError, setFieldErrors, setLoading, resetForm, router, signIn]
   );
 
   const toggleShowPassword = useCallback(() => {

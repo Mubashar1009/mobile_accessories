@@ -32,11 +32,14 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
     error,
     imagePreview,
     title,
+    category,
     description,
     price,
     isOutOfStock,
     fileInputRef,
+    categories,
     setTitle,
+    setCategory,
     setDescription,
     setPrice,
     setIsOutOfStock,
@@ -138,6 +141,23 @@ export function ProductCreateForm({ compact = false }: { compact?: boolean }) {
               placeholder="Product name"
               required
             />
+          </Box>
+
+          {/* Category */}
+          <Box className="space-y-2">
+            <Label htmlFor="category">Category *</Label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              {categories.map((cat) => (
+                <option key={cat.slug} value={cat.slug}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
           </Box>
 
           {/* Description */}

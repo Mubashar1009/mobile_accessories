@@ -2,13 +2,14 @@
 
 import { useCallback, useRef } from "react";
 import { useAdminProductFormStore } from "@/store/adminProductForm/useAdminProductFormStore";
-import { createProduct } from "@/lib/actions";
+import { useProducts } from "@/hooks/useProducts";
 import { productSchema, CATEGORIES } from "@/types/product";
 import { useRouter } from "next/navigation";
 
 export function useAdminProductForm() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { create } = useProducts();
 
   const {
     loading,
@@ -110,7 +111,7 @@ export function useAdminProductForm() {
           formData.append("image", fileInputRef.current.files[0]);
         }
 
-        const result = await createProduct(
+        const result = await create(
           {
             title,
             description: description || null,
@@ -142,7 +143,7 @@ export function useAdminProductForm() {
     [
       price, originalPrice, title, description, category, colors, tag,
       isOutOfStock, numPrice, numOriginal,
-      setLoading, setError, setErrors, resetForm, router,
+      setLoading, setError, setErrors, resetForm, router, create,
     ]
   );
 

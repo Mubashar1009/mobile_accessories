@@ -12,6 +12,16 @@ import type {
   MigrationManagerConfig
 } from "@/types/db/migration";
 
+// A statement fragment that's nothing but comments (or empty) has no SQL
+// worth sending — used to filter split statements without discarding a
+// fragment that merely STARTS with a comment before real DDL.
+function hasSqlContent(statement: string): boolean {
+  return statement
+    .replace(/--[^\n]*/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .trim().length > 0;
+}
+
 // ─────────────────────────────────────────────
 // Built-in PostgreSQL Adapter (pg library)
 // ─────────────────────────────────────────────
@@ -23,7 +33,12 @@ export class PostgresAdapter implements DatabaseAdapter {
     // Dynamic import to avoid hard dependency
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { Client } = require("pg");
-    this.client = new Client({ connectionString });
+    // Without an explicit `ssl` option, `pg` never requests TLS at all —
+    // credentials and every migration statement would travel in
+    // plaintext. Matches src/lib/db/adapters/SQLAdapter.ts: Supabase's
+    // Postgres endpoints require SSL, but the CA chain isn't reliably
+    // available in every runtime, so the certificate itself isn't verified.
+    this.client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
   }
 
   async connect(): Promise<void> {
@@ -200,13 +215,135 @@ export class MigrationManager {
     return { upSQL: sql.replace("-- UP", "").trim(), downSQL: null };
   }
 
+  // ─── Split SQL into statements ───────────────
+  // A naive `sql.split(";")` breaks on every semicolon INSIDE a
+  // `CREATE FUNCTION ... AS $$ ... $$` body too (e.g. migrations 001 and
+  // 003's trigger functions), splitting one statement into fragments that
+  // don't parse. This walks the string tracking whether we're inside a
+  // line/block comment, a quoted string/identifier, or a dollar-quoted
+  // block (`$$...$$` or `$tag$...$tag$`) — and only splits on a `;` when
+  // none of those are open.
+  private splitStatements(sql: string): string[] {
+    const statements: string[] = [];
+    let current = "";
+    let i = 0;
+    const n = sql.length;
+    let inSingleQuote = false;
+    let inDoubleQuote = false;
+    let inLineComment = false;
+    let inBlockComment = false;
+    let dollarTag: string | null = null;
+
+    while (i < n) {
+      if (inLineComment) {
+        current += sql[i];
+        if (sql[i] === "\n") inLineComment = false;
+        i++;
+        continue;
+      }
+      if (inBlockComment) {
+        if (sql.startsWith("*/", i)) {
+          current += "*/";
+          i += 2;
+          inBlockComment = false;
+        } else {
+          current += sql[i];
+          i++;
+        }
+        continue;
+      }
+      if (dollarTag) {
+        if (sql.startsWith(dollarTag, i)) {
+          current += dollarTag;
+          i += dollarTag.length;
+          dollarTag = null;
+        } else {
+          current += sql[i];
+          i++;
+        }
+        continue;
+      }
+      if (inSingleQuote) {
+        if (sql[i] === "'" && sql[i + 1] === "'") {
+          current += "''";
+          i += 2;
+        } else if (sql[i] === "'") {
+          current += "'";
+          i++;
+          inSingleQuote = false;
+        } else {
+          current += sql[i];
+          i++;
+        }
+        continue;
+      }
+      if (inDoubleQuote) {
+        current += sql[i];
+        if (sql[i] === '"') inDoubleQuote = false;
+        i++;
+        continue;
+      }
+
+      // Default state — nothing open
+      if (sql.startsWith("--", i)) {
+        inLineComment = true;
+        current += "--";
+        i += 2;
+        continue;
+      }
+      if (sql.startsWith("/*", i)) {
+        inBlockComment = true;
+        current += "/*";
+        i += 2;
+        continue;
+      }
+      if (sql[i] === "'") {
+        inSingleQuote = true;
+        current += "'";
+        i++;
+        continue;
+      }
+      if (sql[i] === '"') {
+        inDoubleQuote = true;
+        current += '"';
+        i++;
+        continue;
+      }
+      if (sql[i] === "$") {
+        const match = /^\$[a-zA-Z_]*\$/.exec(sql.slice(i));
+        if (match) {
+          dollarTag = match[0];
+          current += dollarTag;
+          i += dollarTag.length;
+          continue;
+        }
+      }
+      if (sql[i] === ";") {
+        statements.push(current.trim());
+        current = "";
+        i++;
+        continue;
+      }
+      current += sql[i];
+      i++;
+    }
+
+    if (current.trim().length > 0) {
+      statements.push(current.trim());
+    }
+
+    // A fragment that merely STARTS with a comment (e.g. a "-- section
+    // header" line followed by real DDL) still has real SQL in it and must
+    // be kept — only drop a fragment that has no non-comment content at
+    // all. (`s.startsWith("--")` on its own would incorrectly drop the
+    // former, silently skipping real statements.)
+    return statements.filter((s) => hasSqlContent(s));
+  }
+
   // ─── Execute SQL Statements ──────────────────
 
   private async executeSQL(sql: string, version: string): Promise<void> {
-    const statements = sql
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0 && !s.startsWith("--"));
+    const statements = this.splitStatements(sql);
 
     for (let i = 0; i < statements.length; i++) {
       try {
