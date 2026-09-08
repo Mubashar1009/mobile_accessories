@@ -16,15 +16,45 @@ import { AppRoutes } from "@/types/enums/routes";
  * Nothing here validates or expires anything itself — Supabase already
  * did that before issuing the code.
  */
+
+/**
+ * `next` arrives from the query string, so it is attacker-controlled and
+ * must never be concatenated onto the origin unchecked.
+ *
+ * `${origin}${next}` looks same-origin but isn't: `?next=@evil.com` yields
+ * `https://site.example@evil.com`, where `site.example` is parsed as URL
+ * *userinfo* and the browser navigates to **evil.com**. A recovery email
+ * that lands the user on an attacker's page is a ready-made phishing
+ * chain, so only a known in-app route is accepted here.
+ */
+const ALLOWED_NEXT_ROUTES: ReadonlySet<string> = new Set<string>(Object.values(AppRoutes));
+
+function resolveNext(raw: string | null): string {
+  if (raw && ALLOWED_NEXT_ROUTES.has(raw)) {
+    return raw;
+  }
+  return AppRoutes.UPDATE_PASSWORD;
+}
+
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") || AppRoutes.UPDATE_PASSWORD;
+  const next = resolveNext(searchParams.get("next"));
 
-  const failed = (message: string) =>
-    NextResponse.redirect(`${origin}${AppRoutes.FORGOT_PASSWORD}?error=${encodeURIComponent(message)}`);
+  // `request.nextUrl.origin` reflects the Host header, which a client can
+  // set freely. Redirect targets are built from URL objects rooted at that
+  // origin — safe because the path component is now allowlisted above, so
+  // the worst a spoofed Host achieves is redirecting the attacker to
+  // themselves.
+  const origin = request.nextUrl.origin;
+
+  const failed = (message: string) => {
+    const url = new URL(AppRoutes.FORGOT_PASSWORD, origin);
+    url.searchParams.set("error", message);
+    return NextResponse.redirect(url);
+  };
 
   if (code) {
     const auth = await Core.createAuthClient();
@@ -42,5 +72,5 @@ export async function GET(request: NextRequest) {
     return failed("This password reset link is invalid or has expired. Please request a new one.");
   }
 
-  return NextResponse.redirect(`${origin}${next}`);
+  return NextResponse.redirect(new URL(next, origin));
 }

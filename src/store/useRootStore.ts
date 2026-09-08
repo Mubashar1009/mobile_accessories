@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import type { RootState } from "@/types/store/root";
+import { createAuthSlice } from "./auth/authSlice";
+import { createPasswordResetSlice } from "./passwordReset/passwordResetSlice";
 import { createAdminDashboardSlice } from "./adminDashboard/adminDashboardSlice";
 import { createAdminProductFormSlice } from "./adminProductForm/adminProductFormSlice";
 import { createCartSlice } from "./cart/cartSlice";
@@ -9,9 +11,7 @@ import { createSignupSlice } from "./signup/signupSlice";
 import { createNavbarSlice } from "./navbar/navbarSlice";
 import { createProductSlice } from "./product/productSlice";
 import { createProductCardSlice } from "./productCard/productCardSlice";
-import { createProductCreateFormSlice } from "./productCreateForm/productCreateFormSlice";
 import { createProductEditDialogSlice } from "./productEditDialog/productEditDialogSlice";
-import { createErrorSlice } from "./error/errorSlice";
 
 export const useRootStore = create<RootState>((set, get) => {
   const makeScopedSet = <K extends keyof RootState>(key: K) => {
@@ -30,6 +30,14 @@ export const useRootStore = create<RootState>((set, get) => {
   };
 
   return {
+    auth: createAuthSlice(
+      makeScopedSet("auth"),
+      () => get().auth
+    ),
+    passwordReset: createPasswordResetSlice(
+      makeScopedSet("passwordReset"),
+      () => get().passwordReset
+    ),
     adminDashboard: createAdminDashboardSlice(
       makeScopedSet("adminDashboard"),
       () => get().adminDashboard
@@ -66,17 +74,9 @@ export const useRootStore = create<RootState>((set, get) => {
       makeScopedSet("productCard"),
       () => get().productCard
     ),
-    productCreateForm: createProductCreateFormSlice(
-      makeScopedSet("productCreateForm"),
-      () => get().productCreateForm
-    ),
     productEditDialog: createProductEditDialogSlice(
       makeScopedSet("productEditDialog"),
       () => get().productEditDialog
-    ),
-    error: createErrorSlice(
-      makeScopedSet("error"),
-      () => get().error
     ),
   };
 });

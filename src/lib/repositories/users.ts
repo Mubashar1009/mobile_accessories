@@ -6,7 +6,6 @@ export interface UserAuthRow {
   id: string;
   email: string;
   name?: string | null;
-  password?: string | null;
 }
 
 /**
@@ -25,6 +24,10 @@ export interface UserAuthRow {
  * `DatabaseAdapterType` with an explicit ILIKE operator — would need every
  * adapter, including the raw-SQL one, to implement it; not worth it for
  * this app's one case-insensitive lookup.)
+ *
+ * Note this row carries no credential material: passwords live solely in
+ * Supabase Auth (`auth.users.encrypted_password`, bcrypt), never in
+ * `public.users` — see `AuthService` for why the old shadow copy was removed.
  */
 export async function findUserByEmail(email: string): Promise<UserAuthRow | null> {
   const rows = await Core.db.list<UserAuthRow>("users", {

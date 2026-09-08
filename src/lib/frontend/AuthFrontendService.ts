@@ -2,13 +2,13 @@
 
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
-import { useAuthStore } from "@/lib/store/authStore";
+import { useRootStore } from "@/store/useRootStore";
 import { loginUserAction, signupUserAction, type AuthActionResult } from "@/app/actions/auth.actions";
 
 /**
  * Client-side counterpart to the backend's `AuthService`: the one place
  * that calls the auth Server Actions and syncs the result into
- * `authStore`. Only `src/hooks/useAuth.ts` calls this; components never do.
+ * the root store's `auth` slice. Only `src/core/auth/useAuth.ts` calls this; components never do.
  *
  * `signIn`/`signUp` also establish the *browser* Supabase client's own
  * session (used by `useNavbar`, `useProducts`, etc. for client-side
@@ -20,7 +20,7 @@ import { loginUserAction, signupUserAction, type AuthActionResult } from "@/app/
  */
 export class AuthFrontendService {
   async signIn(email: string, password: string): Promise<AuthActionResult> {
-    const { setLoading, setError, setCurrentUser } = useAuthStore.getState();
+    const { setLoading, setError, setCurrentUser } = useRootStore.getState().auth;
     setLoading(true);
     setError(null);
     try {
@@ -57,7 +57,7 @@ export class AuthFrontendService {
     password: string,
     confirmPassword?: string
   ): Promise<AuthActionResult> {
-    const { setLoading, setError, setCurrentUser } = useAuthStore.getState();
+    const { setLoading, setError, setCurrentUser } = useRootStore.getState().auth;
     setLoading(true);
     setError(null);
     try {

@@ -11,7 +11,10 @@ export type { AuthActionResult, PasswordResetResult };
 
 /**
  * Server action to register a new user.
- * Encrypts the password with the secret key and stores it in the database.
+ * The password goes to Supabase Auth (GoTrue) only, which stores it as a
+ * bcrypt hash in `auth.users`. Nothing here hashes or stores a copy of its
+ * own — see AuthService for why the old `public.users.password` shadow
+ * column was removed.
  */
 export async function signupUserAction(formData: {
   name: string;
@@ -44,8 +47,8 @@ export async function signupUserAction(formData: {
 
 /**
  * Server action to sign in a user.
- * Encrypts the entered password with the secret key, matches against public.users table,
- * and signs in with Supabase session.
+ * Delegates to Supabase Auth, which is the sole authority on the password;
+ * a successful call establishes the session cookies.
  */
 export async function loginUserAction(formData: {
   email: string;

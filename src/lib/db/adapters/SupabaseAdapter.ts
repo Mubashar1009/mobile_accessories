@@ -1,8 +1,15 @@
 import "server-only";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { AdapterOperationError, ConfigurationError } from "../errors";
+import { AdapterOperationError, ConfigurationError, ValidationError } from "../errors";
+import { containsRegexTerm, quotePostgrestValue } from "../searchPattern";
 import type { DatabaseAdapterType, QueryOptions, SupabaseAdapterConfig } from "../types";
+
+// PostgREST builds filters out of a comma/parenthesis-delimited string, so a
+// column name is structure, not a bound parameter. Restrict them to the same
+// plain-identifier shape SQLAdapter enforces, rather than trusting whatever a
+// caller passes in.
+const IDENTIFIER_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
 /**
  * Supabase JS adapter. Talks to Supabase's REST (PostgREST) API rather than
@@ -31,12 +38,37 @@ export class SupabaseAdapter implements DatabaseAdapterType {
   }
 
   async list<T = Record<string, unknown>>(table: string, options: QueryOptions = {}): Promise<T[]> {
-    const { where = {}, orderBy, ascending = true, limit } = options;
+    const { where = {}, search, orderBy, ascending = true, limit } = options;
 
     let query = this.client.from(table).select("*");
     for (const [column, value] of Object.entries(where)) {
       query = query.eq(column, value);
     }
+
+    // Case-insensitive substring search across the requested columns, OR-ed
+    // together. PostgREST expresses that as `or=(col.op.<value>,…)`, which
+    // supabase-js's `.or()` takes as a raw string — so the value is quoted
+    // (commas/parens in the term would otherwise be read as filter syntax).
+    //
+    // `imatch` (Postgres `~*`), NOT `ilike`: PostgREST rewrites `*` to `%`
+    // inside a like/ilike value, so a user searching for a literal `*` would
+    // silently get a wildcard, and no escaping of `*` survives that rewrite.
+    // `~*` is unanchored and case-insensitive, so a fully escaped regex is an
+    // exact "contains" match — see ../searchPattern.ts.
+    //
+    // A blank term adds no filter at all rather than matching every row.
+    const searchTerm = search?.term.trim();
+    if (search && searchTerm && search.columns.length > 0) {
+      const value = quotePostgrestValue(containsRegexTerm(searchTerm));
+      const clauses = search.columns.map((column) => {
+        if (!IDENTIFIER_PATTERN.test(column)) {
+          throw new ValidationError(`SupabaseAdapter: invalid column identifier "${column}".`);
+        }
+        return `${column}.imatch.${value}`;
+      });
+      query = query.or(clauses.join(","));
+    }
+
     if (orderBy) {
       query = query.order(orderBy, { ascending });
     }

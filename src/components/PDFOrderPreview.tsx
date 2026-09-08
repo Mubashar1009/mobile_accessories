@@ -17,7 +17,6 @@ import { Download, MessageCircle, FileText, Loader2, X } from "lucide-react";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
 import { Heading } from "@/components/ui/heading";
-import { Paragraph } from "@/components/ui/paragraph";
 import type { PDFOrderPreviewProps } from "@/types/components/pdfOrderPreview";
 
 

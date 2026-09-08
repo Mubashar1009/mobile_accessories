@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLoginStore } from "@/store/login/useLoginStore";
 import { loginSchema } from "@/types/login/schema";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/core/auth/useAuth";
 import { AppRoutes } from "@/types/enums/routes";
 
 export function useLogin() {

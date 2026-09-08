@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSignupStore } from "@/store/signup/useSignupStore";
 import { signupSchema } from "@/types/signup/schema";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/core/auth/useAuth";
 import { AppRoutes } from "@/types/enums/routes";
 
 export function useSignup() {

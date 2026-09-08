@@ -1,3 +1,5 @@
+import type { AuthSlice } from "./auth";
+import type { PasswordResetSlice } from "./passwordReset";
 import type { AdminDashboardSlice } from "./adminDashboard";
 import type { AdminProductFormSlice } from "./adminProductForm";
 import type { CartSlice } from "./cart";
@@ -7,11 +9,11 @@ import type { SignupSlice } from "./signup";
 import type { NavbarSlice } from "./navbar";
 import type { ProductSlice } from "./product";
 import type { ProductCardSlice } from "./productCard";
-import type { ProductCreateFormSlice } from "./productCreateForm";
 import type { ProductEditDialogSlice } from "./productEditDialog";
-import type { ErrorSlice } from "./error";
 
 export interface RootState {
+  auth: AuthSlice;
+  passwordReset: PasswordResetSlice;
   adminDashboard: AdminDashboardSlice;
   adminProductForm: AdminProductFormSlice;
   cart: CartSlice;
@@ -21,8 +23,6 @@ export interface RootState {
   navbar: NavbarSlice;
   product: ProductSlice;
   productCard: ProductCardSlice;
-  productCreateForm: ProductCreateFormSlice;
   productEditDialog: ProductEditDialogSlice;
-  error: ErrorSlice;
 }
 

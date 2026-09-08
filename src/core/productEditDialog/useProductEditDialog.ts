@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useEffect } from "react";
 import { useProductEditDialogStore } from "@/store/productEditDialog/useProductEditDialogStore";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts } from "@/core/product/useProducts";
 import { productSchema, CATEGORIES, type Product } from "@/types/product";
 
 export function useProductEditDialog(product: Product | null, onOpenChange: (open: boolean) => void) {

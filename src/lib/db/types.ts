@@ -19,8 +19,30 @@ export const ADAPTERS = {
 
 export type AdapterName = (typeof ADAPTERS)[keyof typeof ADAPTERS];
 
+/**
+ * Case-insensitive substring match across one or more columns, OR-ed
+ * together, pushed down to the database as SQL `ILIKE`.
+ *
+ * `where` only expresses equality, which is why this is a separate option
+ * rather than another entry in it. Both adapters implement it natively
+ * (raw `ILIKE` for SQL, PostgREST `ilike` for Supabase), so a caller never
+ * has to fetch a whole table and filter in memory to run a text search.
+ *
+ * The term is treated as a literal: LIKE metacharacters in it are escaped,
+ * so searching `50%` finds rows containing "50%" rather than matching
+ * everything. A blank/whitespace-only term is ignored entirely.
+ */
+export interface SearchOptions {
+  /** Columns to match against; a row matches if ANY of them does. */
+  columns: string[];
+  /** Raw user input — escaped by the adapter, never interpolated. */
+  term: string;
+}
+
 export interface QueryOptions {
   where?: Record<string, unknown>;
+  /** Case-insensitive `ILIKE` search across columns -- see SearchOptions. */
+  search?: SearchOptions;
   orderBy?: string;
   ascending?: boolean;
   limit?: number;

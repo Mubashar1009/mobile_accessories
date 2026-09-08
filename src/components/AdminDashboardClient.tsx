@@ -4,6 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ProductEditDialog } from "@/components/ProductEditDialog";
+import { ProductSearch } from "@/components/ProductSearch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -89,6 +90,12 @@ export function AdminDashboardClient({ initialProducts }: AdminDashboardClientPr
           </Box>
         ))}
       </Grid>
+
+      {/* Quick search over the catalog. The debounced Server Action behind
+          this (ProductSearch -> useProducts -> searchProductsAction) was
+          fully built but the component was never mounted anywhere, so the
+          feature was unreachable. */}
+      <ProductSearch />
 
       {/* Products Table */}
       <Box className="rounded-xl border bg-card shadow-sm">

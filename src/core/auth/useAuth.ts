@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuthStore } from "@/lib/store/authStore";
+import { useCallback } from "react";
+import { useAuthStore } from "@/store/auth/useAuthStore";
 import { authFrontendService } from "@/lib/frontend/AuthFrontendService";
 
 /**
@@ -17,9 +18,18 @@ export function useAuth() {
   const isLoading = useAuthStore((s) => s.isLoading);
   const error = useAuthStore((s) => s.error);
 
-  const signIn = (email: string, password: string) => authFrontendService.signIn(email, password);
-  const signUp = (name: string, email: string, password: string, confirmPassword?: string) =>
-    authFrontendService.signUp(name, email, password, confirmPassword);
+  // Stable identities: `useLogin`/`useSignup` list these in the dependency
+  // arrays of their `handleSubmit` callbacks, so recreating them on every
+  // render would give those callbacks a new identity every render too.
+  const signIn = useCallback(
+    (email: string, password: string) => authFrontendService.signIn(email, password),
+    []
+  );
+  const signUp = useCallback(
+    (name: string, email: string, password: string, confirmPassword?: string) =>
+      authFrontendService.signUp(name, email, password, confirmPassword),
+    []
+  );
 
   return { currentUser, isLoading, error, signIn, signUp };
 }

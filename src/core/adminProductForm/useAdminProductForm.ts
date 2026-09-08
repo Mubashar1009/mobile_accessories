@@ -2,7 +2,7 @@
 
 import { useCallback, useRef } from "react";
 import { useAdminProductFormStore } from "@/store/adminProductForm/useAdminProductFormStore";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts } from "@/core/product/useProducts";
 import { productSchema, CATEGORIES } from "@/types/product";
 import { useRouter } from "next/navigation";
 
@@ -141,7 +141,7 @@ export function useAdminProductForm() {
       }
     },
     [
-      price, originalPrice, title, description, category, colors, tag,
+      price, title, description, category, colors, tag,
       isOutOfStock, numPrice, numOriginal,
       setLoading, setError, setErrors, resetForm, router, create,
     ]

@@ -1,17 +1,17 @@
 "use client";
 
 import { toast } from "sonner";
-import { usePasswordResetStore } from "@/lib/store/passwordResetStore";
+import { useRootStore } from "@/store/useRootStore";
 import { requestPasswordResetAction, updatePasswordAction } from "@/app/actions/auth.actions";
 
 /**
  * Client-side counterpart to the request/confirm Server Actions: the one
- * place that calls them and syncs the result into `passwordResetStore`.
- * Only `src/hooks/usePasswordReset.ts` calls this; components never do.
+ * place that calls them and syncs the result into the root store's `passwordReset` slice.
+ * Only `src/core/passwordReset/usePasswordReset.ts` calls this; components never do.
  */
 export class PasswordResetFrontendService {
   async requestReset(email: string): Promise<void> {
-    const { setIsSubmitting, setError, setIsEmailSent } = usePasswordResetStore.getState();
+    const { setIsSubmitting, setError, setIsEmailSent } = useRootStore.getState().passwordReset;
     setIsSubmitting(true);
     setError(null);
     try {
@@ -35,7 +35,7 @@ export class PasswordResetFrontendService {
   }
 
   async updatePassword(newPassword: string): Promise<void> {
-    const { setIsSubmitting, setError, setIsPasswordUpdated } = usePasswordResetStore.getState();
+    const { setIsSubmitting, setError, setIsPasswordUpdated } = useRootStore.getState().passwordReset;
     setIsSubmitting(true);
     setError(null);
     try {

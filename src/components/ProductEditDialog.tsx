@@ -1,7 +1,6 @@
 "use client";
 
 import { useProductEditDialog } from "@/core/productEditDialog/useProductEditDialog";
-import { type Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,7 +103,7 @@ export function ProductEditDialog({
               ref={fileInputRef}
               id="edit-product-image"
               type="file"
-              accept="image/png,image/jpeg,image/webp"
+              accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
               onChange={handleImageChange}
               className="hidden"
             />

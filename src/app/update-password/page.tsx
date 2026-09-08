@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Loader2, ShoppingBag, Lock, Eye, EyeOff, ArrowRight, CheckCircle2 } from "lucide-react";
-import { usePasswordReset } from "@/hooks/usePasswordReset";
+import { usePasswordReset } from "@/core/passwordReset/usePasswordReset";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
 import { Heading } from "@/components/ui/heading";

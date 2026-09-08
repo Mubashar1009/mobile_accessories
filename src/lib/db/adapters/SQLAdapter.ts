@@ -2,6 +2,7 @@ import "server-only";
 
 import { Pool, type PoolConfig } from "pg";
 import { AdapterOperationError, ConfigurationError, NotFoundError, ValidationError } from "../errors";
+import { containsPattern } from "../searchPattern";
 import type { DatabaseAdapterType, QueryOptions, SQLAdapterConfig } from "../types";
 
 // Postgres has no way to bind identifiers (table/column names) as query
@@ -67,7 +68,7 @@ export class SQLAdapter implements DatabaseAdapterType {
 
   async list<T = Record<string, unknown>>(table: string, options: QueryOptions = {}): Promise<T[]> {
     assertValidIdentifier(table, "table");
-    const { where = {}, orderBy, ascending = true, limit } = options;
+    const { where = {}, search, orderBy, ascending = true, limit } = options;
 
     const values: unknown[] = [];
     const conditions = Object.entries(where).map(([column, value]) => {
@@ -75,6 +76,26 @@ export class SQLAdapter implements DatabaseAdapterType {
       values.push(value);
       return `${column} = $${values.length}`;
     });
+
+    // ILIKE search across the requested columns, OR-ed together, then AND-ed
+    // with any `where` equality conditions.
+    //
+    // Only the column names are concatenated into the SQL, and those pass
+    // through the identifier allowlist first; the pattern itself is a bound
+    // `$n` value like every other. A blank term contributes no clause at all
+    // rather than degrading into `%%`, which would match every row.
+    const searchTerm = search?.term.trim();
+    if (search && searchTerm && search.columns.length > 0) {
+      values.push(containsPattern(searchTerm));
+      const placeholder = `$${values.length}`;
+      const searchClauses = search.columns.map((column) => {
+        assertValidIdentifier(column, "column");
+        // A NULL column fails its own ILIKE (the result is NULL, not true),
+        // so the row can still match on any of its other columns.
+        return `${column} ILIKE ${placeholder}`;
+      });
+      conditions.push(`(${searchClauses.join(" OR ")})`);
+    }
 
     let sql = `SELECT * FROM ${table}`;
     if (conditions.length > 0) {

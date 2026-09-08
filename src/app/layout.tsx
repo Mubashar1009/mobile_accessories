@@ -15,7 +15,11 @@ const geistMono = Geist_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // `maximumScale: 1` was removed rather than kept: it blocks pinch-zoom on
+  // mobile, which fails WCAG 2.1 SC 1.4.4 (Resize Text) and is a real barrier
+  // for low-vision users on a catalog full of small product text. iOS Safari
+  // ignores it for focus-zoom anyway, so it cost accessibility without buying
+  // the layout stability it is usually added for.
   themeColor: "#171717",
 };
 

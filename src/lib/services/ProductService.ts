@@ -1,10 +1,14 @@
 import "server-only";
 
 import { productSchema, type Product, type ProductInput } from "@/types/product";
+import { validateImageUpload } from "@/lib/security/imageUpload";
 import { logger } from "@/lib/logger";
 import { BaseDomainService } from "./BaseDomainService";
 
 const PRODUCT_IMAGES_BUCKET = "product-images";
+
+/** Columns `search()` matches against, OR-ed together by the adapter. */
+const PRODUCT_SEARCH_COLUMNS = ["title", "description"];
 
 export interface ProductActionResult {
   success?: boolean;
@@ -19,9 +23,16 @@ function storagePathFromUrl(url: string): string | undefined {
   return url.split(`/${PRODUCT_IMAGES_BUCKET}/`)[1];
 }
 
-function buildFileName(file: File): string {
-  const fileExt = file.name.split(".").pop();
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+/**
+ * Builds the stored object name.
+ *
+ * The extension comes from the VALIDATED content type, never from
+ * `file.name` — the client controls the filename, and letting it pick the
+ * stored extension meant it could choose how the public bucket later serves
+ * the object (`.html`, `.svg`, …) regardless of the bytes inside.
+ */
+function buildFileName(extension: string): string {
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${extension}`;
 }
 
 /**
@@ -44,14 +55,35 @@ export class ProductService extends BaseDomainService {
     }
   }
 
-  /** Reuses `list()`'s query, then filters in-memory by title/description — the
-   * same substring-match approach the storefront's `/search` page already
-   * uses client-side; there's no full-text search in the DB adapter layer. */
+  /**
+   * Case-insensitive substring search over title/description, run BY THE
+   * DATABASE via `QueryOptions.search` (SQL `ILIKE`).
+   *
+   * This used to call `list()` and filter the whole table in memory, which
+   * meant every keystroke of the debounced admin search pulled the entire
+   * catalog over the wire to throw most of it away. The adapter layer now
+   * expresses ILIKE natively, so only matching rows are transferred.
+   *
+   * An empty term returns the full list rather than searching for "" — the
+   * adapters ignore a blank term, but going through `list()` here keeps that
+   * intent explicit at the call site.
+   */
   async search(term: string): Promise<Product[]> {
-    const products = await this.list();
-    const q = term.trim().toLowerCase();
-    if (!q) return products;
-    return products.filter((p) => `${p.title} ${p.description ?? ""}`.toLowerCase().includes(q));
+    const trimmed = term.trim();
+    if (!trimmed) {
+      return this.list();
+    }
+
+    try {
+      return await this.db.list<Product>("products", {
+        search: { columns: PRODUCT_SEARCH_COLUMNS, term: trimmed },
+        orderBy: "created_at",
+        ascending: false,
+      });
+    } catch (err) {
+      logger.error("ProductService.search failed", err, { term: trimmed });
+      return [];
+    }
   }
 
   async create(input: ProductInput, imageFile: File | null): Promise<ProductActionResult> {
@@ -63,8 +95,16 @@ export class ProductService extends BaseDomainService {
 
     let image_url: string | null = null;
     if (imageFile && imageFile.size > 0) {
+      const imageCheck = validateImageUpload(imageFile);
+      if (!imageCheck.ok) {
+        return { error: imageCheck.error };
+      }
       try {
-        const uploaded = await this.storage.upload(PRODUCT_IMAGES_BUCKET, buildFileName(imageFile), imageFile);
+        const uploaded = await this.storage.upload(
+          PRODUCT_IMAGES_BUCKET,
+          buildFileName(imageCheck.extension),
+          imageFile
+        );
         image_url = uploaded.url;
       } catch (err) {
         return { error: `Image upload failed: ${toErrorMessage(err, "Unknown error")}` };
@@ -117,12 +157,21 @@ export class ProductService extends BaseDomainService {
     if (validatedData.tag !== undefined) updateData.tag = validatedData.tag;
 
     if (imageFile && imageFile.size > 0) {
+      const imageCheck = validateImageUpload(imageFile);
+      if (!imageCheck.ok) {
+        return { error: imageCheck.error };
+      }
+
       // Fetch the existing row first so the old image can be cleaned up
       // once the new one is confirmed uploaded.
       const existing = await this.db.get<Product>("products", id);
 
       try {
-        const uploaded = await this.storage.upload(PRODUCT_IMAGES_BUCKET, buildFileName(imageFile), imageFile);
+        const uploaded = await this.storage.upload(
+          PRODUCT_IMAGES_BUCKET,
+          buildFileName(imageCheck.extension),
+          imageFile
+        );
         updateData.image_url = uploaded.url;
       } catch (err) {
         return { error: `Image upload failed: ${toErrorMessage(err, "Unknown error")}` };

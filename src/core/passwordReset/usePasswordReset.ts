@@ -1,6 +1,8 @@
 "use client";
 
-import { usePasswordResetStore } from "@/lib/store/passwordResetStore";
+import { useCallback } from "react";
+import { useRootStore } from "@/store/useRootStore";
+import { usePasswordResetStore } from "@/store/passwordReset/usePasswordResetStore";
 import { passwordResetFrontendService } from "@/lib/frontend/PasswordResetFrontendService";
 
 /**
@@ -18,9 +20,20 @@ export function usePasswordReset() {
   const setEmail = usePasswordResetStore((s) => s.setEmail);
   const setNewPassword = usePasswordResetStore((s) => s.setNewPassword);
 
-  const requestReset = () => passwordResetFrontendService.requestReset(usePasswordResetStore.getState().email);
-  const updatePassword = () =>
-    passwordResetFrontendService.updatePassword(usePasswordResetStore.getState().newPassword);
+  // Read the value at call time rather than closing over the rendered one,
+  // so a submit fired in the same tick as the last keystroke still sends
+  // what the user actually typed.
+  const requestReset = useCallback(
+    () => passwordResetFrontendService.requestReset(useRootStore.getState().passwordReset.email),
+    []
+  );
+  const updatePassword = useCallback(
+    () =>
+      passwordResetFrontendService.updatePassword(
+        useRootStore.getState().passwordReset.newPassword
+      ),
+    []
+  );
 
   return {
     email,

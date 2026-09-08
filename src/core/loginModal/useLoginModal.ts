@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useLoginModalStore } from "@/store/loginModal/useLoginModalStore";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/core/auth/useAuth";
 
 export function useLoginModal(onOpenChange: (open: boolean) => void) {
   const router = useRouter();

@@ -4,16 +4,15 @@ import { useCallback, useEffect, useRef } from "react";
 
 /**
  * Generic, reusable debounce wrapper for any callback — not specific to
- * product search. `T`'s constraint uses `any[]` rather than `unknown[]`
- * purely to satisfy TypeScript's contravariant parameter check for a rest
- * signature (`unknown[]` rejects any concrete single-typed-arg callback
- * under `strict: true`); real call sites still get full type-checking via
- * `Parameters<T>`.
+ * product search. The argument list is captured as a tuple type parameter
+ * (`TArgs`) rather than typing the callback itself, so a concrete
+ * single-arg callback still infers cleanly under `strict: true` and call
+ * sites keep full type-checking on the debounced function.
  */
-export function useDebouncedCallback<T extends (...args: any[]) => void>(
-  callback: T,
+export function useDebouncedCallback<TArgs extends unknown[]>(
+  callback: (...args: TArgs) => void,
   delay: number
-): (...args: Parameters<T>) => void {
+): (...args: TArgs) => void {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => void>(
   }, []);
 
   return useCallback(
-    (...args: Parameters<T>) => {
+    (...args: TArgs) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

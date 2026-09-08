@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2, Search } from "lucide-react";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts } from "@/core/product/useProducts";
 import { Input } from "@/components/ui/input";
 
 /**

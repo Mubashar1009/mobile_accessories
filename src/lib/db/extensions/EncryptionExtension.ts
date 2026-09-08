@@ -118,6 +118,29 @@ export class EncryptionExtension extends BaseExtension {
   }
 
   async list<T = Record<string, unknown>>(table: string, options?: QueryOptions): Promise<T[]> {
+    // `options.search` is an ILIKE pushed down to the database, which sees
+    // only ciphertext for an encrypted column — every comparison would fail
+    // and the caller would get an empty result set that looks like an honest
+    // "no matches" rather than a broken query. AES-256-GCM is randomized
+    // (fresh IV per write), so there is no order-preserving or deterministic
+    // trick to make this work: searching an encrypted column requires
+    // decrypting it first, which defeats the point of encrypting it.
+    //
+    // Fail loudly instead. Silently wrong search results are worse than an
+    // error naming the exact column that cannot be searched.
+    const searchColumns = options?.search?.columns ?? [];
+    if (searchColumns.length > 0) {
+      const encryptedFields = this.fieldsFor(table);
+      const conflicting = searchColumns.filter((column) => encryptedFields.includes(column));
+      if (conflicting.length > 0) {
+        throw new EncryptionError(
+          `Cannot search encrypted column(s) ${conflicting
+            .map((c) => `${table}.${c}`)
+            .join(", ")} — an ILIKE would match ciphertext, not the stored value.`
+        );
+      }
+    }
+
     const rows = await this.next.list<T>(table, options);
     return rows.map((row) => this.decryptRow(table, row) as T);
   }
