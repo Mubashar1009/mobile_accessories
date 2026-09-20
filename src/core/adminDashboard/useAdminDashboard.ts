@@ -2,41 +2,44 @@
 
 import { useCallback, useTransition, useEffect } from "react";
 import { useAdminDashboardStore } from "@/store/adminDashboard/useAdminDashboardStore";
-import { toggleOutOfStock, deleteProduct } from "@/lib/actions";
+import { useProducts } from "@/core/product/useProducts";
 import type { Product } from "@/types/product";
 
 export function useAdminDashboard(initialProducts: Product[]) {
   const {
-    products,
     editProduct,
     editOpen,
     deletingId,
-    setProducts,
     setEditProduct,
     setEditOpen,
     setDeletingId,
-    updateProduct,
-    removeProduct,
   } = useAdminDashboardStore();
+
+  const { products, error, seedProducts, toggleOutOfStock, remove } = useProducts();
 
   const [isPending, startTransition] = useTransition();
 
-  // Seed store with server-provided initial products on mount
+  // Seed the shared product store from the server-rendered list.
+  //
+  // `seedProducts` (not `setProducts`) so the demo/loading flags settle with
+  // the data -- the storefront reads this same slice and would otherwise keep
+  // showing its "demo products" banner over real rows.
+  //
+  // The dependency array is honest rather than eslint-disabled: re-running
+  // when the server sends a new list is exactly the wanted behaviour (e.g.
+  // after `revalidatePath` + `router.refresh()`). Writing the same rows again
+  // is a no-op for rendering, so there is no loop to guard against.
   useEffect(() => {
-    setProducts(initialProducts);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    seedProducts(initialProducts);
+  }, [initialProducts, seedProducts]);
 
   const handleToggleStock = useCallback(
     (product: Product) => {
       startTransition(async () => {
-        const result = await toggleOutOfStock(product.id, product.is_out_of_stock);
-        if (!result?.error) {
-          updateProduct({ ...product, is_out_of_stock: !product.is_out_of_stock });
-        }
+        await toggleOutOfStock(product.id, product.is_out_of_stock);
       });
     },
-    [updateProduct]
+    [toggleOutOfStock]
   );
 
   const handleDelete = useCallback(
@@ -44,12 +47,11 @@ export function useAdminDashboard(initialProducts: Product[]) {
       if (!confirm("Delete this product? This will also remove its image.")) return;
       setDeletingId(id);
       startTransition(async () => {
-        const result = await deleteProduct(id);
-        if (!result?.error) removeProduct(id);
+        await remove(id);
         setDeletingId(null);
       });
     },
-    [setDeletingId, removeProduct]
+    [setDeletingId, remove]
   );
 
   const handleEdit = useCallback(
@@ -63,6 +65,7 @@ export function useAdminDashboard(initialProducts: Product[]) {
   return {
     // State
     products,
+    error,
     editProduct,
     editOpen,
     deletingId,

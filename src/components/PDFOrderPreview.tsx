@@ -17,7 +17,6 @@ import { Download, MessageCircle, FileText, Loader2, X } from "lucide-react";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
 import { Heading } from "@/components/ui/heading";
-import { Paragraph } from "@/components/ui/paragraph";
 import type { PDFOrderPreviewProps } from "@/types/components/pdfOrderPreview";
 
 
@@ -155,7 +154,7 @@ export function PDFOrderPreview({ isOpen, setIsOpen }: PDFOrderPreviewProps) {
       pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
-      while (heightLeft >= 0) {
+      while (heightLeft > 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
         pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);

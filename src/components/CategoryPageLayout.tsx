@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useProducts } from "@/core/product/useProducts";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Package, WifiOff, RefreshCw, Loader2, Info, ArrowLeft } from "lucide-react";
+import { Package, WifiOff, RefreshCw, Loader2, Info, ArrowLeft, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Box } from "@/components/ui/box";
 import { Flex } from "@/components/ui/flex";
 import { Grid } from "@/components/ui/grid";
@@ -18,11 +19,21 @@ import { matchesCategory } from "@/core/product/categoryMapper";
 import Link from "next/link";
 import type { CategoryPageLayoutProps } from "@/types/components/categoryPageLayout";
 
+// Below this many products in the category, a search box just adds noise —
+// everything's already scannable in one glance.
+const SEARCH_THRESHOLD = 6;
+
 export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
   const { products, loading, isOffline, isDemo, refetch } = useProducts();
+  const [query, setQuery] = useState("");
   const cat = CATEGORIES.find((c) => c.slug === slug);
   const label = cat?.label ?? slug;
-  const filtered = useMemo(() => products.filter((p) => matchesCategory(p, slug)), [products, slug]);
+  const inCategory = useMemo(() => products.filter((p) => matchesCategory(p, slug)), [products, slug]);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return inCategory;
+    return inCategory.filter((p) => `${p.title} ${p.description ?? ""}`.toLowerCase().includes(q));
+  }, [inCategory, query]);
 
   return (
     <Flex direction="col" className="flex-1">
@@ -30,17 +41,25 @@ export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
 
       <Box as="section" className="border-b bg-muted/30">
         <Box className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-          <Link href="/" className="mb-3 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
-          </Link>
           <Heading level="h1" className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">{label}</Heading>
-          <Paragraph className="mt-1 text-sm text-muted-foreground">Browse our collection of {label.toLowerCase()}</Paragraph>
         </Box>
       </Box>
 
       <Box as="section" className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
         <Box className="space-y-6">
+          {inCategory.length > SEARCH_THRESHOLD && (
+            <Box className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={`Search ${label.toLowerCase()}...`}
+                className="pl-9"
+              />
+            </Box>
+          )}
+
           {isDemo && (
             <Flex align="center" gap="sm" className="rounded-lg bg-primary/10 px-4 py-2.5 text-sm text-primary">
               <Info className="h-4 w-4 shrink-0" />
@@ -86,8 +105,14 @@ export function CategoryPageLayout({ slug }: CategoryPageLayoutProps) {
           {!loading && filtered.length === 0 && (
             <Flex direction="col" align="center" justify="center" className="rounded-xl border border-dashed py-20">
               <Package className="mb-4 h-16 w-16 text-muted-foreground/50" />
-              <Heading level="h2" className="text-xl font-bold text-foreground">No {label} Found</Heading>
-              <Paragraph className="mt-2 text-sm text-muted-foreground">Check back soon for new arrivals!</Paragraph>
+              <Heading level="h2" className="text-xl font-bold text-foreground">
+                {query ? "No Matches Found" : `No ${label} Found`}
+              </Heading>
+              <Paragraph className="mt-2 text-sm text-muted-foreground">
+                {query
+                  ? `We couldn't find any ${label.toLowerCase()} matching "${query}"`
+                  : "Check back soon for new arrivals!"}
+              </Paragraph>
               <Link href="/" className="mt-4">
                 <Button variant="outline" className="gap-2 rounded-lg">
                   <ArrowLeft className="h-4 w-4" />

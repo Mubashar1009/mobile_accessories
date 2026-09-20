@@ -1,6 +1,6 @@
-import { getProducts } from "@/lib/actions";
+import { getProducts } from "@/app/actions/product.actions";
 import { AdminDashboardClient } from "@/components/AdminDashboardClient";
-import { checkIsAdmin } from "@/lib/auth";
+import { checkIsAdmin } from "@/lib/authz";
 import { notFound } from "next/navigation";
 
 export const revalidate = 0;
