@@ -5,6 +5,7 @@ import { env } from "@/config/env";
 import { findUserByEmail } from "@/lib/repositories/users";
 import { logger } from "@/lib/logger";
 import type { AuthActionResult, PasswordResetResult } from "@/types/auth";
+import { AppRoutes } from "@/types/enums/routes";
 import { BaseDomainService } from "./BaseDomainService";
 
 export type { AuthActionResult, PasswordResetResult } from "@/types/auth";
@@ -57,7 +58,13 @@ export class AuthService extends BaseDomainService {
       // `on_auth_user_created` reads `full_name` out of this metadata to
       // populate public.users.name, so passing it here means the row is
       // correct the moment it's created rather than needing a backfill.
-      options: { data: { full_name: trimmedName } },
+      // Without `emailRedirectTo`, Supabase falls back to the dashboard's
+      // "Site URL" (localhost in dev) and drops `?code=` on `/`, where
+      // nothing exchanges it. `/auth/confirm` does the exchange.
+      options: {
+        data: { full_name: trimmedName },
+        emailRedirectTo: `${env.site.url}/auth/confirm?next=${AppRoutes.HOME}`,
+      },
     });
 
     if (error) {
