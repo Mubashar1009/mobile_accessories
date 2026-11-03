@@ -3,7 +3,8 @@
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import { useRootStore } from "@/store/useRootStore";
-import { loginUserAction, signupUserAction, type AuthActionResult } from "@/app/actions/auth.actions";
+import { loginUserAction, signupUserAction } from "@/app/actions/auth.actions";
+import type { AuthActionResult } from "@/types/auth";
 
 /**
  * Client-side counterpart to the backend's `AuthService`: the one place

@@ -2,12 +2,11 @@
 
 import { Core } from "@/lib/core";
 import { authService } from "@/lib/registry";
-import type { AuthActionResult, PasswordResetResult } from "@/lib/services/AuthService";
+import { logger } from "@/lib/logger";
+import type { AuthActionResult, PasswordResetResult } from "@/types/auth";
 import { loginSchema } from "@/types/login/schema";
 import { signupSchema } from "@/types/signup/schema";
 import { requestPasswordResetSchema, updatePasswordSchema } from "@/types/passwordReset/schema";
-
-export type { AuthActionResult, PasswordResetResult };
 
 /**
  * Server action to register a new user.
@@ -39,6 +38,7 @@ export async function signupUserAction(formData: {
     const auth = await Core.createAuthClient();
     return await authService.signup(auth, name, email, password);
   } catch (err) {
+    logger.error("signupUserAction failed", err);
     return {
       error: err instanceof Error ? err.message : "An unexpected error occurred during signup.",
     };
@@ -63,6 +63,7 @@ export async function loginUserAction(formData: {
     const auth = await Core.createAuthClient();
     return await authService.login(auth, validation.data.email, validation.data.password);
   } catch (err) {
+    logger.error("loginUserAction failed", err);
     return {
       error: err instanceof Error ? err.message : "An unexpected error occurred during sign-in.",
     };
@@ -84,6 +85,7 @@ export async function requestPasswordResetAction(email: string): Promise<Passwor
     const auth = await Core.createAuthClient();
     return await authService.requestPasswordReset(auth, validation.data.email);
   } catch (err) {
+    logger.error("requestPasswordResetAction failed", err);
     return {
       success: false,
       error: err instanceof Error ? err.message : "An unexpected error occurred while requesting a password reset.",
@@ -106,6 +108,7 @@ export async function updatePasswordAction(newPassword: string): Promise<Passwor
     const auth = await Core.createAuthClient();
     return await authService.updatePassword(auth, validation.data.newPassword);
   } catch (err) {
+    logger.error("updatePasswordAction failed", err);
     return {
       success: false,
       error: err instanceof Error ? err.message : "An unexpected error occurred while updating your password.",

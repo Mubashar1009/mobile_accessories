@@ -4,22 +4,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { env } from "@/config/env";
 import { findUserByEmail } from "@/lib/repositories/users";
 import { logger } from "@/lib/logger";
+import type { AuthActionResult, PasswordResetResult } from "@/types/auth";
 import { BaseDomainService } from "./BaseDomainService";
 
-export interface AuthActionResult {
-  success?: boolean;
-  error?: string;
-  user?: {
-    id: string;
-    email: string;
-    name?: string;
-  };
-}
-
-export interface PasswordResetResult {
-  success: boolean;
-  error?: string;
-}
+export type { AuthActionResult, PasswordResetResult } from "@/types/auth";
 
 /** Never disclose whether it was the email or the password that was wrong. */
 const INVALID_CREDENTIALS = "Invalid email or credentials.";
