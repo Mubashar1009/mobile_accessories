@@ -10,6 +10,14 @@ function readBoolEnv(name: string): boolean {
   return process.env[name] === "true";
 }
 
+function readSupabaseUrl(): string {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "";
+}
+
+function readSupabaseServiceKey(): string {
+  return process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+}
+
 function buildDbAdapterConfig(): DatabaseConfig {
   const adapterName = process.env.DB_ADAPTER || ADAPTERS.SUPABASE;
 
@@ -22,11 +30,11 @@ function buildDbAdapterConfig(): DatabaseConfig {
   }
 
   if (adapterName === ADAPTERS.SUPABASE) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_KEY;
+    const url = readSupabaseUrl();
+    const key = readSupabaseServiceKey();
     if (!url || !key) {
       throw new Error(
-        'DB_ADAPTER="supabase" requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_KEY to be set.'
+        'DB_ADAPTER="supabase" requires NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL and SUPABASE_SERVICE_KEY/SUPABASE_SERVICE_ROLE_KEY to be set.'
       );
     }
     return { adapter: ADAPTERS.SUPABASE, url, key };
@@ -73,11 +81,11 @@ function buildStorageConfig(): StorageConfig {
   const adapterName = process.env.STORAGE_ADAPTER || STORAGE_ADAPTERS.SUPABASE;
 
   if (adapterName === STORAGE_ADAPTERS.SUPABASE) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_KEY;
+    const url = readSupabaseUrl();
+    const key = readSupabaseServiceKey();
     if (!url || !key) {
       throw new Error(
-        'STORAGE_ADAPTER="supabase" requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_KEY to be set.'
+        'STORAGE_ADAPTER="supabase" requires NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL and SUPABASE_SERVICE_KEY/SUPABASE_SERVICE_ROLE_KEY to be set.'
       );
     }
     return { adapter: STORAGE_ADAPTERS.SUPABASE, url, key };

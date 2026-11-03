@@ -14,13 +14,17 @@ export const env = {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
       process.env.SUPABASE_ANON_KEY ||
       "",
-    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+    serviceRoleKey:
+      process.env.SUPABASE_SERVICE_KEY ||
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      "",
   },
   site: {
     // Base URL used to build absolute redirect links (e.g. Supabase's
     // resetPasswordForEmail `redirectTo`) — set to the deployed origin in
-    // production, defaults to the local dev server otherwise.
-    url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    // production, defaults to the local dev server otherwise. This is only
+    // used server-side, so it does not need the NEXT_PUBLIC_ prefix.
+    url: process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   },
   isDevelopment: process.env.NODE_ENV === "development",
   isProduction: process.env.NODE_ENV === "production",
